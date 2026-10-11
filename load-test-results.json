@@ -1,0 +1,42 @@
+[
+  {
+    "connections": 10,
+    "requestsPerSec": 212.6,
+    "latencyAvgMs": 46.56,
+    "latencyP99Ms": 199,
+    "throughputMBps": "21.54",
+    "errors": 0,
+    "timeouts": 0,
+    "non2xx": 0
+  },
+  {
+    "connections": 20,
+    "requestsPerSec": 228.7,
+    "latencyAvgMs": 86.62,
+    "latencyP99Ms": 299,
+    "throughputMBps": "23.17",
+    "errors": 0,
+    "timeouts": 0,
+    "non2xx": 0
+  },
+  {
+    "connections": 50,
+    "requestsPerSec": 238,
+    "latencyAvgMs": 209.38,
+    "latencyP99Ms": 470,
+    "throughputMBps": "24.12",
+    "errors": 0,
+    "timeouts": 0,
+    "non2xx": 0
+  },
+  {
+    "connections": 100,
+    "requestsPerSec": 215.1,
+    "latencyAvgMs": 310.41,
+    "latencyP99Ms": 975,
+    "throughputMBps": "21.80",
+    "errors": 99,
+    "timeouts": 99,
+    "non2xx": 0
+  }
+]

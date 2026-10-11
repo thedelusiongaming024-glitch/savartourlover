@@ -1,0 +1,443 @@
+@import url('https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@300;400;500;600;700&family=Tiro+Bangla:ital@0;1&display=swap');
+@import "tailwindcss";
+
+/* Previously set as a per-request className by next/font/google
+   (fraunces.variable / jakarta.variable on <html>); now that the fonts
+   are self-hosted static CSS (layout.tsx imports the @fontsource-variable
+   stylesheets, which declare the actual @font-face rules), these two
+   custom properties need to be defined here instead, pointing at the
+   font-family names those stylesheets declare. */
+:root {
+  --font-fraunces: "Fraunces Variable";
+  --font-jakarta: "Plus Jakarta Sans Variable";
+  --font-bengali: "Hind Siliguri", "Noto Sans Bengali", "Kalpurush", "SolaimanLipi", "Vrinda", system-ui, sans-serif;
+}
+
+@theme {
+  --color-pearl: #f7faf9;
+  --color-pearl-deep: #eaf1ee;
+  --color-ink: #122622;
+  --color-ink-soft: #4f6560;
+  --color-ink-faint: #7c8f8a;
+  --color-emerald: #0e6b55;
+  --color-emerald-deep: #0a4f3e;
+  --color-gold: #c9993f;
+  --color-coral: #e1552c;
+  --color-sky: #bfe1f2;
+  --color-sky-deep: #8fc3e0;
+  --color-mist: #e3eaee;
+  --color-mist-deep: #d6e4ec;
+
+  --font-display: var(--font-fraunces), var(--font-bengali), ui-serif, Georgia, serif;
+  --font-sans: var(--font-jakarta), var(--font-bengali), ui-sans-serif, system-ui, sans-serif;
+  --font-bengali: "Hind Siliguri", "Noto Sans Bengali", "Kalpurush", "SolaimanLipi", "Vrinda", system-ui, sans-serif;
+
+  --shadow-glass: 0 8px 32px rgba(18, 38, 34, 0.08);
+  --shadow-glass-lg: 0 24px 64px rgba(18, 38, 34, 0.14);
+}
+
+/* Bengali Typography Elevation when Bangla mode is active */
+html[lang="bn"],
+html.lang-bn {
+  --font-sans: "Hind Siliguri", "Noto Sans Bengali", "Kalpurush", "SolaimanLipi", "Vrinda", system-ui, sans-serif;
+  --font-display: "Hind Siliguri", "Tiro Bangla", var(--font-fraunces), serif;
+}
+
+html[lang="bn"] body,
+html.lang-bn body {
+  font-family: var(--font-sans);
+  line-height: 1.72;
+}
+
+html[lang="bn"] .font-display,
+html.lang-bn .font-display {
+  font-family: var(--font-display);
+  letter-spacing: -0.01em;
+}
+
+.font-bengali {
+  font-family: "Hind Siliguri", "Noto Sans Bengali", "Kalpurush", "SolaimanLipi", "Vrinda", system-ui, sans-serif !important;
+}
+
+:root {
+  /* Glass fill carries a faint azure cast — light glass, lightly bloomed
+     with blue — rather than a neutral white pane */
+  --glass-fill: rgba(235, 246, 251, 0.55);
+  --glass-fill-strong: rgba(240, 249, 253, 0.82);
+  --glass-border: rgba(224, 241, 250, 0.8);
+}
+
+html {
+  scroll-behavior: smooth;
+  background-color: var(--color-mist);
+}
+
+/* Sitewide photographic backdrop — pinned to the viewport with
+   background-attachment: fixed, so it holds still while the page scrolls
+   over it (the hero section has its own opaque scene layer and simply
+   paints over this; the photo takes over visually once that ends). The
+   gradient layers (listed first, so they sit on top of the photo) keep
+   ordinary body copy legible without hiding the image. */
+body {
+  background-color: var(--color-mist);
+  background-image:
+    linear-gradient(
+      180deg,
+      rgba(238, 242, 244, 0.15) 0%,
+      rgba(238, 242, 244, 0.35) 30%,
+      rgba(238, 242, 244, 0.55) 65%,
+      rgba(238, 242, 244, 0.68) 100%
+    ),
+    linear-gradient(
+      155deg,
+      rgba(10, 79, 62, 0.32) 0%,
+      rgba(14, 107, 85, 0.1) 40%,
+      rgba(201, 153, 63, 0.08) 70%,
+      rgba(201, 153, 63, 0.2) 100%
+    ),
+    url("/images/mountain-hero.jpg");
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: cover;
+  background-attachment: fixed;
+  color: var(--color-ink);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+}
+
+/* iOS Safari doesn't support background-attachment: fixed reliably (it
+   silently falls back to scroll, and can jank while doing it) — no harm
+   done, but pin it to scroll explicitly there rather than leaving the
+   behaviour to chance. */
+@supports (-webkit-touch-callout: none) {
+  body {
+    background-attachment: scroll;
+  }
+}
+
+/* Glass surface — the signature material */
+.glass {
+  position: relative;
+  background: var(--glass-fill);
+  -webkit-backdrop-filter: blur(20px) saturate(160%);
+  backdrop-filter: blur(20px) saturate(160%);
+  border: 1px solid var(--glass-border);
+  box-shadow:
+    var(--shadow-glass),
+    inset 0 1px 0 rgba(255, 255, 255, 0.85);
+  overflow: hidden;
+}
+
+.glass-strong {
+  background: var(--glass-fill-strong);
+  -webkit-backdrop-filter: blur(20px) saturate(160%);
+  backdrop-filter: blur(20px) saturate(160%);
+  border: 1px solid var(--glass-border);
+  box-shadow:
+    var(--shadow-glass),
+    inset 0 1px 0 rgba(255, 255, 255, 0.95);
+  overflow: hidden;
+}
+
+/* Diagonal light-sweep that travels across the panel on hover */
+.glass-sweep::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    115deg,
+    transparent 0%,
+    rgba(255, 255, 255, 0) 38%,
+    rgba(255, 255, 255, 0.55) 50%,
+    rgba(255, 255, 255, 0) 62%,
+    transparent 100%
+  );
+  background-size: 240% 100%;
+  background-position: 120% 0;
+  opacity: 0;
+  transition:
+    opacity 0.4s ease,
+    background-position 0.9s ease;
+  pointer-events: none;
+}
+
+.glass-sweep:hover::after {
+  opacity: 1;
+  background-position: -20% 0;
+}
+
+/* Button base */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  border-radius: 9999px;
+  padding: 0.875rem 1.75rem;
+  font-weight: 600;
+  font-size: 0.9375rem;
+  line-height: 1;
+  transition: all 0.25s ease;
+  cursor: pointer;
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.btn-emerald {
+  background: linear-gradient(135deg, var(--color-emerald) 0%, var(--color-emerald-deep) 100%);
+  color: #fff;
+  box-shadow: 0 10px 24px rgba(14, 107, 85, 0.28);
+}
+
+.btn-emerald:hover {
+  box-shadow: 0 14px 32px rgba(14, 107, 85, 0.38);
+  transform: translateY(-1px);
+}
+
+.btn:active {
+  transform: translateY(0) scale(0.97);
+}
+
+.btn-glass {
+  background: var(--glass-fill-strong);
+  color: var(--color-ink);
+  border: 1px solid var(--glass-border);
+  -webkit-backdrop-filter: blur(16px) saturate(160%);
+  backdrop-filter: blur(16px) saturate(160%);
+  box-shadow: var(--shadow-glass);
+}
+
+.btn-glass:hover {
+  background: rgba(255, 255, 255, 0.95);
+  transform: translateY(-1px);
+}
+
+.btn-gold {
+  background: linear-gradient(135deg, #d4a94e 0%, var(--color-gold) 100%);
+  color: #fff;
+  box-shadow: 0 10px 24px rgba(201, 153, 63, 0.3);
+}
+
+.btn-gold:hover {
+  box-shadow: 0 14px 32px rgba(201, 153, 63, 0.4);
+  transform: translateY(-1px);
+}
+
+/* Ink hairline divider with gold accent */
+.hairline {
+  height: 1px;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(201, 153, 63, 0.5),
+    transparent
+  );
+}
+
+/* Slow ambient drift for atmosphere blobs — gives glass panels a living,
+   premium backdrop instead of a static gradient. */
+@keyframes stl-float {
+  0%,
+  100% {
+    transform: translate(0, 0) scale(1);
+  }
+  50% {
+    transform: translate(16px, -22px) scale(1.06);
+  }
+}
+
+.atmosphere-blob {
+  animation: stl-float 16s ease-in-out infinite;
+}
+
+/* Gentle "live" pulse for eyebrow indicator dots */
+@keyframes stl-pulse-dot {
+  0%,
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.45;
+    transform: scale(1.5);
+  }
+}
+
+.pulse-dot {
+  animation: stl-pulse-dot 2.2s ease-in-out infinite;
+}
+
+/* ============================================================
+   Premium glass card system — the signature material, upgraded.
+   Every card gets: a luminous hairline frame, a cursor-tracked
+   specular sheen (light passing through glass), and a slow gilt
+   shimmer ring that wakes up on hover.
+   ============================================================ */
+.glass-card-premium {
+  --glow-x: 50%;
+  --glow-y: 30%;
+  position: relative;
+  isolation: isolate;
+}
+
+/* Luminous hairline frame riding the card edge */
+.glass-card-premium::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 20;
+  border-radius: inherit;
+  padding: 1px;
+  background: linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0.95) 0%,
+    rgba(255, 255, 255, 0.1) 28%,
+    rgba(255, 255, 255, 0.1) 72%,
+    rgba(255, 255, 255, 0.7) 100%
+  );
+  -webkit-mask:
+    linear-gradient(#fff 0 0) content-box,
+    linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  pointer-events: none;
+  opacity: 0.85;
+  transition: opacity 0.4s ease;
+}
+
+/* Cursor-tracked specular sheen — light moving across the pane */
+.glass-spotlight {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 21;
+  border-radius: inherit;
+  pointer-events: none;
+  opacity: 0;
+  background: radial-gradient(
+    420px circle at var(--glow-x) var(--glow-y),
+    rgba(226, 243, 251, 0.55),
+    rgba(226, 243, 251, 0) 55%
+  );
+  mix-blend-mode: overlay;
+  transition: opacity 0.5s ease;
+}
+
+.glass-card-premium:hover .glass-spotlight {
+  opacity: 1;
+}
+
+/* Slow gilt shimmer ring — dormant until hover, so it reads as an
+   intentional accent rather than constant background noise */
+@keyframes stl-ring-rotate {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.glass-card-premium::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 19;
+  border-radius: inherit;
+  padding: 1px;
+  background: conic-gradient(
+    from 0deg,
+    transparent 0%,
+    rgba(201, 153, 63, 0.65) 10%,
+    transparent 22%,
+    transparent 100%
+  );
+  opacity: 0;
+  -webkit-mask:
+    linear-gradient(#fff 0 0) content-box,
+    linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  pointer-events: none;
+  transition: opacity 0.4s ease;
+  animation: stl-ring-rotate 6s linear infinite;
+  animation-play-state: paused;
+}
+
+.glass-card-premium:hover::after {
+  opacity: 1;
+  animation-play-state: running;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .glass-card-premium::after {
+    animation: none !important;
+  }
+}
+
+/* Respect reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* Admin navigation visible scroller */
+.admin-tab-scroller {
+  overflow-x: auto;
+  overflow-y: hidden;
+  scrollbar-width: thin;
+  scrollbar-color: #94a3b8 #e2e8f0;
+  -webkit-overflow-scrolling: touch;
+}
+
+.admin-tab-scroller::-webkit-scrollbar {
+  height: 6px;
+}
+
+.admin-tab-scroller::-webkit-scrollbar-track {
+  background: #e2e8f0;
+  border-radius: 9999px;
+  margin: 0 4px;
+}
+
+.admin-tab-scroller::-webkit-scrollbar-thumb {
+  background: #94a3b8;
+  border-radius: 9999px;
+  border: 1px solid rgba(255, 255, 255, 0.4);
+}
+
+.admin-tab-scroller::-webkit-scrollbar-thumb:hover {
+  background: #64748b;
+}
+
+/* Mobile responsiveness & touch scrolling enhancements */
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+.touch-scroll {
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior-x: contain;
+}
+
+@media (max-width: 640px) {
+  /* Prevent giant text overflow on narrow viewports */
+  .font-display {
+    word-break: break-word;
+  }
+  
+  /* Ensure comfortable tap targets on phone touchscreens */
+  button, a.btn, input, select, textarea {
+    touch-action: manipulation;
+  }
+}
+

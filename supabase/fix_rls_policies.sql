@@ -1,0 +1,5 @@
+-- DEPRECATED — DO NOT RUN.
+-- This script granted the PUBLIC role full read/write/delete access to bookings, customers, tours,
+-- destinations, offers and more (USING (true) / WITH CHECK (true)), which lets anyone holding the
+-- public anon key read every customer's phone number or wipe the catalog.
+-- Use supabase/secure_rls_policies.sql instead.
