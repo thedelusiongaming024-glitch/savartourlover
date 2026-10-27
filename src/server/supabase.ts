@@ -274,20 +274,15 @@ export async function syncOfferToSupabase(offer: DbOffer): Promise<boolean> {
   }
 }
 
-export async function deleteOfferFromSupabase(id: string, code?: string, slug?: string): Promise<boolean> {
+export async function deleteOfferFromSupabase(id: string, code?: string, _slug?: string): Promise<boolean> {
   const supabase = getSupabaseAdminClient();
   try {
     const conditions = new Set<string>();
     conditions.add(`id.eq.${id}`);
-    conditions.add(`slug.eq.${id}`);
     conditions.add(`code.eq.${id}`);
     if (code) {
       conditions.add(`id.eq.${code}`);
       conditions.add(`code.eq.${code}`);
-    }
-    if (slug) {
-      conditions.add(`id.eq.${slug}`);
-      conditions.add(`slug.eq.${slug}`);
     }
     const { error } = await supabase.from("offers").delete().or(Array.from(conditions).join(","));
     if (error) {

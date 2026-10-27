@@ -4349,6 +4349,7 @@ export async function updateInquiryStatus(
   inquiry.status = status;
   if (adminNotes !== undefined) inquiry.admin_notes = adminNotes;
   await saveDb(db, true);
+  await syncContactInquiryToSupabase(inquiry);
   return inquiry;
 }
 
