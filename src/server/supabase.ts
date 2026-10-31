@@ -543,7 +543,11 @@ export async function syncBookingToSupabase(booking: DbBooking): Promise<boolean
     }
 
     if (error) {
-      console.warn("[Supabase Postgres] Booking upsert warning:", error.message);
+      if (error.message?.includes("bookings_tour_id_fkey")) {
+        console.warn(`[Supabase Postgres] Booking upsert skipped for ${booking.id}: tour_id "${booking.tour_id}" does not exist in PostgreSQL tours table.`);
+      } else {
+        console.warn("[Supabase Postgres] Booking upsert warning:", error.message);
+      }
       return false;
     }
     return true;

@@ -599,7 +599,6 @@ function mergeCloudWithLocal(cloudDb: DatabaseSchema, localDb: DatabaseSchema): 
   for (const localC of (localDb.customers || []).filter((c) => !deletedCustomerSet.has(c.id) && (!c.phone_number || !deletedCustomerSet.has(c.phone_number)))) {
     if (!cloudCustIds.has(localC.id)) {
       cloudDb.customers.unshift(localC);
-      void syncCustomerToSupabase(localC);
     }
   }
 
@@ -636,9 +635,9 @@ function mergeCloudWithLocal(cloudDb: DatabaseSchema, localDb: DatabaseSchema): 
   });
 
   for (const localB of (localDb.bookings || []).filter((b) => !deletedBookingSet.has(b.id))) {
-    if (!cloudBookingIds.has(localB.id)) {
+    // Only preserve local bookings that reference an existing, valid tour to prevent foreign key violations
+    if (!cloudBookingIds.has(localB.id) && cloudTourIds.has(localB.tour_id)) {
       cloudDb.bookings.unshift(localB);
-      void syncBookingToSupabase(localB);
     }
   }
 
@@ -649,7 +648,6 @@ function mergeCloudWithLocal(cloudDb: DatabaseSchema, localDb: DatabaseSchema): 
   for (const localP of localDb.payments || []) {
     if (!cloudPaymentIds.has(localP.id) && validBookingIds.has(localP.booking_id)) {
       mergedPayments.unshift(localP);
-      void syncPaymentToSupabase(localP);
     }
   }
   cloudDb.payments = mergedPayments;
@@ -660,7 +658,6 @@ function mergeCloudWithLocal(cloudDb: DatabaseSchema, localDb: DatabaseSchema): 
   for (const localT of localDb.clearanceTickets || []) {
     if (!cloudTicketIds.has(localT.id) && validBookingIds.has(localT.booking_id)) {
       mergedTickets.unshift(localT);
-      void syncClearanceTicketToSupabase(localT);
     }
   }
   cloudDb.clearanceTickets = mergedTickets;
@@ -671,7 +668,6 @@ function mergeCloudWithLocal(cloudDb: DatabaseSchema, localDb: DatabaseSchema): 
   for (const localA of localDb.alerts || []) {
     if (!cloudAlertIds.has(localA.id)) {
       mergedAlerts.unshift(localA);
-      void syncAlertToSupabase(localA);
     }
   }
   cloudDb.alerts = mergedAlerts;
@@ -1105,7 +1101,7 @@ export async function saveDb(data: DatabaseSchema, forceCloudSync = false): Prom
   }
 
   const now = Date.now();
-  const shouldSyncSnapshot = forceCloudSync || isServerlessReadOnly || (now - lastFullSnapshotBackup >= FULL_SNAPSHOT_BACKUP_INTERVAL_MS);
+  const shouldSyncSnapshot = forceCloudSync || (!isServerlessReadOnly && (now - lastFullSnapshotBackup >= FULL_SNAPSHOT_BACKUP_INTERVAL_MS));
   if (!shouldSyncSnapshot) {
     return true;
   }
@@ -1783,7 +1779,8 @@ export async function updateStaffPasswordHash(userId: string, hash: string, salt
   if (!user) return;
   user.password_hash = hash;
   user.salt = salt;
-  await saveDb(db);
+  await syncStaffUserToSupabase(user);
+  await saveDb(db, false);
 }
 
 // Invalidates every refresh token issued to this user before now (see
@@ -1795,7 +1792,8 @@ export async function revokeStaffRefreshTokens(userId: string): Promise<void> {
   const user = db.staffUsers.find((u) => u.id === userId);
   if (!user) return;
   user.tokens_valid_from = Math.floor(Date.now() / 1000);
-  await saveDb(db);
+  await syncStaffUserToSupabase(user);
+  await saveDb(db, false);
 }
 
 export function getAllStaffAdmin(): Omit<DbStaffUser, "password_hash" | "salt">[] {
