@@ -112,7 +112,7 @@ export function TourCard({ tour, showDiscount = true }: TourCardProps) {
                 </span>
               )}
               <span className="block text-[8px] sm:text-[11px] text-ink-faint truncate">
-                {t("card.perPerson")} · {formatNumber(tour.advancePercent)}% {t("card.advanceBadge")}
+                {t("card.perPerson")} · {tour.advanceAmount && tour.advanceAmount > 0 ? `${formatPrice(tour.advanceAmount)} ${t("card.advanceBadge")}` : `${formatNumber(tour.advancePercent)}% ${t("card.advanceBadge")}`}
               </span>
             </div>
             <motion.span

@@ -79,7 +79,20 @@ export default async function TourPage({ params }: PageProps) {
   const heroBackgroundSlides: TourHeroSlide[] = [];
   const seenImageUrls = new Set<string>();
 
+  const isMockImage = (url?: string | null): boolean => {
+    if (!url) return true;
+    const lower = url.toLowerCase().trim();
+    return (
+      lower.includes("unsplash.com") ||
+      lower.includes("mountain-hero.jpg") ||
+      lower.includes("placeholder")
+    );
+  };
+
   const registerSlide = (slide: TourHeroSlide) => {
+    if (isMockImage(slide.image)) {
+      return;
+    }
     const key = slide.image ? slide.image.trim() : `scene-${slide.sceneKey || slide.id}`;
     if (!seenImageUrls.has(key)) {
       seenImageUrls.add(key);
@@ -87,8 +100,8 @@ export default async function TourPage({ params }: PageProps) {
     }
   };
 
-  // 1. Tour primary cover
-  if (tour.cover?.imageUrl) {
+  // 1. Tour primary cover (only real uploaded photos)
+  if (tour.cover?.imageUrl && !isMockImage(tour.cover.imageUrl)) {
     registerSlide({
       id: "tour-cover",
       image: tour.cover.imageUrl,
@@ -98,10 +111,10 @@ export default async function TourPage({ params }: PageProps) {
     });
   }
 
-  // 2. Tour gallery photos
+  // 2. Tour gallery photos (only real uploaded tour gallery photos)
   if (Array.isArray(tour.gallery)) {
     tour.gallery.forEach((g, idx) => {
-      if (g.imageUrl) {
+      if (g.imageUrl && !isMockImage(g.imageUrl)) {
         registerSlide({
           id: `tour-gallery-${idx}`,
           image: g.imageUrl,
@@ -116,7 +129,7 @@ export default async function TourPage({ params }: PageProps) {
   // 2b. Tour custom gallery items (admin uploaded)
   if (Array.isArray(tour.galleryItems)) {
     tour.galleryItems.forEach((gi, idx) => {
-      if (gi.imageUrl) {
+      if (gi.imageUrl && !isMockImage(gi.imageUrl)) {
         registerSlide({
           id: `tour-gallery-item-${idx}`,
           image: gi.imageUrl,
@@ -127,41 +140,15 @@ export default async function TourPage({ params }: PageProps) {
     });
   }
 
-  // 3. Destination cover and gallery
-  if (destination) {
-    if (destination.cover?.imageUrl) {
-      registerSlide({
-        id: "dest-cover",
-        image: destination.cover.imageUrl,
-        title: destination.name,
-        subtitle: destination.region,
-        sceneKey: destination.cover.key,
-      });
-    }
-
-    if (Array.isArray(destination.gallery)) {
-      destination.gallery.forEach((dg, idx) => {
-        if (dg.imageUrl) {
-          registerSlide({
-            id: `dest-gallery-${idx}`,
-            image: dg.imageUrl,
-            title: dg.label || destination.name,
-            subtitle: destination.region,
-            sceneKey: dg.key,
-          });
-        }
-      });
-    }
-  }
-
-  // Fallback: If no photos were found, ensure cover or local scenery exists
+  // Fallback: If no real custom photos uploaded for this tour, show the authentic regional scene gradient
+  // without any random stock or mock images.
   if (heroBackgroundSlides.length === 0) {
     heroBackgroundSlides.push({
-      id: "slide-fallback-1",
-      image: tour.cover?.imageUrl || "/images/mountain-hero.jpg",
+      id: "slide-scene-fallback",
+      image: null,
       title: tour.title,
       subtitle: destination?.name || tour.category,
-      sceneKey: tour.cover?.key || "bandarban",
+      sceneKey: tour.cover?.key || (destination?.cover?.key as any) || "coxsbazar",
     });
   }
 

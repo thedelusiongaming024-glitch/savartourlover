@@ -6,6 +6,7 @@ import { Icon } from "@/components/Icon";
 import { TourGalleryBento } from "@/components/TourGalleryBento";
 import { TourHeroBackgroundSlider, type TourHeroSlide } from "@/components/TourHeroBackgroundSlider";
 import { BookingForm } from "@/components/BookingForm";
+import { TourOverviewRenderer } from "@/components/TourOverviewRenderer";
 import { useLanguage } from "@/context/LanguageContext";
 import type { Tour, Destination } from "@/lib/types";
 
@@ -14,69 +15,6 @@ interface TourDetailClientProps {
   destination?: Destination | null;
   heroBackgroundSlides: TourHeroSlide[];
   watermarkText?: string;
-}
-
-function FormattedDescription({ text }: { text: string }) {
-  if (!text) return null;
-
-  // Split into paragraphs by double newlines or consecutive newlines
-  const paragraphs = text
-    .split(/\n{2,}/)
-    .map((p) => p.trim())
-    .filter(Boolean);
-
-  if (paragraphs.length === 0) return null;
-
-  return (
-    <div className="space-y-4 text-base sm:text-lg leading-relaxed text-ink-soft">
-      {paragraphs.map((para, pIdx) => {
-        const lines = para.split("\n").map((l) => l.trim()).filter(Boolean);
-
-        // Check if paragraph is a list of bullet points
-        const isList = lines.length > 0 && lines.every((l) => /^[-*•·]/.test(l));
-        if (isList) {
-          return (
-            <ul key={pIdx} className="space-y-2.5 my-3 pl-1">
-              {lines.map((l, lIdx) => (
-                <li key={lIdx} className="flex items-start gap-2.5">
-                  <span className="mt-2.5 h-2 w-2 shrink-0 rounded-full bg-emerald" />
-                  <span className="leading-relaxed">{l.replace(/^[-*•·]\s*/, "")}</span>
-                </li>
-              ))}
-            </ul>
-          );
-        }
-
-        // Check if paragraph starts with a day/schedule header (e.g. "প্রথম দিন:", "Day 1:", "১ম দিন:")
-        const dayMatch = para.match(
-          /^((?:প্রথম|দ্বিতীয়|তৃতীয়|চতুর্থ|পঞ্চম|১ম|২য়|৩য়|৪র্থ|৫ম|Day\s*\d+|সকালে|সন্ধ্যায়|রাতে|দুপুরে)[^:–—\n]+[:–—])\s*([\s\S]*)$/i
-        );
-        if (dayMatch) {
-          const header = dayMatch[1].trim();
-          const body = dayMatch[2].trim();
-          return (
-            <div
-              key={pIdx}
-              className="rounded-2xl border border-emerald-100/80 bg-emerald-50/40 p-4 sm:p-5 backdrop-blur-xs shadow-2xs"
-            >
-              <span className="inline-block rounded-lg bg-emerald/15 px-3 py-1 font-display text-sm font-bold text-emerald-deep mb-2">
-                {header}
-              </span>
-              <p className="whitespace-pre-line leading-relaxed text-ink-soft">
-                {body}
-              </p>
-            </div>
-          );
-        }
-
-        return (
-          <p key={pIdx} className="whitespace-pre-line leading-relaxed">
-            {para}
-          </p>
-        );
-      })}
-    </div>
-  );
 }
 
 export function TourDetailClient({
@@ -89,8 +27,12 @@ export function TourDetailClient({
 
   const original = tour.startingPrice;
   const final = Math.max(0, original - tour.discount);
-  const advance = Math.round(final * (tour.advancePercent / 100));
+  const advance = tour.advanceAmount && tour.advanceAmount > 0 ? tour.advanceAmount : Math.round(final * ((tour.advancePercent || 40) / 100));
   const remaining = Math.max(0, final - advance);
+
+  const hasRealGallery =
+    (Array.isArray(tour.galleryItems) && tour.galleryItems.some((g) => Boolean(g?.imageUrl || (g as any)?.image))) ||
+    (Array.isArray(tour.gallery) && tour.gallery.some((g) => Boolean(g?.imageUrl && !g.imageUrl.includes("mountain-hero"))));
 
   const displayCategory = isBn
     ? (() => {
@@ -240,9 +182,11 @@ export function TourDetailClient({
               </Reveal>
 
               {/* Tour Photos & Scenery (Compact Bento Grid in Left Column) */}
-              <Reveal>
-                <TourGalleryBento tour={tour} destination={destination} />
-              </Reveal>
+              {hasRealGallery && (
+                <Reveal>
+                  <TourGalleryBento tour={tour} destination={destination} />
+                </Reveal>
+              )}
 
               {/* Tour Overview / Description */}
               <Reveal>
@@ -250,7 +194,7 @@ export function TourDetailClient({
                   <h2 className="mb-4 font-display text-xl font-semibold text-ink sm:text-2xl">
                     {isBn ? "ট্যুরের বিবরণ" : "Overview"}
                   </h2>
-                  <FormattedDescription text={tour.description} />
+                  <TourOverviewRenderer content={tour.description} />
                 </div>
               </Reveal>
 
@@ -468,11 +412,11 @@ export function TourDetailClient({
                         <p className="mt-1 text-xs sm:text-sm leading-relaxed text-emerald-50/90">
                           {isBn ? (
                             <>
-                              বুকিংয়ের সময় মাত্র {formatNumber(tour.advancePercent)}% অগ্রিম ({formatPrice(advance)}) বিকাশ পেমেন্ট অথবা সরাসরি হাতে নগদে পরিশোধ করুন। আপনার অফিসিয়াল ডিজিটাল টিকেট সাথে সাথে হোয়াটসঅ্যাপ ও ইমেইলে পৌঁছে যাবে। ভ্রমণের দিন বাকি টাকা বিকাশ পেমেন্টে বা সরাসরি ট্যুর ডিরেক্টরের কাছে নগদ পরিশোধ করুন।
+                              বুকিংয়ের সময় মাত্র {formatPrice(advance)} অগ্রিম বিকাশ পেমেন্ট অথবা সরাসরি হাতে নগদে পরিশোধ করুন। আপনার অফিসিয়াল ডিজিটাল টিকেট সাথে সাথে হোয়াটসঅ্যাপ ও ইমেইলে পৌঁছে যাবে। ভ্রমণের দিন বাকি টাকা বিকাশ পেমেন্টে বা সরাসরি ট্যুর ডিরেক্টরের কাছে নগদ পরিশোধ করুন।
                             </>
                           ) : (
                             <>
-                              Book with a {tour.advancePercent}% advance ({formatPrice(advance)}) via bKash payment or pay cash by hand. Your official e-ticket arrives instantly on WhatsApp and email. On tour day, clear the remaining balance via bKash payment or in cash with your tour director.
+                              Book with a {formatPrice(advance)} advance deposit via bKash payment or pay cash by hand. Your official e-ticket arrives instantly on WhatsApp and email. On tour day, clear the remaining balance via bKash payment or in cash with your tour director.
                             </>
                           )}
                         </p>
@@ -571,7 +515,7 @@ export function TourDetailClient({
                         {isBn ? "বুকিং অগ্রিম" : "Advance to book"}
                       </span>
                       <span className="font-bold text-emerald-800">
-                        {formatPrice(advance)} ({formatNumber(tour.advancePercent)}%)
+                        {formatPrice(advance)}
                       </span>
                     </div>
                     <div className="flex items-center justify-between border-t border-ink/5 pt-2">

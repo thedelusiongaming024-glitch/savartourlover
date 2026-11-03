@@ -177,8 +177,9 @@ export function BookingForm({ tour, finalPrice, advanceAmount }: BookingFormProp
   }
 
   const totalFinalPrice = Math.max(0, rawTotalPrice - promoDiscount);
-  const advancePercent = tour.advancePercent ?? (finalPrice > 0 ? Math.round((advanceAmount / finalPrice) * 100) : 40);
-  const totalAdvanceAmount = Math.round((totalFinalPrice * advancePercent) / 100);
+  const seatOrTravelerCount = travelerCount;
+  const perPersonAdvance = advanceAmount > 0 ? advanceAmount : (tour.advanceAmount && tour.advanceAmount > 0 ? tour.advanceAmount : Math.round((finalPrice * (tour.advancePercent || 40)) / 100));
+  const totalAdvanceAmount = Math.min(totalFinalPrice, Math.max(0, perPersonAdvance * seatOrTravelerCount));
   const dueOnTourDay = paymentPlan === "full" ? 0 : Math.max(0, totalFinalPrice - totalAdvanceAmount);
 
   function handleDepartureChange(newId: string) {
@@ -826,51 +827,6 @@ export function BookingForm({ tour, finalPrice, advanceAmount }: BookingFormProp
 
         
       </div>
-
-      {/* Payment Gateway Trust Banner */}
-      {paymentMethod === "Rocket payment" ? (
-        <div className="rounded-xl border border-purple-200 bg-purple-50/70 p-3 text-center space-y-1">
-          <div className="flex items-center justify-center gap-1.5 text-xs font-bold text-purple-950">
-            <span>🔒 Dutch-Bangla Bank Rocket Merchant Payment</span>
-          </div>
-          <p className="text-[11px] text-purple-800">
-            মার্চেন্ট: <strong>SHIMUL HASAN PRINCE</strong> · রকেট একাউন্ট: <strong className="font-mono text-purple-950 font-bold">016205930072</strong>
-          </p>
-          <div className="mt-1 inline-flex flex-wrap items-center justify-center gap-1.5 rounded-lg bg-white/90 border border-purple-300 px-2.5 py-1 text-[11px] text-purple-900 font-medium">
-            <span>TID: <strong className="font-mono text-purple-950 font-bold">60084230</strong></span>
-            <span className="text-slate-400">·</span>
-            <span>মার্চেন্ট ID: <strong className="font-mono text-purple-950 font-bold">999016205930072</strong></span>
-            <span className="text-slate-400">·</span>
-            <span className="text-emerald-700 font-semibold">রকেট মার্চেন্ট পেমেন্ট ও TrxID কনফার্মেশন</span>
-          </div>
-        </div>
-      ) : paymentMethod === "Bkash payment" ? (
-        <div className="rounded-xl border border-pink-200 bg-pink-50/70 p-3 text-center space-y-1">
-          <div className="flex items-center justify-center gap-1.5 text-xs font-bold text-pink-950">
-            <span>🔒 100% Secure Checkout via bKash Payment Gateway</span>
-          </div>
-          <p className="text-[11px] text-pink-800">
-            Fast, secure, and encrypted payment directly through your bKash wallet
-          </p>
-          <div className="mt-1 inline-flex flex-wrap items-center justify-center gap-1.5 rounded-lg bg-white/90 border border-pink-300 px-2.5 py-1 text-[11px] text-pink-900 font-medium">
-            <span>🧪 Sandbox Test Number:</span>
-            <strong className="font-mono text-pink-950 font-bold">01770618575</strong>
-            <span className="text-slate-400">·</span>
-            <span>OTP: <strong className="font-mono text-pink-950 font-bold">123456</strong></span>
-            <span className="text-slate-400">·</span>
-            <span>PIN: <strong className="font-mono text-pink-950 font-bold">12121</strong></span>
-          </div>
-        </div>
-      ) : (
-        <div className="rounded-xl border border-amber-200 bg-amber-50/60 p-3 text-center">
-          <div className="flex items-center justify-center gap-1.5 text-xs font-bold text-amber-950">
-            <span>🏢 Savar Office Counter / Tour Host Cash Verification</span>
-          </div>
-          <p className="mt-0.5 text-[11px] text-amber-800">
-            Hand over cash at counter · Admin will verify and activate ticket within 10 minutes
-          </p>
-        </div>
-      )}
 
       <button
         type="submit"

@@ -10,10 +10,14 @@ import {
   rejectCashPayment,
 } from "@/server/db";
 
+function isStaffOrAdmin(role?: string) {
+  return role === "super_admin" || role === "admin" || role === "staff" || role === "finance_manager";
+}
+
 export async function GET(request: Request) {
   const user = getAuthUserFromHeader(request.headers.get("Authorization"));
-  if (!user || user.role !== "super_admin") {
-    return NextResponse.json({ detail: "Super Admin privileges required." }, { status: 403 });
+  if (!user || !isStaffOrAdmin(user.role)) {
+    return NextResponse.json({ detail: "Staff/Admin privileges required." }, { status: 403 });
   }
 
   await ensureDbHydrated();
@@ -23,8 +27,8 @@ export async function GET(request: Request) {
 
 export async function PATCH(request: Request) {
   const user = getAuthUserFromHeader(request.headers.get("Authorization"));
-  if (!user || user.role !== "super_admin") {
-    return NextResponse.json({ detail: "Super Admin privileges required." }, { status: 403 });
+  if (!user || !isStaffOrAdmin(user.role)) {
+    return NextResponse.json({ detail: "Staff/Admin privileges required." }, { status: 403 });
   }
 
   await ensureDbHydrated();
@@ -66,6 +70,9 @@ export async function PATCH(request: Request) {
 
     const updated = await updateBookingStatus(id, status);
     if (!updated) {
+      if (status === "cancelled") {
+        return NextResponse.json({ success: true, message: "Booking cancelled and deleted from database." });
+      }
       return NextResponse.json({ detail: "Booking not found." }, { status: 404 });
     }
 

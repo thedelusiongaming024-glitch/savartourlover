@@ -9,6 +9,7 @@ import { useLanguage } from "@/context/LanguageContext";
 import { toBengaliNumber } from "@/lib/translations";
 import { adminI18n, type AdminLang } from "@/lib/adminI18n";
 import { LanguageToggle } from "@/components/LanguageToggle";
+import { MarkdownEditor } from "@/components/MarkdownEditor";
 import type {
   DbTour,
   DbDeparture,
@@ -170,38 +171,7 @@ const DEFAULT_JOURNAL_PAGE_CMS: JournalPageCmsContent = {
     "Stories, packing guides, and field notes will appear here once written and published from the Super Admin Panel.",
 };
 
-const DEFAULT_HERO_SLIDES: HeroSlideItem[] = [
-  {
-    id: "slide-coxsbazar",
-    title: "Cox's Bazar",
-    subtitle: "World's Longest Natural Sea Beach",
-    image_url: "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=1920&q=80",
-  },
-  {
-    id: "slide-sajek",
-    title: "Sajek Valley",
-    subtitle: "Valley of Clouds & Green Hills",
-    image_url: "https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=1920&q=80",
-  },
-  {
-    id: "slide-sundarbans",
-    title: "Sundarbans",
-    subtitle: "World's Largest Mangrove Kingdom",
-    image_url: "https://images.unsplash.com/photo-1448375240586-882707db888b?auto=format&fit=crop&w=1920&q=80",
-  },
-  {
-    id: "slide-sylhet",
-    title: "Sylhet & Sreemangal",
-    subtitle: "Lush Rolling Tea Gardens & Waterfalls",
-    image_url: "https://images.unsplash.com/photo-1544735716-392fe2489ffa?auto=format&fit=crop&w=1920&q=80",
-  },
-  {
-    id: "slide-stmartins",
-    title: "Saint Martin's Island",
-    subtitle: "Pristine Coral Island & Turquoise Sea",
-    image_url: "https://images.unsplash.com/photo-1519046904884-53103b34b271?auto=format&fit=crop&w=1920&q=80",
-  },
-];
+const DEFAULT_HERO_SLIDES: HeroSlideItem[] = [];
 
 const DEFAULT_HOME_PAGE_CMS: HomePageCmsContent = {
   hero_media_type: "slideshow",
@@ -597,7 +567,7 @@ function StaffDashboardContent() {
   const [selectedCustomer, setSelectedCustomer] = useState<CustomerWithDetails | null>(null);
 
   // Modals
-  const [tourModal, setTourModal] = useState<{ isOpen: boolean; tour: Partial<DbTour> | null }>({ isOpen: false, tour: null });
+  const [tourModal, setTourModal] = useState<{ isOpen: boolean; tour: Partial<DbTour> | null; isSaving?: boolean }>({ isOpen: false, tour: null, isSaving: false });
   const [categoryModal, setCategoryModal] = useState<{ isOpen: boolean; category: Partial<DbTourCategory> | null }>({ isOpen: false, category: null });
   const [manageCategoriesModalOpen, setManageCategoriesModalOpen] = useState(false);
   const [tourGalleryModal, setTourGalleryModal] = useState<{
@@ -624,7 +594,7 @@ function StaffDashboardContent() {
   const [modalTourDepartures, setModalTourDepartures] = useState<DbDeparture[]>([]);
   const [modalNewDepDate, setModalNewDepDate] = useState("");
   const [modalNewDepSeats, setModalNewDepSeats] = useState<number | string>(40);
-  const [destModal, setDestModal] = useState<{ isOpen: boolean; destination: Partial<DbDestination> | null }>({ isOpen: false, destination: null });
+  const [destModal, setDestModal] = useState<{ isOpen: boolean; destination: Partial<DbDestination> | null; isSaving?: boolean }>({ isOpen: false, destination: null, isSaving: false });
   const [blogModal, setBlogModal] = useState<{ isOpen: boolean; post: Partial<DbBlogPost> | null }>({ isOpen: false, post: null });
   const [offerModal, setOfferModal] = useState<{ isOpen: boolean; offer: Partial<DbOffer> | null }>({ isOpen: false, offer: null });
   const [reviewModal, setReviewModal] = useState<{ isOpen: boolean; review: Partial<DbTestimonial> | null }>({ isOpen: false, review: null });
@@ -777,72 +747,88 @@ function StaffDashboardContent() {
   // Tour Handlers
   async function handleSaveTour(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
-    const formData = new FormData(e.currentTarget);
-    const tour = tourModal.tour || {};
+    if (tourModal.isSaving) return;
+    setTourModal((prev) => ({ ...prev, isSaving: true }));
 
-    const basePrice = formData.get("base_price") as string;
-    const discountValue = (formData.get("discount_value") as string) || "0";
-    const destSlug = (formData.get("destination_slug") as string) || destinations[0]?.slug || "bangladesh";
-    const matchDest = destinations.find((d) => d.slug === destSlug);
+    try {
+      const formData = new FormData(e.currentTarget);
+      const tour = tourModal.tour || {};
 
-    const payload: Partial<DbTour> = {
-      id: tour.id,
-      title: formData.get("title") as string,
-      slug: (formData.get("slug") as string) || (formData.get("title") as string).toLowerCase().replace(/[^a-z0-9]+/g, "-"),
-      destination_slug: destSlug,
-      destination_name: matchDest?.name || destSlug,
-      category: formData.get("category") as string,
-      short_description: formData.get("short_description") as string,
-      full_description: formData.get("full_description") as string,
-      hero_image: normalizeImageUrl((formData.get("hero_image") as string)) || null,
-      duration_days: Number(formData.get("duration_days")),
-      duration_nights: Number(formData.get("duration_nights")),
-      base_price: basePrice,
-      discount_type: Number(discountValue) > 0 ? "flat" : "none",
-      discount_value: discountValue,
-      final_price: String(Math.max(0, Number(basePrice) - Number(discountValue))),
-      allow_partial_payment: formData.get("allow_partial_payment") === "on",
-      advance_payment_percent: formData.get("advance_payment_percent") as string,
-      advance_amount: String(Math.round((Math.max(0, Number(basePrice) - Number(discountValue)) * Number(formData.get("advance_payment_percent") || 40)) / 100)),
-      inclusions: ((formData.get("inclusions") as string) || "").split(",").map((s) => s.trim()).filter(Boolean),
-      exclusions: ((formData.get("exclusions") as string) || "").split(",").map((s) => s.trim()).filter(Boolean),
-      accommodation_notes: ((formData.get("accommodation_notes") as string) || "").trim() || tour.accommodation_notes || "Standard hotel / resort",
-      transportation_notes: ((formData.get("transportation_notes") as string) || "").trim() || tour.transportation_notes || "AC Bus / Private Jeep",
-      meals_notes: ((formData.get("meals_notes") as string) || "").trim() || tour.meals_notes || "Breakfast included",
-      places_to_visit: ((formData.get("places_to_visit") as string) || "")
-        .split("\n")
-        .flatMap((s) => s.split(","))
-        .map((s) => s.trim())
-        .filter(Boolean),
-      meeting_point: formData.get("meeting_point") as string,
-      pickup_points: ((formData.get("pickup_points") as string) || "")
-        .split("\n")
-        .flatMap((s) => s.split(","))
-        .map((s) => s.trim())
-        .filter(Boolean),
-      departure_schedule: formData.get("departure_schedule") as string,
-      total_seats: Number(formData.get("total_seats") || 40),
-      departures: modalTourDepartures,
-      is_featured: formData.get("is_featured") === "on",
-      status: formData.get("status") as "published" | "draft",
-      gallery: tour.gallery || [],
-    };
+      const basePrice = formData.get("base_price") as string;
+      const discountValue = (formData.get("discount_value") as string) || "0";
+      const destSlug = (formData.get("destination_slug") as string) || destinations[0]?.slug || "bangladesh";
+      const matchDest = destinations.find((d) => d.slug === destSlug);
 
-    const isEdit = Boolean(tour.id);
-    const url = isEdit ? `/admin/tours/${tour.id}` : "/admin/tours";
-    const method = isEdit ? "PUT" : "POST";
+      const fullDesc = (formData.get("full_description") as string) || "";
+      const shortDesc = (formData.get("short_description") as string) || fullDesc.split("\n")[0]?.trim() || fullDesc.slice(0, 160) || "";
 
-    const res = await staffFetch(url, {
-      method,
-      body: JSON.stringify(payload),
-    });
+      const payload: Partial<DbTour> = {
+        id: tour.id,
+        title: formData.get("title") as string,
+        slug: (formData.get("slug") as string) || (formData.get("title") as string).toLowerCase().replace(/[^a-z0-9]+/g, "-"),
+        destination_slug: destSlug,
+        destination_name: matchDest?.name || destSlug,
+        category: formData.get("category") as string,
+        short_description: shortDesc,
+        full_description: fullDesc,
+        hero_image: normalizeImageUrl((formData.get("hero_image") as string)) || null,
+        duration_days: Number(formData.get("duration_days")),
+        duration_nights: Number(formData.get("duration_nights")),
+        base_price: basePrice,
+        discount_type: Number(discountValue) > 0 ? "flat" : "none",
+        discount_value: discountValue,
+        final_price: String(Math.max(0, Number(basePrice) - Number(discountValue))),
+        allow_partial_payment: formData.get("allow_partial_payment") === "on",
+        advance_payment_percent: (() => {
+          const fp = Math.max(0, Number(basePrice) - Number(discountValue));
+          const adv = Number(formData.get("advance_amount") || formData.get("advance_payment_percent") || 0);
+          return fp > 0 ? String(Math.round((adv / fp) * 100)) : "40";
+        })(),
+        advance_amount: String(Number(formData.get("advance_amount") || (Math.max(0, Number(basePrice) - Number(discountValue)) * Number(formData.get("advance_payment_percent") || 40)) / 100)),
+        inclusions: ((formData.get("inclusions") as string) || "").split(",").map((s) => s.trim()).filter(Boolean),
+        exclusions: ((formData.get("exclusions") as string) || "").split(",").map((s) => s.trim()).filter(Boolean),
+        accommodation_notes: ((formData.get("accommodation_notes") as string) || "").trim() || tour.accommodation_notes || "Standard hotel / resort",
+        transportation_notes: ((formData.get("transportation_notes") as string) || "").trim() || tour.transportation_notes || "AC Bus / Private Jeep",
+        meals_notes: ((formData.get("meals_notes") as string) || "").trim() || tour.meals_notes || "Breakfast included",
+        places_to_visit: ((formData.get("places_to_visit") as string) || "")
+          .split("\n")
+          .flatMap((s) => s.split(","))
+          .map((s) => s.trim())
+          .filter(Boolean),
+        meeting_point: formData.get("meeting_point") as string,
+        pickup_points: ((formData.get("pickup_points") as string) || "")
+          .split("\n")
+          .flatMap((s) => s.split(","))
+          .map((s) => s.trim())
+          .filter(Boolean),
+        departure_schedule: formData.get("departure_schedule") as string,
+        total_seats: Number(formData.get("total_seats") || 40),
+        departures: modalTourDepartures,
+        is_featured: formData.get("is_featured") === "on",
+        status: formData.get("status") as "published" | "draft",
+        gallery: tour.gallery || [],
+      };
 
-    if (res.ok) {
-      showNotification("success", `Tour package ${isEdit ? "updated" : "created"} successfully.`);
-      setTourModal({ isOpen: false, tour: null });
-      loadData();
-    } else {
-      showNotification("error", "Failed to save tour.");
+      const isEdit = Boolean(tour.id);
+      const url = isEdit ? `/admin/tours/${tour.id}` : "/admin/tours";
+      const method = isEdit ? "PUT" : "POST";
+
+      const res = await staffFetch(url, {
+        method,
+        body: JSON.stringify(payload),
+      });
+
+      if (res.ok) {
+        showNotification("success", `Tour package ${isEdit ? "updated" : "created"} successfully.`);
+        setTourModal({ isOpen: false, tour: null, isSaving: false });
+        await loadData();
+      } else {
+        showNotification("error", "Failed to save tour.");
+      }
+    } catch {
+      showNotification("error", "An error occurred while saving the tour.");
+    } finally {
+      setTourModal((prev) => ({ ...prev, isSaving: false }));
     }
   }
 
@@ -1096,49 +1082,58 @@ function StaffDashboardContent() {
   // Destination Handlers
   async function handleSaveDestination(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
-    const formData = new FormData(e.currentTarget);
-    const dest = destModal.destination || {};
+    if (destModal.isSaving) return;
+    setDestModal((prev) => ({ ...prev, isSaving: true }));
 
-    const nameStr = ((formData.get("name") as string) || "").trim();
-    const slugInput = ((formData.get("slug") as string) || "").trim();
-    const rawDivision = ((formData.get("division") as string) || "").trim();
-    const formattedDivision = rawDivision ? rawDivision.charAt(0).toUpperCase() + rawDivision.slice(1).toLowerCase() : "Chattogram";
+    try {
+      const formData = new FormData(e.currentTarget);
+      const dest = destModal.destination || {};
 
-    const payload: Partial<DbDestination> = {
-      id: dest.id,
-      name: nameStr || dest.name || "New Destination",
-      slug: slugInput || dest.slug || nameStr.toLowerCase().replace(/[^a-z0-9]+/g, "-"),
-      division: formattedDivision,
-      tagline: (formData.get("tagline") as string) || "",
-      description: (formData.get("description") as string) || "",
-      best_time_to_visit: (formData.get("best_time_to_visit") as string) || "",
-      weather_notes: (formData.get("weather_notes") as string) || "",
-      popular_attractions: ((formData.get("popular_attractions") as string) || "").split(",").map((s) => s.trim()).filter(Boolean),
-      recommended_accommodation: (formData.get("recommended_accommodation") as string) || "",
-      travel_tips: (formData.get("travel_tips") as string) || "",
-      permits_required: dest.permits_required || "None",
-      gallery: dest.gallery || [],
-      cover_image: normalizeImageUrl((formData.get("cover_image") as string)) || null,
-      cover_video_url: (formData.get("cover_video_url") as string) || "",
-      is_featured: formData.get("is_featured") === "on",
-      status: (formData.get("status") as "published" | "draft") || "published",
-    };
+      const nameStr = ((formData.get("name") as string) || "").trim();
+      const slugInput = ((formData.get("slug") as string) || "").trim();
+      const rawDivision = ((formData.get("division") as string) || "").trim();
+      const formattedDivision = rawDivision ? rawDivision.charAt(0).toUpperCase() + rawDivision.slice(1).toLowerCase() : "Chattogram";
 
-    const isEdit = Boolean(dest.id);
-    const url = isEdit ? `/admin/destinations/${dest.id}` : "/admin/destinations";
-    const method = isEdit ? "PUT" : "POST";
+      const payload: Partial<DbDestination> = {
+        id: dest.id,
+        name: nameStr || dest.name || "New Destination",
+        slug: slugInput || dest.slug || nameStr.toLowerCase().replace(/[^a-z0-9]+/g, "-"),
+        division: formattedDivision,
+        tagline: (formData.get("tagline") as string) || "",
+        description: (formData.get("description") as string) || "",
+        best_time_to_visit: (formData.get("best_time_to_visit") as string) || "",
+        weather_notes: (formData.get("weather_notes") as string) || "",
+        popular_attractions: ((formData.get("popular_attractions") as string) || "").split(",").map((s) => s.trim()).filter(Boolean),
+        recommended_accommodation: (formData.get("recommended_accommodation") as string) || "",
+        travel_tips: (formData.get("travel_tips") as string) || "",
+        permits_required: dest.permits_required || "None",
+        gallery: dest.gallery || [],
+        cover_image: normalizeImageUrl((formData.get("cover_image") as string)) || null,
+        cover_video_url: (formData.get("cover_video_url") as string) || "",
+        is_featured: formData.get("is_featured") === "on",
+        status: (formData.get("status") as "published" | "draft") || "published",
+      };
 
-    const res = await staffFetch(url, {
-      method,
-      body: JSON.stringify(payload),
-    });
+      const isEdit = Boolean(dest.id);
+      const url = isEdit ? `/admin/destinations/${dest.id}` : "/admin/destinations";
+      const method = isEdit ? "PUT" : "POST";
 
-    if (res.ok) {
-      showNotification("success", `Destination ${isEdit ? "updated" : "created"} successfully.`);
-      setDestModal({ isOpen: false, destination: null });
-      loadData();
-    } else {
-      showNotification("error", "Failed to save destination.");
+      const res = await staffFetch(url, {
+        method,
+        body: JSON.stringify(payload),
+      });
+
+      if (res.ok) {
+        showNotification("success", `Destination ${isEdit ? "updated" : "created"} successfully.`);
+        setDestModal({ isOpen: false, destination: null, isSaving: false });
+        await loadData();
+      } else {
+        showNotification("error", "Failed to save destination.");
+      }
+    } catch {
+      showNotification("error", "An error occurred while saving the destination.");
+    } finally {
+      setDestModal((prev) => ({ ...prev, isSaving: false }));
     }
   }
 
@@ -1442,7 +1437,12 @@ function StaffDashboardContent() {
       body: JSON.stringify({ id, status: newStatus }),
     });
     if (res.ok) {
-      showNotification("success", `Booking status updated to ${newStatus}.`);
+      showNotification(
+        "success",
+        newStatus === "cancelled"
+          ? (isBn ? "বুকিং বাতিল এবং ডাটাবেজ থেকে মুছে ফেলা হয়েছে।" : "Booking cancelled and deleted from database.")
+          : `Booking status updated to ${newStatus}.`
+      );
       loadData();
     } else {
       showNotification("error", "Failed to update booking status.");
@@ -1548,6 +1548,45 @@ function StaffDashboardContent() {
     } else {
       const err = await res.json().catch(() => ({}));
       showNotification("error", err.detail || "Failed to reject Rocket payment.");
+    }
+  }
+
+  // Approve Pending bKash Online Verification
+  async function handleApproveBkashPayment(id: string, reference: string, trxId?: string) {
+    if (!confirm(`Are you sure you want to approve bKash payment for booking ${reference}?\nTrxID: ${trxId || "N/A"}\n\nThis will mark the booking as confirmed and credit the transaction.`)) {
+      return;
+    }
+    const res = await staffFetch("/staff/bkash/approve", {
+      method: "POST",
+      body: JSON.stringify({ booking_id: id, admin_name: user?.username || "Staff Admin" }),
+    });
+    if (res.ok) {
+      showNotification("success", `bKash payment approved for booking ${reference}!`);
+      loadData();
+    } else {
+      const err = await res.json().catch(() => ({}));
+      showNotification("error", err.detail || "Failed to approve bKash payment.");
+    }
+  }
+
+  // Reject Pending bKash Verification (Fake TrxID / Timeout)
+  async function handleRejectBkashPayment(id: string, reference: string, trxId?: string) {
+    const reason = prompt(
+      `Enter rejection reason for booking ${reference} (TrxID: ${trxId || "None"}):`,
+      "bKash TrxID could not be verified in records"
+    );
+    if (reason === null) return;
+    const res = await staffFetch("/staff/bkash/reject", {
+      method: "POST",
+      body: JSON.stringify({ booking_id: id, reason }),
+    });
+    if (res.ok) {
+      const data = await res.json().catch(() => ({}));
+      showNotification("success", data.message || `Booking ${reference} cancelled and seats released.`);
+      loadData();
+    } else {
+      const err = await res.json().catch(() => ({}));
+      showNotification("error", err.detail || "Failed to reject bKash payment.");
     }
   }
 
@@ -2362,7 +2401,9 @@ function StaffDashboardContent() {
 
             {/* Tours Grid */}
             <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-              {filteredTours.map((t) => (
+              {filteredTours
+                .filter((t, idx, arr) => arr.findIndex((x) => (t.id && x.id === t.id) || (t.slug && x.slug === t.slug)) === idx)
+                .map((t) => (
                 <div key={t.id} className="rounded-xl border border-slate-200 bg-white p-5 flex flex-col justify-between shadow-xs hover:border-slate-300 transition">
                   <div>
                     <div className="flex items-center justify-between text-xs mb-2.5">
@@ -2391,7 +2432,9 @@ function StaffDashboardContent() {
                       {Number(t.discount_value) > 0 && (
                         <span className="text-xs text-slate-400 line-through">{bdt(t.base_price)}</span>
                       )}
-                      <span className="text-xs text-slate-500 ml-auto font-medium">{num(t.advance_payment_percent)}% {dict.tours.advanceRequired}</span>
+                      <span className="text-xs text-slate-500 ml-auto font-medium">
+                        {bdt(t.advance_amount || Math.round(Number(t.final_price || t.base_price || 0) * (Number(t.advance_payment_percent || 40) / 100)))} {dict.tours.advanceRequired}
+                      </span>
                     </div>
 
                     <div className="mt-2 text-xs text-slate-500">
@@ -2490,7 +2533,9 @@ function StaffDashboardContent() {
             </div>
 
             <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-              {filteredDestinations.map((d) => (
+              {filteredDestinations
+                .filter((d, idx, arr) => arr.findIndex((x) => (d.id && x.id === d.id) || (d.slug && x.slug === d.slug)) === idx)
+                .map((d) => (
                 <div key={d.id} className="rounded-xl border border-slate-200 bg-white p-5 flex flex-col justify-between shadow-xs hover:border-slate-300 transition">
                   <div>
                     <div className="flex items-center justify-between text-xs mb-2">
@@ -4401,32 +4446,6 @@ function StaffDashboardContent() {
               </div>
             )}
 
-            {/* Urgency Alert for Pending Rocket Verification */}
-            {bookings.filter((b) => b.status === "pending_verification").length > 0 && (
-              <div className="rounded-xl border border-purple-300 bg-purple-50/90 p-4 flex flex-wrap items-center justify-between gap-3 shadow-xs animate-in fade-in">
-                <div className="flex items-center gap-3">
-                  <div className="h-10 w-10 rounded-full bg-purple-700 text-white flex items-center justify-center font-bold text-lg shrink-0">
-                    🚀
-                  </div>
-                  <div>
-                    <h4 className="text-xs sm:text-sm font-bold text-purple-950">
-                      {num(bookings.filter((b) => b.status === "pending_verification").length)} {isBn ? "টি রকেট অনলাইন যাচাই বাকি" : "Rocket Payment(s) Awaiting Automated SMS Match or Approval"}
-                    </h4>
-                    <p className="text-[11px] sm:text-xs text-purple-800 mt-0.5">
-                      {isBn ? "১৫ মিনিটের অটো-রিলিজ টাইমার চালু আছে। এসএমএস এলে স্বয়ংক্রিয়ভাবে নিশ্চিত হবে, অথবা ম্যানুয়ালি অনুমোদন/বাতিল করুন।" : "15-minute auto-release timer is active. System will auto-confirm on matching SMS, or approve/reject manually."}
-                    </p>
-                  </div>
-                </div>
-                <button
-                  type="button"
-                  onClick={() => setBookingStatusFilter("pending_verification")}
-                  className="rounded-lg bg-purple-700 hover:bg-purple-800 text-white px-3.5 py-1.5 text-xs font-bold transition shadow-xs cursor-pointer shrink-0"
-                >
-                  {isBn ? "রকেট বুকিং দেখুন" : "View Rocket Bookings"}
-                </button>
-              </div>
-            )}
-
             <div className="overflow-x-auto rounded-xl border border-slate-200 bg-white shadow-xs">
               <table className="w-full text-left text-sm">
                 <thead className="bg-slate-50 text-xs text-slate-600 uppercase tracking-wider border-b border-slate-200 font-semibold">
@@ -4612,44 +4631,83 @@ function StaffDashboardContent() {
                               <option value="cancelled">{isBn ? "বাতিল" : "Cancelled"}</option>
                             </select>
 
-                            {/* Pending Rocket Online Verification 15-Minute Timer & Quick Actions */}
+                            {/* Pending Rocket / bKash Online Verification 15-Minute Timer & Quick Actions */}
                             {b.status === "pending_verification" && (
-                              <div className="rounded-lg border border-purple-300 bg-purple-50 p-2 space-y-1.5 shadow-2xs">
-                                <div className="text-[11px] font-bold text-purple-950 flex items-center justify-between">
-                                  <span>🚀 {isBn ? "রকেট যাচাই বাকি" : "Rocket Verification"}</span>
-                                  <span className="font-mono text-purple-900 font-extrabold">{bdt(b.advance_amount || b.amount_paid || b.total_price)}</span>
+                              b.payment_method === "Rocket payment" || b.advance_payment_method === "Rocket payment" ? (
+                                <div className="rounded-lg border border-purple-300 bg-purple-50 p-2 space-y-1.5 shadow-2xs">
+                                  <div className="text-[11px] font-bold text-purple-950 flex items-center justify-between">
+                                    <span>🚀 {isBn ? "রকেট যাচাই বাকি" : "Rocket Verification"}</span>
+                                    <span className="font-mono text-purple-900 font-extrabold">{bdt(b.advance_amount || b.amount_paid || b.total_price)}</span>
+                                  </div>
+                                  <div className="text-[10px] space-y-0.5 font-mono text-slate-700 bg-white/80 p-1.5 rounded border border-purple-200">
+                                    <div><span className="font-semibold text-slate-500">TrxID:</span> <span className="font-bold text-purple-950">{b.submitted_trx_id || b.advance_transaction_id || b.transaction_id || "N/A"}</span></div>
+                                    {b.submitted_sender_phone && (
+                                      <div><span className="font-semibold text-slate-500">Sender:</span> {b.submitted_sender_phone}</div>
+                                    )}
+                                  </div>
+                                  <div>
+                                    <AdminRocketCountdown
+                                      expiresAt={b.verification_expires_at}
+                                      onExpire={() => loadData()}
+                                    />
+                                  </div>
+                                  <div className="flex flex-wrap items-center gap-1 pt-0.5">
+                                    <button
+                                      type="button"
+                                      onClick={() => handleApproveRocketPayment(b.id, b.reference, b.submitted_trx_id || b.advance_transaction_id || b.transaction_id)}
+                                      className="rounded bg-purple-700 hover:bg-purple-800 text-white px-2 py-1 text-[10px] font-bold shadow-2xs transition cursor-pointer"
+                                      title="Manually approve Rocket payment and confirm seats"
+                                    >
+                                      ✓ {isBn ? "অনুমোদন করুন" : "Approve Payment"}
+                                    </button>
+                                    <button
+                                      type="button"
+                                      onClick={() => handleRejectRocketPayment(b.id, b.reference, b.submitted_trx_id || b.advance_transaction_id || b.transaction_id)}
+                                      className="rounded bg-rose-600 hover:bg-rose-700 text-white px-2 py-1 text-[10px] font-bold shadow-2xs transition cursor-pointer"
+                                      title="Reject fake/unpaid Rocket TrxID and instantly release seats"
+                                    >
+                                      ✕ {isBn ? "বাতিল ও সিট মুক্ত" : "Reject & Release Seats"}
+                                    </button>
+                                  </div>
                                 </div>
-                                <div className="text-[10px] space-y-0.5 font-mono text-slate-700 bg-white/80 p-1.5 rounded border border-purple-200">
-                                  <div><span className="font-semibold text-slate-500">TrxID:</span> <span className="font-bold text-purple-950">{b.submitted_trx_id || b.advance_transaction_id || b.transaction_id || "N/A"}</span></div>
-                                  {b.submitted_sender_phone && (
-                                    <div><span className="font-semibold text-slate-500">Sender:</span> {b.submitted_sender_phone}</div>
-                                  )}
+                              ) : (
+                                <div className="rounded-lg border border-pink-300 bg-pink-50 p-2 space-y-1.5 shadow-2xs">
+                                  <div className="text-[11px] font-bold text-pink-950 flex items-center justify-between">
+                                    <span>📱 {isBn ? "বিকাশ যাচাই বাকি" : "bKash Verification"}</span>
+                                    <span className="font-mono text-pink-900 font-extrabold">{bdt(b.advance_amount || b.amount_paid || b.total_price)}</span>
+                                  </div>
+                                  <div className="text-[10px] space-y-0.5 font-mono text-slate-700 bg-white/80 p-1.5 rounded border border-pink-200">
+                                    <div><span className="font-semibold text-slate-500">TrxID:</span> <span className="font-bold text-pink-950">{b.submitted_trx_id || b.advance_transaction_id || b.transaction_id || "N/A"}</span></div>
+                                    {b.submitted_sender_phone && (
+                                      <div><span className="font-semibold text-slate-500">Sender:</span> {b.submitted_sender_phone}</div>
+                                    )}
+                                  </div>
+                                  <div>
+                                    <AdminRocketCountdown
+                                      expiresAt={b.verification_expires_at}
+                                      onExpire={() => loadData()}
+                                    />
+                                  </div>
+                                  <div className="flex flex-wrap items-center gap-1 pt-0.5">
+                                    <button
+                                      type="button"
+                                      onClick={() => handleApproveBkashPayment(b.id, b.reference, b.submitted_trx_id || b.advance_transaction_id || b.transaction_id)}
+                                      className="rounded bg-[#D12053] hover:bg-[#b81242] text-white px-2 py-1 text-[10px] font-bold shadow-2xs transition cursor-pointer"
+                                      title="Manually approve bKash payment and confirm seats"
+                                    >
+                                      ✓ {isBn ? "অনুমোদন করুন" : "Approve Payment"}
+                                    </button>
+                                    <button
+                                      type="button"
+                                      onClick={() => handleRejectBkashPayment(b.id, b.reference, b.submitted_trx_id || b.advance_transaction_id || b.transaction_id)}
+                                      className="rounded bg-rose-600 hover:bg-rose-700 text-white px-2 py-1 text-[10px] font-bold shadow-2xs transition cursor-pointer"
+                                      title="Reject fake/unpaid bKash TrxID and instantly release seats"
+                                    >
+                                      ✕ {isBn ? "বাতিল ও সিট মুক্ত" : "Reject & Release Seats"}
+                                    </button>
+                                  </div>
                                 </div>
-                                <div>
-                                  <AdminRocketCountdown
-                                    expiresAt={b.verification_expires_at}
-                                    onExpire={() => loadData()}
-                                  />
-                                </div>
-                                <div className="flex flex-wrap items-center gap-1 pt-0.5">
-                                  <button
-                                    type="button"
-                                    onClick={() => handleApproveRocketPayment(b.id, b.reference, b.submitted_trx_id || b.advance_transaction_id || b.transaction_id)}
-                                    className="rounded bg-purple-700 hover:bg-purple-800 text-white px-2 py-1 text-[10px] font-bold shadow-2xs transition cursor-pointer"
-                                    title="Manually approve Rocket payment and confirm seats"
-                                  >
-                                    ✓ {isBn ? "অনুমোদন করুন" : "Approve Payment"}
-                                  </button>
-                                  <button
-                                    type="button"
-                                    onClick={() => handleRejectRocketPayment(b.id, b.reference, b.submitted_trx_id || b.advance_transaction_id || b.transaction_id)}
-                                    className="rounded bg-rose-600 hover:bg-rose-700 text-white px-2 py-1 text-[10px] font-bold shadow-2xs transition cursor-pointer"
-                                    title="Reject fake/unpaid Rocket TrxID and instantly release seats"
-                                  >
-                                    ✕ {isBn ? "বাতিল ও সিট মুক্ত" : "Reject & Release Seats"}
-                                  </button>
-                                </div>
-                              </div>
+                              )
                             )}
 
                             {/* Pending Cash Approval 10-Minute Timer & Quick Actions */}
@@ -4722,8 +4780,12 @@ function StaffDashboardContent() {
                             )}
 
                             {b.verified_by_sms_id && (
-                              <div className="text-[11px] text-purple-900 font-semibold flex items-center gap-1">
-                                <span>⚡ Auto-verified by DBBL Rocket SMS</span>
+                              <div className="text-[11px] font-semibold flex items-center gap-1">
+                                {b.payment_method === "Rocket payment" || b.advance_payment_method === "Rocket payment" ? (
+                                  <span className="text-purple-900">⚡ Auto-verified by DBBL Rocket SMS</span>
+                                ) : (
+                                  <span className="text-pink-700">⚡ Auto-verified by bKash SMS</span>
+                                )}
                               </div>
                             )}
                             {b.cash_approved_by && (
@@ -5395,7 +5457,7 @@ function StaffDashboardContent() {
                                 type="text"
                                 value={item.image}
                                 onChange={(e) => handleUpdateGalleryItem(idx, "image", e.target.value)}
-                                placeholder="https://images.unsplash.com/... or direct image link"
+                                placeholder="https://... direct image URL or cloud photo link"
                                 className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-xs text-slate-900 outline-none focus:border-emerald-600 focus:ring-1 focus:ring-emerald-600 font-mono shadow-2xs"
                               />
                             </div>
@@ -5853,11 +5915,18 @@ function StaffDashboardContent() {
 
               <div className="grid gap-3 sm:grid-cols-2">
                 <label className="flex flex-col gap-1 text-slate-700 text-xs font-medium">
-                  {isBn ? "অগ্রিম বুকিং ডিপোজিট (%) *" : "Advance Deposit Required (%) *"}
+                  {isBn ? "প্রয়োজনীয় অগ্রিম জামানত (৳) *" : "Advance Deposit Required (৳) *"}
                   <input
                     type="number"
-                    name="advance_payment_percent"
-                    defaultValue={tourModal.tour?.advance_payment_percent || 40}
+                    name="advance_amount"
+                    defaultValue={
+                      tourModal.tour?.advance_amount
+                        ? Number(tourModal.tour.advance_amount)
+                        : (tourModal.tour?.final_price
+                            ? Math.round(Number(tourModal.tour.final_price) * (Number(tourModal.tour.advance_payment_percent || 40) / 100))
+                            : 5000)
+                    }
+                    placeholder="e.g. 5000"
                     className="rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 outline-none focus:border-emerald-600 focus:ring-1 focus:ring-emerald-600 shadow-xs"
                   />
                 </label>
@@ -6156,33 +6225,18 @@ function StaffDashboardContent() {
                 </div>
               )}
 
-              <label className="flex flex-col gap-1 text-slate-700 text-xs font-medium">
-                Short Description
-                <textarea
-                  required
-                  rows={2}
-                  name="short_description"
-                  defaultValue={tourModal.tour?.short_description}
-                  className="rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 outline-none focus:border-emerald-600 focus:ring-1 focus:ring-emerald-600 shadow-xs"
-                />
-              </label>
-
-              <label className="flex flex-col gap-1 text-slate-700 text-xs font-semibold">
-                <span className="flex items-center justify-between">
-                  <span>Detailed Overview (বিস্তারিত বিবরণ — প্যারাগ্রাফ, লাইন ব্রেক ও বুলেট পয়েন্ট ফরম্যাট)</span>
-                  <span className="text-[11px] font-normal text-emerald-700">Paragraphs & Line breaks preserved</span>
-                </span>
-                <textarea
-                  rows={6}
-                  name="full_description"
-                  defaultValue={tourModal.tour?.full_description}
-                  placeholder={"প্রথম দিন: সকালে নাস্তা শেষে...\n\nদ্বিতীয় দিন: সারাদিন ঘুরে...\n\nপরের দিন সকালে চেক-আউট করে..."}
-                  className="rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 outline-none focus:border-emerald-600 focus:ring-1 focus:ring-emerald-600 shadow-xs font-normal"
-                />
-                <span className="text-[11px] font-normal text-slate-400">
-                  Enter key separates paragraphs. Day headings (e.g. প্রথম দিন:, দ্বিতীয় দিন:) and bullet points (- / •) are automatically styled on the public tour page.
-                </span>
-              </label>
+              <MarkdownEditor
+                key={`desc-${tourModal.tour?.id || "new"}`}
+                name="full_description"
+                defaultValue={tourModal.tour?.full_description || tourModal.tour?.short_description || ""}
+                label={
+                  <div className="flex items-center justify-between">
+                    <span>Detailed Overview (বিস্তারিত বিবরণ — প্যারাগ্রাফ, লাইন ব্রেক ও বুলেট পয়েন্ট ফরম্যাট)</span>
+                    <span className="text-[11px] font-normal text-emerald-700">Paragraphs &amp; Line breaks preserved</span>
+                  </div>
+                }
+                placeholder={"প্রথম দিন: সকালে নাস্তা শেষে চান্দের গাড়িতে সাজেকের উদ্দেশ্যে রওনা...\n\nদ্বিতীয় দিন: সারাদিন পাহাড়ে ভ্রমণ...\n\n- হোটেল চেক-ইন\n- কংলাক পাহাড় ভ্রমণ"}
+              />
 
               <label className="flex flex-col gap-1 text-slate-700 text-xs font-semibold">
                 <span className="flex items-center gap-1.5">
@@ -6255,9 +6309,11 @@ function StaffDashboardContent() {
                 </button>
                 <button
                   type="submit"
-                  className="rounded-lg bg-emerald-700 px-5 py-2 text-xs font-semibold text-white hover:bg-emerald-800 transition shadow-xs"
+                  disabled={tourModal.isSaving}
+                  className="rounded-lg bg-emerald-700 px-5 py-2 text-xs font-semibold text-white hover:bg-emerald-800 disabled:opacity-50 disabled:cursor-not-allowed transition shadow-xs flex items-center gap-2 cursor-pointer"
                 >
-                  {dict.modals.tour.save}
+                  {tourModal.isSaving && <span className="animate-spin text-sm">↻</span>}
+                  {tourModal.isSaving ? (isBn ? "সংরক্ষণ করা হচ্ছে..." : "Saving...") : dict.modals.tour.save}
                 </button>
               </div>
             </form>
@@ -6418,9 +6474,11 @@ function StaffDashboardContent() {
                 </button>
                 <button
                   type="submit"
-                  className="rounded-lg bg-emerald-700 px-5 py-2 text-xs font-semibold text-white hover:bg-emerald-800 transition shadow-xs"
+                  disabled={destModal.isSaving}
+                  className="rounded-lg bg-emerald-700 px-5 py-2 text-xs font-semibold text-white hover:bg-emerald-800 disabled:opacity-50 disabled:cursor-not-allowed transition shadow-xs flex items-center gap-2 cursor-pointer"
                 >
-                  {isBn ? "গন্তব্য সংরক্ষণ করুন" : "Save Destination"}
+                  {destModal.isSaving && <span className="animate-spin text-sm">↻</span>}
+                  {destModal.isSaving ? (isBn ? "সংরক্ষণ করা হচ্ছে..." : "Saving...") : (isBn ? "গন্তব্য সংরক্ষণ করুন" : "Save Destination")}
                 </button>
               </div>
             </form>
@@ -6510,17 +6568,20 @@ function StaffDashboardContent() {
                 />
               </label>
 
-              <label className="flex flex-col gap-1 text-slate-700 text-xs font-medium">
-                {isBn ? "আর্টিকেলের মূল বক্তব্য (Markdown সমর্থিত)" : "Article Body (Markdown supported)"}
-                <textarea
-                  required
-                  rows={8}
-                  name="content"
-                  defaultValue={blogModal.post?.body || blogModal.post?.content}
-                  className="rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 outline-none focus:border-emerald-600 focus:ring-1 focus:ring-emerald-600 shadow-xs font-mono"
-                  placeholder="Write body content here…"
-                />
-              </label>
+              <MarkdownEditor
+                key={`blog-content-${blogModal.post?.id || "new"}`}
+                name="content"
+                defaultValue={blogModal.post?.body || blogModal.post?.content || ""}
+                label={
+                  <span>{isBn ? "আর্টিকেলের মূল বক্তব্য (Markdown সমর্থিত) *" : "Full Article Body (Markdown supported) *"}</span>
+                }
+                placeholder="Write the full article content, stories, and recommendations..."
+                helperText={
+                  <span className="text-[11px] font-normal text-slate-500">
+                    Supports Markdown headers (H2, H3), bold, italics, blockquotes, lists, and code blocks.
+                  </span>
+                }
+              />
 
               <label className="flex flex-col gap-1 text-slate-700 text-xs font-medium">
                 {isBn ? "ট্যাগসমূহ (কমা দিয়ে আলাদা করুন)" : "Tags (comma-separated)"}

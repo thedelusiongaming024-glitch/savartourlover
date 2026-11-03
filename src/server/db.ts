@@ -38,6 +38,7 @@ import {
 } from "./supabase";
 import { normalizeImageUrl } from "@/lib/media";
 import { parseRocketSms, type ParsedRocketSms } from "./rocketSmsParser";
+import { parseBkashSms, type ParsedBkashSms } from "./bkashSmsParser";
 import { getSupabaseAdminClient } from "@/lib/supabase";
 import type {
   AboutPageCmsContent,
@@ -57,6 +58,7 @@ import type {
   DbOffer,
   DbPayment,
   DbRocketIncomingSms,
+  DbBkashIncomingSms,
   DbStaffUser,
   DbSupplier,
   DbTestimonial,
@@ -93,7 +95,7 @@ const DB_FILE = path.join(DB_DIR, "db.json");
 // *are* running, not overall traffic. Kept configurable since the right
 // value depends on how close to the free-tier egress cap (5 GB/month) the
 // project is running.
-const SUPABASE_SYNC_INTERVAL_MS = Number(process.env.SUPABASE_SYNC_INTERVAL_MS) || 45000;
+const SUPABASE_SYNC_INTERVAL_MS = Number(process.env.SUPABASE_SYNC_INTERVAL_MS) || 15000;
 
 let memoryDb: DatabaseSchema | null = null;
 
@@ -123,6 +125,12 @@ export function autoCancelExpiredUnpaidBookings(db: DatabaseSchema): boolean {
   const toDeleteIds: string[] = [];
 
   for (const b of db.bookings) {
+    // Check 0: Any booking with status "cancelled" is automatically deleted/erased from the database
+    if (b.status === "cancelled") {
+      toDeleteIds.push(b.id);
+      continue;
+    }
+
     // Check 1: Cash advance bookings past 10-minute approval window
     const isCash = b.payment_method === "cash_on_hand" || b.payment_method === "cash";
     const isPendingCash = b.status === "pending_cash_approval" || (isCash && b.status === "pending_payment");
@@ -143,7 +151,7 @@ export function autoCancelExpiredUnpaidBookings(db: DatabaseSchema): boolean {
       }
     }
 
-    // Check 3: Rocket pending_verification bookings past 15-minute verification window
+    // Check 3: Rocket/bKash pending_verification bookings past 15-minute verification window
     if (b.status === "pending_verification" && parseFloat(b.amount_paid || "0") === 0) {
       if (b.verification_expires_at) {
         const exp = new Date(b.verification_expires_at).getTime();
@@ -152,12 +160,6 @@ export function autoCancelExpiredUnpaidBookings(db: DatabaseSchema): boolean {
           continue;
         }
       }
-    }
-
-    // Check 4: Any legacy cancelled bookings with 0 advance paid that remained in database
-    if (b.status === "cancelled" && parseFloat(b.amount_paid || "0") === 0) {
-      toDeleteIds.push(b.id);
-      continue;
     }
   }
 
@@ -168,28 +170,51 @@ export function autoCancelExpiredUnpaidBookings(db: DatabaseSchema): boolean {
       const ref = booking?.reference || bookingId;
 
       // Remove from bookings list
-      db.bookings = db.bookings.filter((b) => b.id !== bookingId);
+      db.bookings = db.bookings.filter((b) => b.id !== bookingId && b.reference !== ref);
 
-      // Remove associated pending payments
-      db.payments = db.payments.filter((p) => p.booking_id !== bookingId);
+      if (!db.deletedEntities) {
+        db.deletedEntities = {
+          destinations: [],
+          tours: [],
+          offers: [],
+          testimonials: [],
+          blogPosts: [],
+          homepageBlocks: [],
+          tourCategories: [],
+          bookings: [],
+        };
+      }
+      if (!db.deletedEntities.bookings) db.deletedEntities.bookings = [];
+      if (bookingId && !db.deletedEntities.bookings.includes(bookingId)) {
+        db.deletedEntities.bookings.push(bookingId);
+      }
+      if (ref && !db.deletedEntities.bookings.includes(ref)) {
+        db.deletedEntities.bookings.push(ref);
+      }
+
+      // Remove associated payments
+      db.payments = db.payments.filter((p) => p.booking_id !== bookingId && p.booking_id !== ref);
 
       // Remove clearance ticket if any
       if (Array.isArray(db.clearanceTickets)) {
-        db.clearanceTickets = db.clearanceTickets.filter((ct) => ct.booking_id !== bookingId);
+        db.clearanceTickets = db.clearanceTickets.filter((ct) => ct.booking_id !== bookingId && ct.booking_id !== ref);
       }
 
       // Add alert
       db.alerts.unshift({
-        id: `alt-exp-del-${Date.now()}-${bookingId.slice(-4)}`,
+        id: `alt-del-cancel-${Date.now()}-${bookingId.slice(-4)}`,
         alert_type: "booking_cancelled",
         severity: "warning",
-        message: `Incomplete booking ${ref} was auto-cancelled & deleted: advance was not paid within the 10-minute window. Seats released: ${seats || "None"}.`,
+        message: `Booking ${ref} was cancelled and automatically deleted from database. Seats released: ${seats || "None"}.`,
         is_acknowledged: false,
         created_at: new Date().toISOString(),
       });
 
       // Purge from Supabase in background
       void deleteBookingFromSupabase(bookingId);
+      if (ref && ref !== bookingId) {
+        void deleteBookingFromSupabase(ref);
+      }
       changed = true;
     }
   }
@@ -198,40 +223,29 @@ export function autoCancelExpiredUnpaidBookings(db: DatabaseSchema): boolean {
 }
 
 /**
- * Cancels and permanently purges an incomplete booking where advance payment was not made.
- * Immediately releases the reserved seats, deletes pending payments, deletes the booking from
- * local storage (db.json) and Supabase PostgreSQL so it is not saved further in the database.
+ * Permanently erases/deletes a booking from local storage (db.json) and Supabase PostgreSQL.
+ * Immediately releases the reserved seats, deletes pending payments and clearance tickets.
  */
 export async function deleteIncompleteBooking(
   bookingId: string,
-  reason?: string
+  reason: string = "Cancelled"
 ): Promise<{ success: boolean; seatsReleased: string[]; reference?: string }> {
   const db = loadDb();
-  const bIndex = db.bookings.findIndex((b) => b.id === bookingId);
-  if (bIndex === -1) {
-    await deleteBookingFromSupabase(bookingId);
-    return { success: false, seatsReleased: [] };
+  const bIndex = db.bookings.findIndex((b) => b.id === bookingId || b.reference === bookingId);
+  
+  let actualId = bookingId;
+  let reference = bookingId;
+  let seatsReleased: string[] = [];
+
+  if (bIndex !== -1) {
+    const booking = db.bookings[bIndex];
+    actualId = booking.id;
+    reference = booking.reference;
+    seatsReleased = Array.isArray(booking.selected_seats) ? [...booking.selected_seats] : [];
+    db.bookings.splice(bIndex, 1);
+  } else {
+    db.bookings = db.bookings.filter((b) => b.id !== bookingId && b.reference !== bookingId);
   }
-
-  const booking = db.bookings[bIndex];
-
-  // Safety protection: Do NOT delete bookings where advance or full payment was already received
-  const isPaid =
-    booking.status === "confirmed_advance_paid" ||
-    booking.status === "confirmed_fully_paid" ||
-    booking.status === "cleared_on_tour_day" ||
-    parseFloat(booking.amount_paid || "0") > 0;
-
-  if (isPaid) {
-    console.warn(`[deleteIncompleteBooking] Prevented deletion of confirmed/paid booking ${bookingId}`);
-    return { success: false, seatsReleased: [] };
-  }
-
-  const seatsReleased = Array.isArray(booking.selected_seats) ? [...booking.selected_seats] : [];
-  const reference = booking.reference;
-
-  // 1. Remove the booking from db.bookings
-  db.bookings.splice(bIndex, 1);
 
   if (!db.deletedEntities) {
     db.deletedEntities = {
@@ -246,35 +260,55 @@ export async function deleteIncompleteBooking(
     };
   }
   if (!db.deletedEntities.bookings) db.deletedEntities.bookings = [];
-  if (!db.deletedEntities.bookings.includes(bookingId)) {
+  if (actualId && !db.deletedEntities.bookings.includes(actualId)) {
+    db.deletedEntities.bookings.push(actualId);
+  }
+  if (reference && !db.deletedEntities.bookings.includes(reference)) {
+    db.deletedEntities.bookings.push(reference);
+  }
+  if (bookingId && !db.deletedEntities.bookings.includes(bookingId)) {
     db.deletedEntities.bookings.push(bookingId);
   }
 
   // 2. Remove associated payments
-  db.payments = db.payments.filter((p) => p.booking_id !== bookingId);
+  db.payments = db.payments.filter((p) => p.booking_id !== actualId && p.booking_id !== reference && p.booking_id !== bookingId);
 
   // 3. Remove clearance tickets if any
   if (Array.isArray(db.clearanceTickets)) {
-    db.clearanceTickets = db.clearanceTickets.filter((ct) => ct.booking_id !== bookingId);
+    db.clearanceTickets = db.clearanceTickets.filter((ct) => ct.booking_id !== actualId && ct.booking_id !== reference && ct.booking_id !== bookingId);
   }
 
   // 4. Record an operational alert for staff visibility
   db.alerts.unshift({
-    id: `alt-del-unpaid-${Date.now()}-${bookingId.slice(-4)}`,
+    id: `alt-del-cancel-${Date.now()}-${actualId.slice(-4)}`,
     alert_type: "booking_cancelled",
     severity: "info",
-    message: `Incomplete booking ${reference || bookingId} cancelled & deleted: advance was not paid${reason ? ` (${reason})` : ""}. Seats released: ${seatsReleased.length > 0 ? seatsReleased.join(", ") : "None"}.`,
+    message: `Booking ${reference || actualId} cancelled and automatically deleted from database${reason ? ` (${reason})` : ""}. Seats released: ${seatsReleased.length > 0 ? seatsReleased.join(", ") : "None"}.`,
     is_acknowledged: false,
     created_at: new Date().toISOString(),
   });
 
-  // 5. Persist the updated database without the incomplete booking
+  // 5. Persist the updated database without the cancelled booking
   await saveDb(db, true);
 
   // 6. Delete from Supabase PostgreSQL
-  await deleteBookingFromSupabase(bookingId);
+  await deleteBookingFromSupabase(actualId);
+  if (reference && reference !== actualId) {
+    await deleteBookingFromSupabase(reference);
+  }
+  if (bookingId && bookingId !== actualId && bookingId !== reference) {
+    await deleteBookingFromSupabase(bookingId);
+  }
 
   return { success: true, seatsReleased, reference };
+}
+
+export async function cancelBookingDirectly(
+  bookingId: string,
+  reason: string = "Cancelled"
+): Promise<{ success: boolean; seatsReleased: string[]; reference?: string; booking?: DbBooking }> {
+  const res = await deleteIncompleteBooking(bookingId, reason);
+  return { success: res.success, seatsReleased: res.seatsReleased, reference: res.reference };
 }
 
 /** Bookings that still occupy seats. Abandoned unpaid bookings stop blocking after the hold expires. */
@@ -448,370 +482,71 @@ async function getCloudDatabase(): Promise<DatabaseSchema | null> {
 }
 
 function mergeCloudWithLocal(cloudDb: DatabaseSchema, localDb: DatabaseSchema): DatabaseSchema {
-  // 0. Merge tombstones (deletedEntities) so deleted items are NEVER resurrected from cloud
-  const mergedDeletedEntities = {
-    destinations: Array.from(new Set([...(localDb.deletedEntities?.destinations || []), ...(cloudDb.deletedEntities?.destinations || [])])),
-    tours: Array.from(new Set([...(localDb.deletedEntities?.tours || []), ...(cloudDb.deletedEntities?.tours || [])])),
-    offers: Array.from(new Set([...(localDb.deletedEntities?.offers || []), ...(cloudDb.deletedEntities?.offers || [])])),
-    testimonials: Array.from(new Set([...(localDb.deletedEntities?.testimonials || []), ...(cloudDb.deletedEntities?.testimonials || [])])),
-    blogPosts: Array.from(new Set([...(localDb.deletedEntities?.blogPosts || []), ...(cloudDb.deletedEntities?.blogPosts || [])])),
-    homepageBlocks: Array.from(new Set([...(localDb.deletedEntities?.homepageBlocks || []), ...(cloudDb.deletedEntities?.homepageBlocks || [])])),
-    tourCategories: Array.from(new Set([...(localDb.deletedEntities?.tourCategories || []), ...(cloudDb.deletedEntities?.tourCategories || [])])),
-    bookings: Array.from(new Set([...(localDb.deletedEntities?.bookings || []), ...(cloudDb.deletedEntities?.bookings || [])])),
-    customers: Array.from(new Set([...(localDb.deletedEntities?.customers || []), ...(cloudDb.deletedEntities?.customers || [])])),
-    contactInquiries: Array.from(new Set([...(localDb.deletedEntities?.contactInquiries || []), ...(cloudDb.deletedEntities?.contactInquiries || [])])),
+  // Combine deleted entities so local deletions are not lost when merging
+  const deletedBookings = new Set([
+    ...(localDb.deletedEntities?.bookings || []),
+    ...(cloudDb.deletedEntities?.bookings || [])
+  ]);
+
+  const filteredCloudBookings = (cloudDb.bookings || []).filter(
+    (b) => !deletedBookings.has(b.id) && !deletedBookings.has(b.reference) && b.status !== "cancelled"
+  );
+
+  const result: DatabaseSchema = {
+    ...cloudDb,
+    destinations: cloudDb.destinations || [],
+    tours: cloudDb.tours || [],
+    tourCategories: (cloudDb.tourCategories && cloudDb.tourCategories.length > 0)
+      ? cloudDb.tourCategories
+      : (localDb.tourCategories && localDb.tourCategories.length > 0 ? localDb.tourCategories : DEFAULT_TOUR_CATEGORIES),
+    offers: cloudDb.offers || [],
+    testimonials: cloudDb.testimonials || [],
+    blogPosts: cloudDb.blogPosts || [],
+    homepageBlocks: (cloudDb.homepageBlocks && cloudDb.homepageBlocks.length > 0) ? cloudDb.homepageBlocks : (localDb.homepageBlocks || []),
+    staffUsers: (cloudDb.staffUsers && cloudDb.staffUsers.length > 0) ? cloudDb.staffUsers : (localDb.staffUsers || []),
+    customers: cloudDb.customers || [],
+    bookings: filteredCloudBookings,
+    payments: cloudDb.payments || [],
+    clearanceTickets: cloudDb.clearanceTickets || [],
+    alerts: cloudDb.alerts || [],
+    contactInquiries: cloudDb.contactInquiries || [],
+    // Storage mirror collections (expenses, suppliers, analytics)
+    expenses: (cloudDb.expenses && cloudDb.expenses.length > 0) ? cloudDb.expenses : (localDb.expenses || []),
+    suppliers: (cloudDb.suppliers && cloudDb.suppliers.length > 0) ? cloudDb.suppliers : (localDb.suppliers || []),
+    analyticsEvents: (cloudDb.analyticsEvents && cloudDb.analyticsEvents.length > 0) ? cloudDb.analyticsEvents : (localDb.analyticsEvents || []),
+    deletedEntities: {
+      ...localDb.deletedEntities,
+      ...cloudDb.deletedEntities,
+      bookings: Array.from(deletedBookings),
+    },
   };
-  cloudDb.deletedEntities = mergedDeletedEntities;
 
-  const deletedDestSet = new Set(mergedDeletedEntities.destinations);
-  const deletedTourSet = new Set(mergedDeletedEntities.tours);
-  const deletedOfferSet = new Set(mergedDeletedEntities.offers);
-  const deletedTestimonialSet = new Set(mergedDeletedEntities.testimonials);
-  const deletedBlogSet = new Set(mergedDeletedEntities.blogPosts);
-  const deletedBlockSet = new Set(mergedDeletedEntities.homepageBlocks);
-  const deletedCatSet = new Set(mergedDeletedEntities.tourCategories);
-  const deletedBookingSet = new Set(mergedDeletedEntities.bookings);
-  const deletedCustomerSet = new Set(mergedDeletedEntities.customers);
-  const deletedInquirySet = new Set(mergedDeletedEntities.contactInquiries);
-
-  // Filter out deleted destinations from cloudDb and reconcile with local destinations
-  cloudDb.destinations = (cloudDb.destinations || []).filter(
-    (d) => !deletedDestSet.has(d.id) && !deletedDestSet.has(d.slug)
-  );
-
-  if (localDb.destinations && localDb.destinations.length > 0) {
-    const localDestMap = new Map<string, DbDestination>();
-    for (const d of localDb.destinations) {
-      if (d.id) localDestMap.set(d.id, d);
-      if (d.slug) localDestMap.set(d.slug, d);
-    }
-
-    cloudDb.destinations = cloudDb.destinations.map((cloudD) => {
-      const localD = localDestMap.get(cloudD.id) || localDestMap.get(cloudD.slug);
-      if (!localD) return cloudD;
-      return {
-        ...localD,
-        ...cloudD,
-        cover_image: cloudD.cover_image || localD.cover_image,
-        cover_video_url: cloudD.cover_video_url || localD.cover_video_url,
-        gallery: (cloudD.gallery && cloudD.gallery.length > 0) ? cloudD.gallery : (localD.gallery || []),
-        popular_attractions:
-          (cloudD.popular_attractions && cloudD.popular_attractions.length > 0)
-            ? cloudD.popular_attractions
-            : (localD.popular_attractions || []),
-      };
-    });
-
-    const cloudDestIds = new Set(cloudDb.destinations.map((d) => d.id));
-    const cloudDestSlugs = new Set(cloudDb.destinations.map((d) => d.slug));
-    for (const localD of localDb.destinations) {
-      if (!deletedDestSet.has(localD.id) && !deletedDestSet.has(localD.slug)) {
-        if (!cloudDestIds.has(localD.id) && !cloudDestSlugs.has(localD.slug)) {
-          cloudDb.destinations.push(localD);
-        }
-      }
+  // Preserve only recent in-flight bookings/payments created locally in the last 2 minutes
+  // that are still propagating over the network to Supabase
+  const now = Date.now();
+  const twoMinutesAgo = new Date(now - 2 * 60 * 1000).toISOString();
+  const cloudBookingIds = new Set(result.bookings.map((b) => b.id));
+  for (const lb of localDb.bookings || []) {
+    if (
+      !cloudBookingIds.has(lb.id) &&
+      !deletedBookings.has(lb.id) &&
+      !deletedBookings.has(lb.reference) &&
+      lb.status !== "cancelled" &&
+      lb.created_at &&
+      lb.created_at >= twoMinutesAgo
+    ) {
+      result.bookings.unshift(lb);
     }
   }
 
-  // Filter out deleted tours from cloudDb and reconcile
-  cloudDb.tours = (cloudDb.tours || []).filter(
-    (t) => !deletedTourSet.has(t.id) && !deletedTourSet.has(t.slug)
-  );
-  const localTourMap = new Map((localDb.tours || []).map((t) => [t.id, t]));
-  const localTourSlugMap = new Map((localDb.tours || []).map((t) => [t.slug, t]));
-  cloudDb.tours = cloudDb.tours.map((cloudT) => {
-    const localT = localTourMap.get(cloudT.id) || localTourSlugMap.get(cloudT.slug);
-    if (!localT) return cloudT;
-    return {
-      ...localT,
-      ...cloudT,
-      meals_notes: (cloudT.meals_notes && cloudT.meals_notes !== "Breakfast included")
-        ? cloudT.meals_notes
-        : (localT.meals_notes || cloudT.meals_notes || "Breakfast included"),
-      accommodation_notes: (cloudT.accommodation_notes && cloudT.accommodation_notes !== "Standard hotel / resort")
-        ? cloudT.accommodation_notes
-        : (localT.accommodation_notes || cloudT.accommodation_notes || "Standard hotel / resort"),
-      transportation_notes: (cloudT.transportation_notes && cloudT.transportation_notes !== "AC Bus / Private Jeep")
-        ? cloudT.transportation_notes
-        : (localT.transportation_notes || cloudT.transportation_notes || "AC Bus / Private Jeep"),
-      gallery: (cloudT.gallery && cloudT.gallery.length > 0) ? cloudT.gallery : (localT.gallery || []),
-      places_to_visit: (cloudT.places_to_visit && cloudT.places_to_visit.length > 0) ? cloudT.places_to_visit : (localT.places_to_visit || []),
-    };
-  });
-
-  const cloudTourIds = new Set(cloudDb.tours.map((t) => t.id));
-  const cloudTourSlugs = new Set(cloudDb.tours.map((t) => t.slug));
-  for (const localT of localDb.tours || []) {
-    if (!deletedTourSet.has(localT.id) && !deletedTourSet.has(localT.slug)) {
-      if (!cloudTourIds.has(localT.id) && !cloudTourSlugs.has(localT.slug)) {
-        cloudDb.tours.push(localT);
-      }
+  const cloudPaymentIds = new Set(result.payments.map((p) => p.id));
+  for (const lp of localDb.payments || []) {
+    if (!cloudPaymentIds.has(lp.id) && lp.created_at && lp.created_at >= twoMinutesAgo) {
+      result.payments.unshift(lp);
     }
   }
 
-  // Filter out deleted offers from cloudDb
-  cloudDb.offers = (cloudDb.offers || []).filter(
-    (o) => !deletedOfferSet.has(o.id) && (!o.code || !deletedOfferSet.has(o.code)) && (!o.slug || !deletedOfferSet.has(o.slug))
-  );
-
-  // Filter out deleted testimonials from cloudDb
-  cloudDb.testimonials = (cloudDb.testimonials || []).filter(
-    (t) => !deletedTestimonialSet.has(t.id)
-  );
-
-  // Filter out deleted blog posts from cloudDb
-  cloudDb.blogPosts = (cloudDb.blogPosts || []).filter(
-    (b) => !deletedBlogSet.has(b.id) && !deletedBlogSet.has(b.slug)
-  );
-
-  // Filter out deleted homepage blocks from cloudDb
-  cloudDb.homepageBlocks = (cloudDb.homepageBlocks || []).filter(
-    (b) => !deletedBlockSet.has(b.id)
-  );
-
-  // Filter out deleted tour categories from cloudDb
-  cloudDb.tourCategories = (cloudDb.tourCategories || []).filter(
-    (c) => !deletedCatSet.has(c.id) && !deletedCatSet.has(c.slug)
-  );
-
-  // 1. Enrich existing cloud customers with local activities & preserve active/recent local customers
-  cloudDb.customers = (cloudDb.customers || []).filter(
-    (c) => !deletedCustomerSet.has(c.id) && (!c.phone_number || !deletedCustomerSet.has(c.phone_number))
-  );
-  const localCustMap = new Map((localDb.customers || []).filter((c) => !deletedCustomerSet.has(c.id) && (!c.phone_number || !deletedCustomerSet.has(c.phone_number))).map((c) => [c.id, c]));
-  const cloudCustIds = new Set((cloudDb.customers || []).map((c) => c.id));
-  cloudDb.customers = (cloudDb.customers || []).map((cloudC) => {
-    const localC = localCustMap.get(cloudC.id);
-    if (!localC) return cloudC;
-    const localActs = localC.activities || [];
-    const cloudActs = cloudC.activities || [];
-    const actIds = new Set(cloudActs.map((a) => a.id));
-    const mergedActs = [...cloudActs];
-    for (const la of localActs) {
-      if (!actIds.has(la.id)) mergedActs.push(la);
-    }
-    return {
-      ...cloudC,
-      activities: mergedActs,
-    };
-  });
-
-  for (const localC of (localDb.customers || []).filter((c) => !deletedCustomerSet.has(c.id) && (!c.phone_number || !deletedCustomerSet.has(c.phone_number)))) {
-    if (!cloudCustIds.has(localC.id)) {
-      cloudDb.customers.unshift(localC);
-    }
-  }
-
-  // 2. Enrich existing cloud bookings with local promo_code/discount/seats/travelers & preserve active/pending/recent local bookings
-  cloudDb.bookings = (cloudDb.bookings || []).filter((b) => !deletedBookingSet.has(b.id));
-  const localBookingMap = new Map((localDb.bookings || []).filter((b) => !deletedBookingSet.has(b.id)).map((b) => [b.id, b]));
-  const cloudBookingIds = new Set((cloudDb.bookings || []).map((b) => b.id));
-  cloudDb.bookings = (cloudDb.bookings || []).map((cloudB) => {
-    const localB = localBookingMap.get(cloudB.id);
-    const promoInfo = extractPromoInfo(cloudB.special_requests);
-    const promo_code = localB?.promo_code || cloudB.promo_code || promoInfo.promoCode || null;
-    const discount_amount = localB?.discount_amount || cloudB.discount_amount || promoInfo.discountAmount || undefined;
-    const pickup_point = cloudB.pickup_point || localB?.pickup_point || undefined;
-
-    if (!localB) return { ...cloudB, promo_code, discount_amount, pickup_point };
-    return {
-      ...cloudB,
-      pickup_point,
-      promo_code,
-      discount_amount,
-      payment_method: cloudB.payment_method || localB.payment_method,
-      cash_approval_expires_at: cloudB.cash_approval_expires_at || localB.cash_approval_expires_at,
-      cash_approved_by: cloudB.cash_approved_by || localB.cash_approved_by,
-      cash_approved_at: cloudB.cash_approved_at || localB.cash_approved_at,
-      selected_seats:
-        cloudB.selected_seats && cloudB.selected_seats.length > 0
-          ? cloudB.selected_seats
-          : localB.selected_seats || [],
-      travelers:
-        cloudB.travelers && cloudB.travelers.length > 0
-          ? cloudB.travelers
-          : localB.travelers,
-    };
-  });
-
-  for (const localB of (localDb.bookings || []).filter((b) => !deletedBookingSet.has(b.id))) {
-    // Only preserve local bookings that reference an existing, valid tour to prevent foreign key violations
-    if (!cloudBookingIds.has(localB.id) && cloudTourIds.has(localB.tour_id)) {
-      cloudDb.bookings.unshift(localB);
-    }
-  }
-
-  // 3. Payments: cloud payments from PostgreSQL are authoritative, preserve any valid local uncommitted payments
-  const validBookingIds = new Set((cloudDb.bookings || []).map((b) => b.id));
-  const cloudPaymentIds = new Set((cloudDb.payments || []).map((p) => p.id));
-  const mergedPayments = [...(cloudDb.payments || [])];
-  for (const localP of localDb.payments || []) {
-    if (!cloudPaymentIds.has(localP.id) && validBookingIds.has(localP.booking_id)) {
-      mergedPayments.unshift(localP);
-    }
-  }
-  cloudDb.payments = mergedPayments;
-
-  // 4. Clearance Tickets: cloud tickets from PostgreSQL are authoritative, preserve any valid local uncommitted tickets
-  const cloudTicketIds = new Set((cloudDb.clearanceTickets || []).map((t) => t.id));
-  const mergedTickets = [...(cloudDb.clearanceTickets || [])];
-  for (const localT of localDb.clearanceTickets || []) {
-    if (!cloudTicketIds.has(localT.id) && validBookingIds.has(localT.booking_id)) {
-      mergedTickets.unshift(localT);
-    }
-  }
-  cloudDb.clearanceTickets = mergedTickets;
-
-  // 5. Operational Alerts: cloud alerts from PostgreSQL are authoritative, preserve local uncommitted alerts
-  const cloudAlertIds = new Set((cloudDb.alerts || []).map((a) => a.id));
-  const mergedAlerts = [...(cloudDb.alerts || [])];
-  for (const localA of localDb.alerts || []) {
-    if (!cloudAlertIds.has(localA.id)) {
-      mergedAlerts.unshift(localA);
-    }
-  }
-  cloudDb.alerts = mergedAlerts;
-
-  // 6. Contact Inquiries: cloud inquiries from PostgreSQL are authoritative, preserve local uncommitted inquiries
-  cloudDb.contactInquiries = (cloudDb.contactInquiries || []).filter((i) => !deletedInquirySet.has(i.id));
-  const cloudInquiryIds = new Set((cloudDb.contactInquiries || []).map((i) => i.id));
-  const mergedInquiries = [...(cloudDb.contactInquiries || [])];
-  for (const localI of (localDb.contactInquiries || []).filter((i) => !deletedInquirySet.has(i.id))) {
-    if (!cloudInquiryIds.has(localI.id)) {
-      mergedInquiries.unshift(localI);
-    }
-  }
-  cloudDb.contactInquiries = mergedInquiries;
-
-  // 7. Expenses, Suppliers & Analytics (Storage mirror collections)
-  if (localDb.expenses?.length && (!cloudDb.expenses || cloudDb.expenses.length === 0)) {
-    cloudDb.expenses = localDb.expenses;
-  }
-  if (localDb.suppliers?.length && (!cloudDb.suppliers || cloudDb.suppliers.length === 0)) {
-    cloudDb.suppliers = localDb.suppliers;
-  }
-  if (localDb.analyticsEvents?.length && (!cloudDb.analyticsEvents || cloudDb.analyticsEvents.length === 0)) {
-    cloudDb.analyticsEvents = localDb.analyticsEvents;
-  }
-
-  // 8. Offers: merge offers so promo codes and valid dates are retained
-  const existingOffers = localDb.offers || [];
-  if (existingOffers.length) {
-    const cloudOfferMap = new Map((cloudDb.offers || []).map((o) => [o.id, o]));
-    const mergedOffers = [...(cloudDb.offers || [])];
-    for (const localO of existingOffers) {
-      if (!cloudOfferMap.has(localO.id)) {
-        mergedOffers.push(localO);
-      } else {
-        const idx = mergedOffers.findIndex((o) => o.id === localO.id);
-        if (idx !== -1) {
-          mergedOffers[idx] = {
-            ...mergedOffers[idx],
-            tour_id: localO.tour_id ?? mergedOffers[idx].tour_id,
-            tour_slug: localO.tour_slug ?? mergedOffers[idx].tour_slug,
-            tour_title: localO.tour_title ?? mergedOffers[idx].tour_title,
-            code: localO.code ?? mergedOffers[idx].code,
-            is_active: localO.is_active !== undefined ? localO.is_active : mergedOffers[idx].is_active,
-            discount_type: localO.discount_type ?? mergedOffers[idx].discount_type,
-            discount_value: localO.discount_value ?? mergedOffers[idx].discount_value,
-            minimum_spend: localO.minimum_spend ?? mergedOffers[idx].minimum_spend,
-            valid_from: localO.valid_from ?? mergedOffers[idx].valid_from,
-            valid_until: localO.valid_until ?? mergedOffers[idx].valid_until,
-          };
-        }
-      }
-    }
-    cloudDb.offers = mergedOffers;
-  }
-
-  // 9. Tours: preserve customizations and ensure total_seats and departures are merged
-  if (localDb.tours && localDb.tours.length > 0) {
-    const localTourMap = new Map(localDb.tours.map((t) => [t.id, t]));
-    cloudDb.tours = (cloudDb.tours || []).map((cloudT) => {
-      const localT = localTourMap.get(cloudT.id) || localDb.tours.find((t) => t.slug === cloudT.slug);
-      if (!localT) return cloudT;
-      const effectiveSeats = Number(cloudT.total_seats || localT.total_seats || 40);
-      return {
-        ...cloudT,
-        total_seats: effectiveSeats,
-        departures: (cloudT.departures && cloudT.departures.length > 0) ? cloudT.departures : (localT.departures || []),
-        meeting_point: cloudT.meeting_point || localT.meeting_point || "Dhaka Sayedabad / Fakirapool",
-        pickup_points: (cloudT.pickup_points && cloudT.pickup_points.length > 0) ? cloudT.pickup_points : (localT.pickup_points || []),
-        departure_schedule: cloudT.departure_schedule || localT.departure_schedule || "Every Friday 7:00 AM",
-        gallery: (localT.gallery && localT.gallery.length > 0) ? localT.gallery : cloudT.gallery,
-      };
-    });
-  }
-
-  // 10. CMS Homepage Blocks: preserve blocks
-  if (localDb.homepageBlocks && localDb.homepageBlocks.length > 0) {
-    const cloudBlockIds = new Set((cloudDb.homepageBlocks || []).map((b) => b.id));
-    const mergedBlocks = [...(cloudDb.homepageBlocks || [])];
-    for (const localB of localDb.homepageBlocks) {
-      if (!cloudBlockIds.has(localB.id)) {
-        mergedBlocks.push(localB);
-      } else if (localB.id === "block-home-page" || localB.id === "block-about-page" || localB.id === "block-journal-page" || localB.id === "block-hero-1" || localB.id === "block-seo-settings") {
-        const idx = mergedBlocks.findIndex((b) => b.id === localB.id);
-        if (idx !== -1) {
-          mergedBlocks[idx] = {
-            ...mergedBlocks[idx],
-            content: { ...mergedBlocks[idx].content, ...localB.content },
-          };
-        }
-      }
-    }
-    cloudDb.homepageBlocks = mergedBlocks;
-  }
-
-  // 11. Tour Categories: reconcile cloud and local categories
-  const catMap = new Map<string, DbTourCategory>();
-  for (const c of DEFAULT_TOUR_CATEGORIES) {
-    catMap.set(c.id, c);
-  }
-  for (const lc of localDb.tourCategories || []) {
-    catMap.set(lc.id, lc);
-  }
-  for (const cc of cloudDb.tourCategories || []) {
-    catMap.set(cc.id, cc);
-  }
-  cloudDb.tourCategories = Array.from(catMap.values());
-
-  // 12. Staff Users: preserve local staff accounts if cloud is empty or missing them
-  if (localDb.staffUsers && localDb.staffUsers.length > 0) {
-    const cloudStaffIds = new Set((cloudDb.staffUsers || []).map((s) => s.id));
-    const mergedStaff = [...(cloudDb.staffUsers || [])];
-    for (const localS of localDb.staffUsers) {
-      if (!cloudStaffIds.has(localS.id)) {
-        mergedStaff.push(localS);
-      }
-    }
-    cloudDb.staffUsers = mergedStaff;
-  }
-
-  // 13. Testimonials & Blog Posts: preserve local testimonials and blogs
-  if (localDb.testimonials && localDb.testimonials.length > 0) {
-    const cloudIds = new Set((cloudDb.testimonials || []).map((t) => t.id));
-    const merged = [...(cloudDb.testimonials || [])];
-    for (const localT of localDb.testimonials) {
-      if (!cloudIds.has(localT.id)) {
-        merged.push(localT);
-      }
-    }
-    cloudDb.testimonials = merged;
-  }
-
-  if (localDb.blogPosts && localDb.blogPosts.length > 0) {
-    const cloudIds = new Set((cloudDb.blogPosts || []).map((b) => b.id));
-    const merged = [...(cloudDb.blogPosts || [])];
-    for (const localB of localDb.blogPosts) {
-      if (!cloudIds.has(localB.id)) {
-        merged.push(localB);
-      }
-    }
-    cloudDb.blogPosts = merged;
-  }
-
-  return cloudDb;
+  return normalizeDatabaseSchema(result);
 }
 
 function triggerBackgroundSupabaseSync() {
@@ -826,21 +561,24 @@ function triggerBackgroundSupabaseSync() {
     .then((cloudDb) => {
       if (!cloudDb) return;
       if (mutationCounter !== counterAtStart) return;
-      if (cloudDb.destinations.length > 0 || cloudDb.tours.length > 0) {
-        if (!memoryDb && fs.existsSync(DB_FILE)) {
-          try {
-            const raw = fs.readFileSync(DB_FILE, "utf-8");
-            memoryDb = JSON.parse(raw) as DatabaseSchema;
-          } catch {}
-        }
-        const merged = memoryDb ? mergeCloudWithLocal(cloudDb, memoryDb) : cloudDb;
-        memoryDb = merged;
+      if (!memoryDb && fs.existsSync(DB_FILE)) {
         try {
-          if (!fs.existsSync(DB_DIR)) fs.mkdirSync(DB_DIR, { recursive: true });
-          fs.writeFileSync(DB_FILE, JSON.stringify(merged, null, 2), "utf-8");
-          lastDbMtime = fs.statSync(DB_FILE).mtimeMs;
+          const raw = fs.readFileSync(DB_FILE, "utf-8");
+          memoryDb = JSON.parse(raw) as DatabaseSchema;
         } catch {}
       }
+      const merged = memoryDb ? mergeCloudWithLocal(cloudDb, memoryDb) : cloudDb;
+      memoryDb = merged;
+      try {
+        if (!fs.existsSync(DB_DIR)) fs.mkdirSync(DB_DIR, { recursive: true });
+        const serialized = JSON.stringify(merged, null, 2);
+        fs.writeFileSync(DB_FILE, serialized, "utf-8");
+        lastDbMtime = fs.statSync(DB_FILE).mtimeMs;
+        const altDir = path.join(process.cwd(), "data_storage");
+        if (fs.existsSync(altDir)) {
+          fs.writeFileSync(path.join(altDir, "db.json"), serialized, "utf-8");
+        }
+      } catch {}
     })
     .catch((err) => console.warn("[Supabase Sync] Background sync error:", err))
     .finally(() => {
@@ -850,7 +588,7 @@ function triggerBackgroundSupabaseSync() {
 
 export async function refreshFromSupabase(): Promise<DatabaseSchema> {
   const cloudDb = await fetchDatabaseFromSupabase();
-  if (cloudDb && (cloudDb.destinations.length > 0 || cloudDb.tours.length > 0)) {
+  if (cloudDb) {
     lastSupabaseFetch = Date.now();
     if (!memoryDb && fs.existsSync(DB_FILE)) {
       try {
@@ -862,8 +600,13 @@ export async function refreshFromSupabase(): Promise<DatabaseSchema> {
     memoryDb = merged;
     try {
       if (!fs.existsSync(DB_DIR)) fs.mkdirSync(DB_DIR, { recursive: true });
-      fs.writeFileSync(DB_FILE, JSON.stringify(merged, null, 2), "utf-8");
+      const serialized = JSON.stringify(merged, null, 2);
+      fs.writeFileSync(DB_FILE, serialized, "utf-8");
       lastDbMtime = fs.statSync(DB_FILE).mtimeMs;
+      const altDir = path.join(process.cwd(), "data_storage");
+      if (fs.existsSync(altDir)) {
+        fs.writeFileSync(path.join(altDir, "db.json"), serialized, "utf-8");
+      }
     } catch {}
     return merged;
   }
@@ -913,41 +656,99 @@ export function normalizeDatabaseSchema(db: any): DatabaseSchema {
   const deletedDests = new Set(db.deletedEntities.destinations || []);
   if (!Array.isArray(db.destinations)) {
     db.destinations = [];
-  }
-  if (Array.isArray(db.destinations)) {
-    db.destinations = db.destinations.filter(
-      (d: any) => !deletedDests.has(d.id) && !deletedDests.has(d.slug)
-    );
+  } else {
+    const seenDestIds = new Set<string>();
+    const seenDestSlugs = new Set<string>();
+    const dedupedDests: DbDestination[] = [];
+    for (const d of db.destinations) {
+      if (!d || typeof d !== "object") continue;
+      if (deletedDests.has(d.id) || deletedDests.has(d.slug)) continue;
+      const did = String(d.id || "").trim();
+      const dslug = String(d.slug || "").trim().toLowerCase();
+      if (did && seenDestIds.has(did)) continue;
+      if (dslug && seenDestSlugs.has(dslug)) continue;
+      if (did) seenDestIds.add(did);
+      if (dslug) seenDestSlugs.add(dslug);
+      dedupedDests.push(d);
+    }
+    db.destinations = dedupedDests;
   }
 
   const deletedTours = new Set(db.deletedEntities.tours || []);
-  if (!Array.isArray(db.tours)) db.tours = [];
-  else {
-    db.tours = db.tours.filter(
-      (t: any) => !deletedTours.has(t.id) && !deletedTours.has(t.slug)
-    );
+  if (!Array.isArray(db.tours)) {
+    db.tours = [];
+  } else {
+    const seenTourIds = new Set<string>();
+    const seenTourSlugs = new Set<string>();
+    const dedupedTours: DbTour[] = [];
+    for (const t of db.tours) {
+      if (!t || typeof t !== "object") continue;
+      if (deletedTours.has(t.id) || deletedTours.has(t.slug)) continue;
+      const tid = String(t.id || "").trim();
+      const tslug = String(t.slug || "").trim().toLowerCase();
+      if (tid && seenTourIds.has(tid)) continue;
+      if (tslug && seenTourSlugs.has(tslug)) continue;
+      if (tid) seenTourIds.add(tid);
+      if (tslug) seenTourSlugs.add(tslug);
+      dedupedTours.push(t);
+    }
+    db.tours = dedupedTours;
   }
 
   const deletedOffers = new Set(db.deletedEntities.offers || []);
-  if (!Array.isArray(db.offers)) db.offers = [];
-  else {
-    db.offers = db.offers.filter(
-      (o: any) => !deletedOffers.has(o.id) && (!o.code || !deletedOffers.has(o.code)) && (!o.slug || !deletedOffers.has(o.slug))
-    );
+  if (!Array.isArray(db.offers)) {
+    db.offers = [];
+  } else {
+    const seenOfferIds = new Set<string>();
+    const seenOfferCodes = new Set<string>();
+    const dedupedOffers: DbOffer[] = [];
+    for (const o of db.offers) {
+      if (!o || typeof o !== "object") continue;
+      if (deletedOffers.has(o.id) || (o.code && deletedOffers.has(o.code)) || (o.slug && deletedOffers.has(o.slug))) continue;
+      const oid = String(o.id || "").trim();
+      const ocode = String(o.code || o.slug || "").trim().toUpperCase();
+      if (oid && seenOfferIds.has(oid)) continue;
+      if (ocode && seenOfferCodes.has(ocode)) continue;
+      if (oid) seenOfferIds.add(oid);
+      if (ocode) seenOfferCodes.add(ocode);
+      dedupedOffers.push(o);
+    }
+    db.offers = dedupedOffers;
   }
 
   const deletedTestimonials = new Set(db.deletedEntities.testimonials || []);
-  if (!Array.isArray(db.testimonials)) db.testimonials = [];
-  else {
-    db.testimonials = db.testimonials.filter((t: any) => !deletedTestimonials.has(t.id));
+  if (!Array.isArray(db.testimonials)) {
+    db.testimonials = [];
+  } else {
+    const seenTestIds = new Set<string>();
+    db.testimonials = db.testimonials.filter((t: any) => {
+      if (!t || typeof t !== "object" || deletedTestimonials.has(t.id)) return false;
+      const tid = String(t.id || "").trim();
+      if (tid && seenTestIds.has(tid)) return false;
+      if (tid) seenTestIds.add(tid);
+      return true;
+    });
   }
 
   const deletedBlogs = new Set(db.deletedEntities.blogPosts || []);
-  if (!Array.isArray(db.blogPosts)) db.blogPosts = [];
-  else {
-    db.blogPosts = db.blogPosts.filter(
-      (b: any) => !deletedBlogs.has(b.id) && !deletedBlogs.has(b.slug)
-    );
+  if (!Array.isArray(db.blogPosts)) {
+    db.blogPosts = [];
+  } else {
+    const seenBlogIds = new Set<string>();
+    const seenBlogSlugs = new Set<string>();
+    const dedupedBlogs: DbBlogPost[] = [];
+    for (const b of db.blogPosts) {
+      if (!b || typeof b !== "object") continue;
+      if (deletedBlogs.has(b.id) || deletedBlogs.has(b.slug)) continue;
+      const bid = String(b.id || "").trim();
+      const bslug = String(b.slug || "").trim().toLowerCase();
+      if (bid && seenBlogIds.has(bid)) continue;
+      if (bslug && seenBlogSlugs.has(bslug)) continue;
+      if (bid) seenBlogIds.add(bid);
+      if (bslug) seenBlogSlugs.add(bslug);
+      dedupedBlogs.push(b);
+    }
+    db.blogPosts = dedupedBlogs;
   }
 
   const deletedBlocks = new Set(db.deletedEntities.homepageBlocks || []);
@@ -969,7 +770,9 @@ export function normalizeDatabaseSchema(db: any): DatabaseSchema {
   if (!Array.isArray(db.customers)) db.customers = [];
   if (!Array.isArray(db.bookings)) db.bookings = [];
   else {
-    db.bookings = db.bookings.filter((b: any) => !deletedBookings.has(b.id));
+    db.bookings = db.bookings.filter(
+      (b: any) => !deletedBookings.has(b.id) && !deletedBookings.has(b.reference) && b.status !== "cancelled"
+    );
   }
   if (!Array.isArray(db.payments)) db.payments = [];
   if (!Array.isArray(db.clearanceTickets)) db.clearanceTickets = [];
@@ -979,6 +782,7 @@ export function normalizeDatabaseSchema(db: any): DatabaseSchema {
   if (!Array.isArray(db.contactInquiries)) db.contactInquiries = [];
   if (!Array.isArray(db.analyticsEvents)) db.analyticsEvents = [];
   if (!Array.isArray(db.rocketIncomingSms)) db.rocketIncomingSms = [];
+  if (!Array.isArray(db.bkashIncomingSms)) db.bkashIncomingSms = [];
 
   // Guarantee that every booking has its transaction numbers linked from successful payments
   if (Array.isArray(db.bookings) && Array.isArray(db.payments)) {
@@ -1005,15 +809,21 @@ export function normalizeDatabaseSchema(db: any): DatabaseSchema {
 
   // Guarantee tours are connected to valid destination IDs, names, and slugs
   if (Array.isArray(db.tours) && Array.isArray(db.destinations)) {
-    const destBySlug = new Map<string, DbDestination>(db.destinations.map((d: DbDestination) => [d.slug, d]));
+    const destBySlug = new Map<string, DbDestination>(db.destinations.map((d: DbDestination) => [(d.slug || "").toLowerCase(), d]));
     const destById = new Map<string, DbDestination>(db.destinations.map((d: DbDestination) => [d.id, d]));
+    const destByName = new Map<string, DbDestination>(db.destinations.map((d: DbDestination) => [(d.name || "").trim().toLowerCase(), d]));
     for (const t of db.tours) {
       if (!t) continue;
-      const matched = destBySlug.get(t.destination_slug) || (t.destination_id ? destById.get(t.destination_id) : null);
+      const slugKey = (t.destination_slug || "").toLowerCase();
+      const nameKey = (t.destination_name || "").toLowerCase();
+      const matched =
+        (t.destination_id ? destById.get(t.destination_id) : null) ||
+        (slugKey && slugKey !== "-" && slugKey !== "bangladesh" ? destBySlug.get(slugKey) : null) ||
+        (nameKey && nameKey !== "bangladesh" ? destByName.get(nameKey) : null);
       if (matched) {
-        if (!t.destination_id) t.destination_id = matched.id;
-        if (!t.destination_name) t.destination_name = matched.name;
-        if (!t.destination_slug) t.destination_slug = matched.slug;
+        t.destination_id = matched.id;
+        t.destination_name = matched.name;
+        t.destination_slug = matched.slug;
       }
     }
   }
@@ -1090,7 +900,14 @@ export async function saveDb(data: DatabaseSchema, forceCloudSync = false): Prom
     if (!fs.existsSync(DB_DIR)) {
       fs.mkdirSync(DB_DIR, { recursive: true });
     }
-    fs.writeFileSync(DB_FILE, JSON.stringify(memoryDb, null, 2), "utf-8");
+    const serialized = JSON.stringify(memoryDb, null, 2);
+    fs.writeFileSync(DB_FILE, serialized, "utf-8");
+    const altDir = path.join(process.cwd(), "data_storage");
+    if (fs.existsSync(altDir)) {
+      try {
+        fs.writeFileSync(path.join(altDir, "db.json"), serialized, "utf-8");
+      } catch {}
+    }
     try {
       lastDbMtime = fs.statSync(DB_FILE).mtimeMs;
     } catch {
@@ -1675,9 +1492,9 @@ export function getHomePageCms(): HomePageCmsContent {
     (b) => b.block_type === "home_page" || b.id === "block-home-page"
   );
 
-  // Derive dynamic hero slides ONLY from real published destinations in the database
+  // Derive dynamic hero slides ONLY from real published destinations with real uploaded images
   const dynamicHeroSlides: HeroSlideItem[] = (db.destinations || [])
-    .filter((d) => d.status === "published" && d.cover_image)
+    .filter((d) => d.status === "published" && d.cover_image && !d.cover_image.includes("unsplash.com"))
     .map((d) => ({
       id: `slide-${d.slug}`,
       title: d.name,
@@ -2260,8 +2077,18 @@ export async function createBooking(input: {
     // A zero total can never be paid through the gateway; refuse instead of creating an unpayable booking.
     throw new Error("This booking total is invalid. Please contact support.");
   }
-  const advancePercent = input.payment_plan === "full" ? 100 : (parseFloat(tour.advance_payment_percent) || 40);
-  const advanceAmount = Math.round((totalPrice * advancePercent) / 100);
+  let advanceAmount = totalPrice;
+  let advancePercent = 100;
+  if (input.payment_plan !== "full") {
+    const flatAdvance = parseFloat(tour.advance_amount || "0");
+    if (flatAdvance > 0) {
+      advanceAmount = Math.min(totalPrice, Math.round(flatAdvance * effectiveTravelerCount));
+    } else {
+      const advPct = parseFloat(tour.advance_payment_percent) || 40;
+      advanceAmount = Math.round((totalPrice * advPct) / 100);
+    }
+    advancePercent = totalPrice > 0 ? Math.round((advanceAmount / totalPrice) * 100) : 100;
+  }
 
   let specialReqs = userRequests;
   if (validatedPromo && appliedDiscount > 0) {
@@ -2965,7 +2792,7 @@ export async function completeDuePayment(
     }
     booking.status = "confirmed_fully_paid";
     booking.updated_at = new Date().toISOString();
-    await saveDb(db);
+    await saveDb(db, true);
     await syncBookingToSupabase(booking);
     if (ticket) await syncClearanceTicketToSupabase(ticket);
 
@@ -3113,13 +2940,8 @@ export async function approveCashPayment(
   if (receivedType !== "due" && booking.status === "pending_cash_approval" && booking.cash_approval_expires_at) {
     const exp = new Date(booking.cash_approval_expires_at).getTime();
     if (!isNaN(exp) && Date.now() > exp) {
-      booking.status = "cancelled";
-      booking.updated_at = new Date().toISOString();
-      const cancelNote = "[Auto-cancelled: Physical cash was not approved within the 10-minute security window]";
-      booking.special_requests = booking.special_requests ? `${booking.special_requests} ${cancelNote}` : cancelNote;
-      await saveDb(db);
-      await syncBookingToSupabase(booking);
-      throw new Error("The 10-minute cash approval window has expired. This booking has been cancelled.");
+      await cancelBookingDirectly(booking.id, "The 10-minute cash approval window has expired.");
+      throw new Error("The 10-minute cash approval window has expired. This booking has been cancelled and seats released.");
     }
   }
 
@@ -3257,7 +3079,7 @@ export async function approveCashPayment(
     });
   }
 
-  await saveDb(db);
+  await saveDb(db, true);
   await syncPaymentToSupabase(payment);
   await syncBookingToSupabase(booking);
   if (ticket) await syncClearanceTicketToSupabase(ticket);
@@ -3304,41 +3126,16 @@ export async function rejectCashPayment(
       created_at: new Date().toISOString(),
     });
 
-    await saveDb(db);
+    await saveDb(db, true);
     await syncBookingToSupabase(booking);
     return booking;
   }
 
-  if (booking.status === "pending_cash_approval" || parseFloat(booking.amount_paid || "0") === 0) {
-    await deleteIncompleteBooking(bookingId, `Cash reservation rejected by ${adminUsername}${reason ? `: ${reason}` : ""}`);
-    return booking;
-  }
-
-  booking.status = "cancelled";
-  booking.updated_at = new Date().toISOString();
-  const rejectNote = `[Cash payment rejected by ${adminUsername}${reason ? `: ${reason}` : ""}]`;
-  booking.special_requests = booking.special_requests ? `${booking.special_requests} ${rejectNote}` : rejectNote;
-
-  const pendingPay = db.payments.find(
-    (p) => p.booking_id === booking.id && (p.status === "pending" || p.status === "pending_cash_approval")
+  const cancelRes = await cancelBookingDirectly(
+    bookingId,
+    `Cash reservation cancelled by ${adminUsername}${reason ? `: ${reason}` : ""}`
   );
-  if (pendingPay) {
-    pendingPay.status = "cancelled";
-    await syncPaymentToSupabase(pendingPay);
-  }
-
-  db.alerts.unshift({
-    id: `alt-cash-rej-${Date.now()}`,
-    alert_type: "cash_payment_rejected",
-    severity: "warning",
-    message: `Physical cash reservation for booking ${booking.reference} was rejected by ${adminUsername}. Seats released.`,
-    is_acknowledged: false,
-    created_at: new Date().toISOString(),
-  });
-
-  await saveDb(db);
-  await syncBookingToSupabase(booking);
-  return booking;
+  return cancelRes.booking || booking;
 }
 
 // ---------------------------------------------------------------------------
@@ -3572,15 +3369,29 @@ export function getAllToursAdmin(): DbTour[] {
 
 export async function saveTour(tourData: Partial<DbTour>): Promise<DbTour> {
   const db = loadDb();
-  const id = tourData.id || `tour-${Date.now()}`;
-  const index = db.tours.findIndex((t) => t.id === id);
+  const targetId = tourData.id?.trim();
+  const targetSlug = (tourData.slug || "").trim().toLowerCase();
+  const targetTitle = (tourData.title || "").trim().toLowerCase();
+
+  const index = db.tours.findIndex((t) => {
+    if (targetId && t.id === targetId) return true;
+    if (targetSlug && (t.slug || "").trim().toLowerCase() === targetSlug) return true;
+    if (targetTitle && !targetId && (t.title || "").trim().toLowerCase() === targetTitle) return true;
+    return false;
+  });
   const existingTour = index !== -1 ? db.tours[index] : null;
+  const id = existingTour?.id || targetId || `tour-${Date.now()}`;
 
   const basePriceNum = parseFloat(tourData.base_price || "0");
   const discountValNum = parseFloat(tourData.discount_value || "0");
   const finalPriceNum = Math.max(0, basePriceNum - discountValNum);
-  const advancePercent = tourData.advance_payment_percent || "40";
-  const advanceAmountNum = Math.round((finalPriceNum * parseFloat(advancePercent)) / 100);
+  const rawAdvanceAmount = tourData.advance_amount !== undefined && tourData.advance_amount !== null && String(tourData.advance_amount).trim() !== ""
+    ? parseFloat(String(tourData.advance_amount))
+    : null;
+  const advanceAmountNum = rawAdvanceAmount !== null && !isNaN(rawAdvanceAmount)
+    ? Math.max(0, rawAdvanceAmount)
+    : Math.round((finalPriceNum * parseFloat(tourData.advance_payment_percent || "40")) / 100);
+  const advancePercent = tourData.advance_payment_percent || (finalPriceNum > 0 ? String(Math.round((advanceAmountNum / finalPriceNum) * 100)) : "40");
 
   const totalSeatsNum = Math.max(1, Number(tourData.total_seats) || (existingTour ? existingTour.total_seats : 40));
 
@@ -3627,8 +3438,8 @@ export async function saveTour(tourData: Partial<DbTour>): Promise<DbTour> {
     destination_slug: matchedDest?.slug || destInput,
     destination_name: matchedDest?.name || tourData.destination_name || existingTour?.destination_name || "Cox's Bazar",
     category: tourData.category || "group_tour",
-    short_description: tourData.short_description || "",
-    full_description: tourData.full_description || "",
+    short_description: tourData.short_description || tourData.full_description?.split("\n")[0]?.trim() || existingTour?.short_description || "",
+    full_description: tourData.full_description || tourData.short_description || existingTour?.full_description || "",
     hero_image: tourData.hero_image ? normalizeImageUrl(tourData.hero_image) : null,
     duration_days: tourData.duration_days || 3,
     duration_nights: tourData.duration_nights || 2,
@@ -3980,8 +3791,15 @@ export function getAllBlogPostsAdmin(): DbBlogPost[] {
 
 export async function saveBlogPost(postData: Partial<DbBlogPost>): Promise<DbBlogPost> {
   const db = loadDb();
-  const id = postData.id || `post-${Date.now()}`;
-  const index = db.blogPosts.findIndex((p) => p.id === id);
+  const targetId = postData.id?.trim();
+  const targetSlug = (postData.slug || "").trim().toLowerCase();
+  const index = db.blogPosts.findIndex((p) => {
+    if (targetId && p.id === targetId) return true;
+    if (targetSlug && (p.slug || "").trim().toLowerCase() === targetSlug) return true;
+    return false;
+  });
+  const existing = index !== -1 ? db.blogPosts[index] : null;
+  const id = existing?.id || targetId || `post-${Date.now()}`;
 
   const rawBody = postData.body || postData.content || "";
   const defaultPost: DbBlogPost = {
@@ -4067,8 +3885,15 @@ export function getAllOffersAdmin(): DbOffer[] {
 
 export async function saveOffer(offerData: Partial<DbOffer>): Promise<DbOffer> {
   const db = loadDb();
-  const id = offerData.id || `offer-${Date.now()}`;
-  const index = db.offers.findIndex((o) => o.id === id);
+  const targetId = offerData.id?.trim();
+  const targetCode = (offerData.code || offerData.slug || "").trim().toUpperCase();
+  const index = db.offers.findIndex((o) => {
+    if (targetId && o.id === targetId) return true;
+    if (targetCode && (o.code || o.slug || "").trim().toUpperCase() === targetCode) return true;
+    return false;
+  });
+  const existing = index !== -1 ? db.offers[index] : null;
+  const id = existing?.id || targetId || `offer-${Date.now()}`;
 
   const defaultOffer: DbOffer = {
     id,
@@ -4306,17 +4131,22 @@ export function getAllBookingsAdmin(): DbBooking[] {
 }
 
 export async function updateBookingStatus(id: string, status: DbBooking["status"]): Promise<DbBooking | null> {
+  if (status === "cancelled") {
+    await cancelBookingDirectly(id, "Manually set to cancelled by admin");
+    return null;
+  }
+
   const db = loadDb();
-  const booking = db.bookings.find((b) => b.id === id);
+  const booking = db.bookings.find((b) => b.id === id || b.reference === id);
   if (!booking) return null;
   booking.status = status;
 
   if (status === "confirmed_fully_paid" || status === "cleared_on_tour_day") {
     booking.amount_paid = booking.total_price;
     booking.amount_due = "0.00";
-    let ticket = db.clearanceTickets.find((t) => t.booking_id === id);
+    let ticket = db.clearanceTickets.find((t) => t.booking_id === booking.id);
     if (!ticket) {
-      ticket = getClearanceTicket(id) || undefined;
+      ticket = getClearanceTicket(booking.id) || undefined;
     }
     if (ticket) {
       ticket.is_cleared = true;
@@ -4326,7 +4156,7 @@ export async function updateBookingStatus(id: string, status: DbBooking["status"
   }
 
   booking.updated_at = new Date().toISOString();
-  await saveDb(db);
+  await saveDb(db, true);
   await syncBookingToSupabase(booking);
   return booking;
 }
@@ -4809,5 +4639,307 @@ export function getRocketIncomingSmsList(): DbRocketIncomingSms[] {
   const db = loadDb();
   return Array.isArray(db.rocketIncomingSms) ? db.rocketIncomingSms : [];
 }
+
+// ---------------------------------------------------------------------------
+// HYBRID SMART MATCHER: bKash SMS Verification & Personal Gateway
+// ---------------------------------------------------------------------------
+
+export async function recordIncomingBkashSms(input: {
+  raw_message: string;
+  sender?: string;
+}): Promise<{
+  success: boolean;
+  parsed: ParsedBkashSms;
+  smsRecord?: DbBkashIncomingSms;
+  autoMatchedBooking?: DbBooking;
+  error?: string;
+}> {
+  const parsed = parseBkashSms(input.raw_message);
+  if (!parsed.isBkash || !parsed.trxId || !parsed.amount) {
+    return {
+      success: false,
+      parsed,
+      error: "Message is not a valid incoming bKash payment SMS (TrxID or Amount missing).",
+    };
+  }
+
+  const db = loadDb();
+  if (!Array.isArray(db.bkashIncomingSms)) {
+    db.bkashIncomingSms = [];
+  }
+
+  // Deduplicate: check if this TrxID is already recorded
+  let smsRecord = db.bkashIncomingSms.find((s) => s.trx_id.toUpperCase() === parsed.trxId!.toUpperCase());
+  if (!smsRecord) {
+    smsRecord = {
+      id: `sms-bka-${Date.now()}-${randomToken(4)}`,
+      trx_id: parsed.trxId,
+      amount: parsed.amount.toFixed(2),
+      sender_phone: parsed.senderPhone || undefined,
+      balance: parsed.balance !== null ? parsed.balance.toFixed(2) : undefined,
+      raw_message: input.raw_message,
+      received_at: new Date().toISOString(),
+      is_used: false,
+    };
+    db.bkashIncomingSms.unshift(smsRecord);
+  }
+
+  let autoMatchedBooking: DbBooking | undefined;
+
+  // Check if there is an active booking waiting in pending_verification for this TrxID
+  if (!smsRecord.is_used) {
+    const pendingBooking = db.bookings.find(
+      (b) =>
+        (b.status === "pending_verification" || b.status === "pending_payment") &&
+        b.submitted_trx_id &&
+        b.submitted_trx_id.toUpperCase() === parsed.trxId!.toUpperCase()
+    );
+
+    if (pendingBooking) {
+      const payment = db.payments.find((p) => p.booking_id === pendingBooking.id);
+      const tranId = payment?.tran_id || `TRAN-${Date.now()}`;
+
+      await confirmPaymentSuccess(
+        tranId,
+        parsed.trxId,
+        "Bkash payment",
+        {
+          bookingId: pendingBooking.id,
+          bookingRef: pendingBooking.reference,
+          verifiedAmount: parsed.amount.toFixed(2),
+        }
+      );
+
+      smsRecord.is_used = true;
+      smsRecord.matched_booking_id = pendingBooking.id;
+      smsRecord.matched_at = new Date().toISOString();
+
+      pendingBooking.status = "confirmed_advance_paid";
+      pendingBooking.verified_by_sms_id = smsRecord.id;
+      pendingBooking.updated_at = new Date().toISOString();
+      autoMatchedBooking = pendingBooking;
+
+      db.alerts.unshift({
+        id: `alt-bka-${Date.now()}-${randomToken(3)}`,
+        alert_type: "bkash_auto_verified",
+        severity: "info",
+        message: `✓ bKash Payment Auto-Verified by SMS: Booking ${pendingBooking.reference} (${pendingBooking.tour_title}) confirmed for ৳${smsRecord.amount} with TrxID ${parsed.trxId}.`,
+        is_acknowledged: false,
+        created_at: new Date().toISOString(),
+      });
+    }
+  }
+
+  await saveDb(db);
+  return {
+    success: true,
+    parsed,
+    smsRecord,
+    autoMatchedBooking,
+  };
+}
+
+export async function verifyBkashTrxHybrid(input: {
+  tran_id: string;
+  payment_id?: string;
+  trx_id: string;
+  sender_phone: string;
+  amount?: string;
+}): Promise<{
+  success: boolean;
+  status: "matched_instant" | "pending_verification";
+  message: string;
+  booking?: DbBooking;
+  redirect_url?: string;
+  hold_expires_at?: string;
+  error?: string;
+}> {
+  const db = loadDb();
+  const cleanTrx = input.trx_id.trim().toUpperCase();
+  const cleanPhone = input.sender_phone.replace(/^\+88/, "").trim();
+
+  // Locate the payment & booking
+  let payment = db.payments.find((p) => p.tran_id === input.tran_id);
+  if (!payment && input.payment_id) {
+    payment = db.payments.find((p) => p.id === input.payment_id || p.val_id === input.payment_id);
+  }
+  if (!payment) {
+    return {
+      success: false,
+      status: "pending_verification",
+      message: "Payment session not found.",
+      error: "Payment record not found.",
+    };
+  }
+
+  const booking = db.bookings.find((b) => b.id === payment.booking_id);
+  if (!booking) {
+    return {
+      success: false,
+      status: "pending_verification",
+      message: "Booking not found.",
+      error: "Booking record not found.",
+    };
+  }
+
+  // Anti-replay: has this TrxID already been used for another confirmed booking?
+  const existingUsed = db.payments.find(
+    (p) =>
+      p.status === "success" &&
+      p.trx_id &&
+      p.trx_id.toUpperCase() === cleanTrx &&
+      p.tran_id !== payment.tran_id
+  );
+  if (existingUsed) {
+    return {
+      success: false,
+      status: "pending_verification",
+      message: "This bKash Transaction ID was already used for another confirmed booking.",
+      error: "Duplicate Transaction ID (Already Used).",
+    };
+  }
+
+  // Check if an SMS with this TrxID has already arrived in db.bkashIncomingSms
+  if (!Array.isArray(db.bkashIncomingSms)) {
+    db.bkashIncomingSms = [];
+  }
+
+  const matchingSms = db.bkashIncomingSms.find(
+    (s) => s.trx_id.toUpperCase() === cleanTrx && (!s.is_used || s.matched_booking_id === booking.id)
+  );
+
+  if (matchingSms) {
+    // CASE A: INSTANT MATCH! bKash SMS already received
+    const verifiedAmount = matchingSms.amount || payment.amount;
+    await confirmPaymentSuccess(
+      payment.tran_id,
+      cleanTrx,
+      "Bkash payment",
+      {
+        bookingId: booking.id,
+        bookingRef: booking.reference,
+        verifiedAmount,
+      }
+    );
+
+    matchingSms.is_used = true;
+    matchingSms.matched_booking_id = booking.id;
+    matchingSms.matched_at = new Date().toISOString();
+
+    booking.status = "confirmed_advance_paid";
+    booking.submitted_trx_id = cleanTrx;
+    booking.submitted_sender_phone = cleanPhone;
+    booking.verified_by_sms_id = matchingSms.id;
+    booking.updated_at = new Date().toISOString();
+
+    await saveDb(db);
+
+    return {
+      success: true,
+      status: "matched_instant",
+      message: "Payment 100% verified by bKash SMS!",
+      booking,
+      redirect_url: `/payment-result?status=success&reference=${encodeURIComponent(booking.reference)}`,
+    };
+  }
+
+  // CASE B: SMS NOT YET IN DATABASE (Delayed / Phone briefly offline)
+  // Move to pending_verification with 15-minute hold timer
+  const holdExpiresAt = new Date(Date.now() + 15 * 60 * 1000).toISOString();
+  booking.status = "pending_verification";
+  booking.verification_expires_at = holdExpiresAt;
+  booking.submitted_trx_id = cleanTrx;
+  booking.submitted_sender_phone = cleanPhone;
+  booking.payment_method = "Bkash payment";
+  booking.advance_payment_method = "Bkash payment";
+  booking.updated_at = new Date().toISOString();
+
+  payment.trx_id = cleanTrx;
+  payment.val_id = cleanTrx;
+
+  db.alerts.unshift({
+    id: `alt-bka-hold-${Date.now()}-${randomToken(3)}`,
+    alert_type: "bkash_hold_pending",
+    severity: "warning",
+    message: `⏳ bKash TrxID [${cleanTrx}] submitted for ${booking.reference} (${booking.tour_title}). SMS not yet received. 15-minute verification hold active.`,
+    is_acknowledged: false,
+    created_at: new Date().toISOString(),
+  });
+
+  await saveDb(db);
+
+  return {
+    success: true,
+    status: "pending_verification",
+    message: "TrxID recorded. Awaiting SMS verification from bKash...",
+    booking,
+    hold_expires_at: holdExpiresAt,
+  };
+}
+
+export async function approveBkashVerification(
+  bookingId: string,
+  adminName: string = "Staff Admin"
+): Promise<{ success: boolean; booking: DbBooking; ticket?: any }> {
+  const db = loadDb();
+  const booking = db.bookings.find((b) => b.id === bookingId);
+  if (!booking) {
+    throw new Error(`Booking ${bookingId} not found.`);
+  }
+
+  if (booking.status === "confirmed_advance_paid" || booking.status === "confirmed_fully_paid") {
+    return { success: true, booking };
+  }
+
+  if (booking.status === "cancelled") {
+    throw new Error("Cannot approve a cancelled booking. The hold window may have expired.");
+  }
+
+  const payment = db.payments.find((p) => p.booking_id === booking.id);
+  const tranId = payment?.tran_id || `TRAN-${Date.now()}`;
+  const trxId = booking.submitted_trx_id || payment?.trx_id || `BKA-MANUAL-${Date.now()}`;
+
+  const result = await confirmPaymentSuccess(
+    tranId,
+    trxId,
+    "Bkash payment",
+    {
+      bookingId: booking.id,
+      bookingRef: booking.reference,
+      verifiedAmount: booking.advance_amount,
+    }
+  );
+
+  booking.status = "confirmed_advance_paid";
+  booking.cash_approved_by = adminName;
+  booking.cash_approved_at = new Date().toISOString();
+  booking.updated_at = new Date().toISOString();
+
+  db.alerts.unshift({
+    id: `alt-bka-appr-${Date.now()}-${randomToken(3)}`,
+    alert_type: "bkash_manual_approved",
+    severity: "info",
+    message: `✓ bKash payment for ${booking.reference} was manually approved by ${adminName} (TrxID: ${trxId}).`,
+    is_acknowledged: false,
+    created_at: new Date().toISOString(),
+  });
+
+  await saveDb(db);
+  return { success: true, booking, ticket: result.ticket };
+}
+
+export async function rejectBkashVerification(
+  bookingId: string,
+  reason: string = "Fake or unverified bKash TrxID"
+): Promise<{ success: boolean; seatsReleased: string[] }> {
+  const result = await deleteIncompleteBooking(bookingId, reason);
+  return { success: true, seatsReleased: result.seatsReleased };
+}
+
+export function getBkashIncomingSmsList(): DbBkashIncomingSms[] {
+  const db = loadDb();
+  return Array.isArray(db.bkashIncomingSms) ? db.bkashIncomingSms : [];
+}
+
 
 

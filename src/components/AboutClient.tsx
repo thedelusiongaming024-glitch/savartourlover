@@ -252,15 +252,8 @@ export function AboutClient({
 
       {/* Story */}
       <section className="px-4 py-10 sm:px-6">
-        <div className="mx-auto grid max-w-6xl gap-8 lg:grid-cols-2 lg:items-center">
+        <div className="mx-auto max-w-3xl">
           <Reveal>
-            <SceneBackdrop
-              scene={{ key: "bandarban", label: "Hills of the Chittagong Hill Tracts" }}
-              className="aspect-[4/3] w-full rounded-[2rem]"
-              showLabel={false}
-            />
-          </Reveal>
-          <Reveal delay={0.08}>
             <span className="inline-flex items-center gap-2 rounded-full border border-gold/30 bg-gold/10 px-3.5 py-1.5 text-xs font-semibold uppercase tracking-[0.14em] text-gold">
               <span className="h-1.5 w-1.5 rounded-full bg-gold" />
               {storyBadge}
@@ -268,7 +261,7 @@ export function AboutClient({
             <h2 className="mt-4 font-display text-2xl font-semibold text-ink sm:text-3xl">
               {storyTitle}
             </h2>
-            <div className="mt-4 space-y-4 text-base leading-relaxed text-ink-soft">
+            <div className="mt-4 space-y-4 text-base leading-relaxed text-ink-soft text-pretty">
               {safeParagraphs.map((para, i) => (
                 <p key={i}>{para}</p>
               ))}
@@ -279,7 +272,7 @@ export function AboutClient({
                 <span className="text-xs font-semibold uppercase tracking-wider text-emerald-deep">
                   {missionTitle}
                 </span>
-                <p className="mt-1 text-sm leading-relaxed text-ink">
+                <p className="mt-1 text-sm leading-relaxed text-ink text-pretty">
                   {missionText}
                 </p>
               </div>

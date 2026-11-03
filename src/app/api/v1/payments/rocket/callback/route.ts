@@ -5,6 +5,7 @@ import {
   getPaymentByTranId,
   getBookingById,
   loadDb,
+  cancelBookingDirectly,
   deleteIncompleteBooking,
 } from "@/server/db";
 
@@ -63,6 +64,7 @@ async function handleCallback(request: Request) {
   status = (status || "").toLowerCase().trim();
 
   // Attempt to locate the payment record
+  let reference = url.searchParams.get("reference") || "";
   let payment = tran_id ? getPaymentByTranId(tran_id) : null;
   if (!payment && paymentID) {
     const db = loadDb();
@@ -75,13 +77,20 @@ async function handleCallback(request: Request) {
       ) || null;
   }
 
-  const booking = payment ? getBookingById(payment.booking_id) : null;
-  let reference = booking?.reference || "";
+  let booking = payment ? getBookingById(payment.booking_id) : null;
+  if (!booking && reference) {
+    const db = loadDb();
+    booking = db.bookings.find((b: any) => b.reference === reference) || null;
+  }
+  if (booking && !reference) {
+    reference = booking.reference;
+  }
 
   // If payment was cancelled by customer on Rocket page
   if (status === "cancel" || status === "cancelled") {
-    if (booking && isAdvanceBooking(booking, payment)) {
-      await deleteIncompleteBooking(booking.id, "Rocket checkout cancelled by customer");
+    const cancelTarget = booking ? booking.id : reference;
+    if (cancelTarget) {
+      await cancelBookingDirectly(cancelTarget, "Rocket checkout cancelled by customer");
     }
     return NextResponse.redirect(
       `${origin}/payment-result?status=cancel${reference ? `&reference=${encodeURIComponent(reference)}` : ""}`,
@@ -91,8 +100,9 @@ async function handleCallback(request: Request) {
 
   // If payment failed on Rocket page
   if (status === "failure" || status === "failed" || status === "fail") {
-    if (booking && isAdvanceBooking(booking, payment)) {
-      await deleteIncompleteBooking(booking.id, "Rocket checkout payment failed");
+    const cancelTarget = booking ? booking.id : reference;
+    if (cancelTarget) {
+      await cancelBookingDirectly(cancelTarget, "Rocket checkout payment failed");
     }
     return NextResponse.redirect(
       `${origin}/payment-result?status=fail${reference ? `&reference=${encodeURIComponent(reference)}` : ""}`,

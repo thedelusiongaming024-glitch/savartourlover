@@ -82,6 +82,7 @@ export interface Tour {
   startingPrice: number;
   discount: number;
   advancePercent: number;
+  advanceAmount?: number;
   allowPartialPayment?: boolean;
   category: string;
   summary: string;

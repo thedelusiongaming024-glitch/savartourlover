@@ -93,7 +93,7 @@ export function PopularDestinationsCoverflow({
           region: d.region,
           propertiesCount: count,
           tourCount: count,
-          imageUrl: d.cover?.imageUrl || curatedMatch?.imageUrl || "/images/mountain-hero.jpg",
+          imageUrl: d.cover?.imageUrl || curatedMatch?.imageUrl || "",
         };
       });
     }

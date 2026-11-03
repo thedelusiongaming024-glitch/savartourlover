@@ -297,42 +297,56 @@ async function runTotalSync() {
       is_featured: Boolean(d.is_featured),
       status: d.status || "published",
     })),
-    tours: tours.map((t) => ({
-      id: t.id,
-      title: t.title,
-      slug: t.slug,
-      destination_id: t.destination_id || undefined,
-      destination_slug: t.destination_slug || "bangladesh",
-      destination_name: t.destination_name || "Bangladesh",
-      category: t.category || "group_tour",
-      short_description: t.short_description || "",
-      full_description: t.full_description || "",
-      hero_image: t.hero_image || null,
-      duration_days: Number(t.duration_days) || 3,
-      duration_nights: Number(t.duration_nights) || 2,
-      base_price: String(t.base_price || 0),
-      discount_type: t.discount_type || "none",
-      discount_value: String(t.discount_value || 0),
-      final_price: String(t.final_price || t.base_price || 0),
-      allow_partial_payment: t.allow_partial_payment !== false,
-      advance_payment_percent: String(t.advance_payment_percent || 40),
-      advance_amount: String(t.advance_amount || 0),
-      inclusions: Array.isArray(t.inclusions) ? t.inclusions : [],
-      exclusions: Array.isArray(t.exclusions) ? t.exclusions : [],
-      accommodation_notes: t.accommodation_notes || "",
-      transportation_notes: t.transportation_notes || "",
-      meals_notes: t.meals_notes || "",
-      meeting_point: t.meeting_point || "Dhaka Sayedabad / Fakirapool",
-      pickup_points: Array.isArray(t.pickup_points) ? t.pickup_points : [],
-      departure_schedule: t.departure_schedule || "Every Friday 7:00 AM",
-      total_seats: Number(t.total_seats) || 40,
-      departures: Array.isArray(t.departures) ? t.departures : [],
-      itinerary: Array.isArray(t.itinerary) ? t.itinerary : [],
-      gallery: Array.isArray(t.gallery) ? t.gallery : [],
-      faqs: Array.isArray(t.faqs) ? t.faqs : [],
-      is_featured: Boolean(t.is_featured),
-      status: t.status || "published",
-    })),
+    tours: tours.map((t) => {
+      const destById = dests.find((d) => d.id === t.destination_id);
+      const destBySlug = dests.find((d) => d.slug === t.destination_slug);
+      const destName = destById?.name || destBySlug?.name || (t.destination_slug ? t.destination_slug.charAt(0).toUpperCase() + t.destination_slug.slice(1) : "Bangladesh");
+      const basePriceNum = Number(t.starting_price || t.base_price || 0);
+      const discountValNum = Number(t.discount || t.discount_value || 0);
+      const finalPriceNum = Math.max(0, basePriceNum - discountValNum);
+      const overviewText = t.overview || t.full_description || t.short_description || "";
+      const packingList = Array.isArray(t.packing_suggestions) ? t.packing_suggestions : [];
+      const mealsMeta = packingList.find((p) => typeof p === "string" && p.startsWith("meta:meals:"))?.slice("meta:meals:".length);
+      const accMeta = packingList.find((p) => typeof p === "string" && p.startsWith("meta:accommodation:"))?.slice("meta:accommodation:".length);
+      const transMeta = packingList.find((p) => typeof p === "string" && p.startsWith("meta:transportation:"))?.slice("meta:transportation:".length);
+
+      return {
+        id: t.id,
+        title: t.title,
+        slug: t.slug,
+        destination_id: t.destination_id || destBySlug?.id || undefined,
+        destination_slug: t.destination_slug || "bangladesh",
+        destination_name: destName,
+        category: t.category || "group_tour",
+        short_description: overviewText,
+        full_description: overviewText,
+        hero_image: t.hero_image || null,
+        duration_days: Number(t.duration_days) || 3,
+        duration_nights: Number(t.duration_nights) || 2,
+        base_price: String(basePriceNum),
+        discount_type: discountValNum > 0 ? "flat" : "none",
+        discount_value: String(discountValNum),
+        final_price: String(finalPriceNum),
+        allow_partial_payment: t.allow_partial_payment !== false,
+        advance_payment_percent: String(t.advance_percent || t.advance_payment_percent || 40),
+        advance_amount: String(t.advance_amount || Math.round(basePriceNum * 0.4)),
+        inclusions: Array.isArray(t.inclusions) ? t.inclusions : [],
+        exclusions: Array.isArray(t.exclusions) ? t.exclusions : [],
+        accommodation_notes: t.accommodation_notes || accMeta || "Standard hotel / resort",
+        transportation_notes: t.transportation_notes || transMeta || "AC Bus / Private Jeep",
+        meals_notes: t.meals_notes || mealsMeta || "Breakfast included",
+        meeting_point: t.meeting_point || "Dhaka Sayedabad / Fakirapool",
+        pickup_points: Array.isArray(t.pickup_points) ? t.pickup_points : [],
+        departure_schedule: t.departure_schedule || "Every Friday 7:00 AM",
+        total_seats: Number(t.total_seats) || 40,
+        departures: Array.isArray(t.departures) ? t.departures : [],
+        itinerary: Array.isArray(t.itinerary) ? t.itinerary : [],
+        gallery: Array.isArray(t.gallery) ? t.gallery : [],
+        faqs: Array.isArray(t.faqs) ? t.faqs : [],
+        is_featured: Boolean(t.is_featured),
+        status: t.status || "published",
+      };
+    }),
     tourCategories,
     offers: offers.map((o) => ({
       id: o.id,

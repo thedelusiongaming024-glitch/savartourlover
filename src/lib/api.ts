@@ -149,7 +149,9 @@ function adaptTour(t: any): Tour {
   const discount = Math.max(0, Math.round(basePrice - finalPrice));
   const durationDays = Number(t.duration_days) || 3;
   const durationNights = Number(t.duration_nights) || 2;
-  const advancePercent = Number(t.advance_payment_percent || t.advance_percent) || 40;
+  const rawAdvanceAmount = parseFloat(t.advance_amount || "0") || 0;
+  const advancePercent = Number(t.advance_payment_percent || t.advance_percent) || (finalPrice > 0 && rawAdvanceAmount > 0 ? Math.round((rawAdvanceAmount / finalPrice) * 100) : 40);
+  const advanceAmount = rawAdvanceAmount > 0 ? Math.round(rawAdvanceAmount) : Math.round(finalPrice * (advancePercent / 100));
 
   const itinerary: ItineraryDay[] = Array.isArray(t.itinerary)
     ? t.itinerary.map((d: any, i: number) => ({
@@ -210,6 +212,7 @@ function adaptTour(t: any): Tour {
     startingPrice: Math.round(basePrice),
     discount,
     advancePercent,
+    advanceAmount,
     allowPartialPayment: t.allow_partial_payment !== false,
     category: CATEGORY_LABELS[t.category] ?? t.category ?? "Group Tour",
     summary: t.short_description || t.overview || t.description || "",

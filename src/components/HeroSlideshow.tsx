@@ -10,16 +10,16 @@ import type { SceneKey } from "@/lib/types";
 
 const FALLBACK_DEFAULT_SLIDES: HeroSlideItem[] = [
   {
-    id: "slide-scenic-1",
+    id: "slide-coxsbazar",
     title: "Savar Tour Lover",
     subtitle: "Explore Beautiful Bangladesh",
-    image_url: "https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=1920&q=80",
+    image_url: "",
   },
   {
-    id: "slide-scenic-2",
+    id: "slide-sajek",
     title: "Savar Tour Lover",
     subtitle: "Let Your Dreams Fly With Us",
-    image_url: "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=1920&q=80",
+    image_url: "",
   },
 ];
 
@@ -36,7 +36,12 @@ export function HeroSlideshow({ slides, scenes, interval = 6000 }: HeroSlideshow
   const [failedImages, setFailedImages] = useState<Record<string, boolean>>({});
   const reduce = useSafeReducedMotion();
 
-  const activeSlides = (slides && slides.length > 0) ? slides : FALLBACK_DEFAULT_SLIDES;
+  // Filter out any mock/unsplash URLs
+  const cleanSlides = (slides || []).filter(
+    (s) => s && s.image_url && !s.image_url.includes("unsplash.com")
+  );
+
+  const activeSlides = cleanSlides.length > 0 ? cleanSlides : FALLBACK_DEFAULT_SLIDES;
 
   useEffect(() => {
     if (paused || activeSlides.length <= 1) return;

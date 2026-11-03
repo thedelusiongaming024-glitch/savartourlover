@@ -110,7 +110,7 @@ export async function POST(
     });
 
     const origin = new URL(request.url).origin;
-    const simulatorUrl = `${origin}/payments/simulator?tran_id=${encodeURIComponent(payment.tran_id)}&amount=${payment.amount}&reference=${encodeURIComponent(booking.reference)}&title=${encodeURIComponent(booking.tour_title + " (Balance Due)")}`;
+    const simulatorUrl = `${origin}/payments/bkash/simulator?tran_id=${encodeURIComponent(payment.tran_id)}&amount=${payment.amount}&reference=${encodeURIComponent(booking.reference)}&title=${encodeURIComponent(booking.tour_title + " (Balance Due)")}&cus_phone=${encodeURIComponent(booking.customer_phone_number || "")}&cus_name=${encodeURIComponent(booking.customer_full_name || "")}`;
     let redirect_url: string;
 
     const { initiateBKashPayment, isBKashConfigured } = await import("@/lib/bkash");

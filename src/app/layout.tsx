@@ -19,6 +19,7 @@ import { LanguageProvider } from "@/context/LanguageContext";
 import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
 import { ServerTracker } from "@/components/ServerTracker";
+import { WhatsAppWidget } from "@/components/WhatsAppWidget";
 import {
   siteDescription,
   siteName,
@@ -272,6 +273,7 @@ export default function RootLayout({
           <Navbar />
           <main className="flex-1 w-full max-w-[100vw] overflow-x-clip">{children}</main>
           <Footer />
+          <WhatsAppWidget />
         </LanguageProvider>
       </body>
     </html>

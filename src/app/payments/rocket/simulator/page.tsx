@@ -189,7 +189,7 @@ function RocketRealPaymentContent() {
       setActionType("cancel");
       const callbackUrl = `/api/v1/payments/rocket/callback?status=cancel&tran_id=${encodeURIComponent(
         tranId
-      )}&paymentID=${encodeURIComponent(paymentId)}`;
+      )}&paymentID=${encodeURIComponent(paymentId)}&reference=${encodeURIComponent(reference)}`;
       window.location.href = callbackUrl;
     }
   }
@@ -201,106 +201,73 @@ function RocketRealPaymentContent() {
   };
 
   return (
-    <main className="min-h-screen bg-gradient-to-br from-[#260422] via-[#420a3a] to-[#170215] px-3 py-6 sm:py-12 flex flex-col items-center justify-start text-slate-800 font-sans">
-      {/* Top Breadcrumb Header Bar */}
-      <div className="w-full max-w-xl mb-3 flex items-center justify-between px-2 text-xs">
+    <main className="min-h-screen bg-[#F3F4F6] px-4 py-8 sm:py-14 flex flex-col items-center justify-start text-slate-800 font-sans">
+      {/* Clean Top Bar */}
+      <div className="w-full max-w-md mb-3 flex items-center justify-between px-1 text-xs">
         <Link
           href="/"
-          className="inline-flex items-center gap-1.5 text-pink-200 hover:text-white transition font-medium"
+          className="inline-flex items-center gap-1.5 text-slate-600 hover:text-slate-900 font-medium transition"
         >
           <span>←</span>
-          <span>সাভার ট্যুর লাভার (Savar Tour Lover)</span>
+          <span>সাভার ট্যুর লাভার</span>
         </Link>
-        <span className="rounded-full bg-white/10 px-2.5 py-0.5 text-pink-200/90 font-mono text-[11px]">
-          🔒 Smart Matcher Active
-        </span>
+        <span className="text-slate-500 font-medium">হেল্পলাইন: 01646-325350</span>
       </div>
 
-      <div className="w-full max-w-xl overflow-hidden rounded-3xl bg-white shadow-2xl border border-white/20">
+      <div className="w-full max-w-md overflow-hidden rounded-2xl bg-white shadow-lg border border-slate-200">
         {/* DBBL Rocket Official Header */}
-        <div className="bg-gradient-to-r from-[#8C1D7D] via-[#751167] to-[#5a0c50] px-5 sm:px-7 py-5 text-white">
-          <div className="flex items-center justify-between gap-3">
-            <div className="flex items-center gap-3">
-              <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-white/20 text-2xl shadow-inner border border-white/30">
-                🚀
-              </div>
-              <div>
-                <div className="flex items-center gap-2">
-                  <h1 className="text-xl sm:text-2xl font-black tracking-tight text-white">Rocket</h1>
-                  <span className="rounded-md bg-white/25 px-2 py-0.5 text-[11px] font-bold text-white uppercase tracking-wider">
-                    রকেট
-                  </span>
-                </div>
-                <p className="text-[11px] sm:text-xs text-pink-100 font-medium leading-tight">
-                  Dutch-Bangla Bank · ডাচ-বাংলা ব্যাংক মোবাইল ব্যাংকিং
-                </p>
-              </div>
-            </div>
-            <div className="shrink-0 text-right">
-              <span className="inline-block rounded-full bg-emerald-500/30 border border-emerald-300/50 px-3 py-1 text-[11px] font-bold text-emerald-200">
-                ● অটো-ভেরিফিকেশন
+        <div className="bg-[#8C1D7D] px-6 py-4 text-white flex items-center justify-between">
+          <div>
+            <div className="flex items-center gap-2">
+              <span className="text-2xl font-black tracking-tight leading-none">Rocket</span>
+              <span className="rounded bg-white/20 px-1.5 py-0.5 text-[10px] font-bold uppercase">
+                রকেট
               </span>
             </div>
+            <p className="text-[11px] text-pink-100 font-medium mt-1">
+              Dutch-Bangla Bank · ডাচ-বাংলা ব্যাংক
+            </p>
           </div>
+          <span className="text-sm font-semibold opacity-95">পেমেন্ট গেটওয়ে</span>
         </div>
 
         {/* Merchant & Booking Details Strip */}
-        <div className="border-b border-purple-100 bg-purple-50/70 px-5 sm:px-7 py-4 text-xs">
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-slate-700">
+        <div className="border-b border-slate-100 bg-slate-50/70 px-6 py-4 text-xs">
+          <div className="flex items-start justify-between gap-3">
             <div>
-              <span className="text-slate-500 font-medium">মার্চেন্ট (Merchant):</span>
-              <p className="font-bold text-purple-950 text-sm mt-0.5">{merchantName}</p>
-              <div className="flex flex-wrap items-center gap-x-2 text-[11px] text-slate-600 font-mono mt-0.5">
-                <span>MID: <strong>{merchantId}</strong></span>
-                <span>·</span>
-                <span>TID: <strong>{merchantTid}</strong></span>
-              </div>
+              <span className="text-slate-500 text-[11px]">মার্চেন্ট:</span>
+              <p className="font-semibold text-slate-900 text-sm">{merchantName}</p>
+              <p className="text-[11px] text-slate-500 mt-0.5 truncate max-w-[220px]">{title}</p>
             </div>
-            <div className="sm:text-right">
-              <span className="text-slate-500 font-medium">বুকিং রেফারেন্স (Ref):</span>
-              <div className="flex sm:justify-end items-center gap-1.5 mt-0.5">
-                <span className="font-mono font-bold text-slate-900 text-sm tracking-wide">
+            <div className="text-right">
+              <span className="text-slate-500 text-[11px]">বুকিং রেফারেন্স:</span>
+              <div className="flex items-center justify-end gap-1.5 mt-0.5">
+                <span className="font-mono font-bold text-slate-900 text-xs tracking-wide">
                   {reference || "STL-PENDING"}
                 </span>
                 <button
                   type="button"
                   onClick={() => copyToClipboard(reference, "ref")}
-                  title="রেফারেন্স কপি করুন"
-                  className="rounded-md bg-purple-200/80 hover:bg-purple-300 text-purple-950 px-1.5 py-0.5 text-[10px] font-bold cursor-pointer transition"
+                  className="rounded bg-slate-200 hover:bg-slate-300 text-slate-700 px-1.5 py-0.5 text-[10px] font-semibold transition cursor-pointer"
                 >
-                  {copiedRef ? "✓ কপিড" : "কপি"}
+                  {copiedRef ? "কপিড" : "কপি"}
                 </button>
               </div>
-              <p className="truncate max-w-[240px] sm:ml-auto text-[11px] text-slate-600 font-medium mt-0.5">
-                {title}
-              </p>
-              {cusName && (
-                <p className="text-[11px] text-slate-500 font-medium">
-                  যাত্রী: {cusName}
-                </p>
-              )}
             </div>
           </div>
 
-          <div className="mt-3.5 flex items-center justify-between border-t border-purple-200/80 pt-3">
+          <div className="mt-3.5 flex items-center justify-between border-t border-slate-200/80 pt-3">
             <div>
-              <span className="font-bold text-purple-950 text-xs sm:text-sm">
-                পরিশোধযোগ্য অগ্রিম (Payable Advance):
-              </span>
-              <p className="text-[10px] text-slate-500">বুকিং কনফার্মেশনের জন্য নির্ধারিত অগ্রিম টাকা</p>
+              <span className="text-[11px] text-slate-500">প্রদেয় অগ্রিম টাকা:</span>
+              <div className="text-2xl font-black text-[#8C1D7D]">{formatBDT(numAmount)}</div>
             </div>
-            <div className="flex items-center gap-2">
-              <span className="text-xl sm:text-2xl font-black text-[#8C1D7D]">
-                {formatBDT(numAmount)}
-              </span>
-              <button
-                type="button"
-                onClick={() => copyToClipboard(String(Math.round(numAmount)), "amount")}
-                className="rounded-lg bg-purple-100 hover:bg-purple-200 text-purple-950 px-2 py-1 text-[10px] font-bold cursor-pointer transition shadow-xs"
-              >
-                {copiedAmount ? "✓ কপিড" : "টাকা কপি"}
-              </button>
-            </div>
+            <button
+              type="button"
+              onClick={() => copyToClipboard(String(Math.round(numAmount)), "amount")}
+              className="rounded-lg bg-purple-50 hover:bg-purple-100 text-[#8C1D7D] border border-purple-200 px-2.5 py-1 text-xs font-semibold transition cursor-pointer"
+            >
+              {copiedAmount ? "টাকা কপি হয়েছে" : "টাকা কপি করুন"}
+            </button>
           </div>
         </div>
 
@@ -322,129 +289,79 @@ function RocketRealPaymentContent() {
           </div>
         )}
 
-        {/* SCREEN 2: HYBRID FALLBACK 15-MINUTE COUNTDOWN WATCHER */}
+        {/* SCREEN 2: PENDING VERIFICATION COUNTDOWN */}
         {verificationMode === "watching" && (
-          <div className="p-6 sm:p-8 space-y-5">
-            <div className="rounded-2xl border-2 border-amber-300 bg-amber-50/80 p-5 text-center space-y-3 shadow-xs">
-              <div className="inline-flex items-center gap-1.5 rounded-full bg-amber-100 text-amber-900 px-3 py-1 text-xs font-bold uppercase tracking-wider">
-                <span>⏱️ ভেরিফিকেশন পেন্ডিং (১৫ মিনিট সিট হোল্ড)</span>
+          <div className="p-6 space-y-4">
+            <div className="rounded-xl border border-amber-200 bg-amber-50/70 p-4 text-center space-y-2">
+              <span className="text-xs font-semibold text-amber-900">
+                পেমেন্ট রিকোয়েস্ট গ্রহণ করা হয়েছে
+              </span>
+              <div className="font-mono text-3xl font-black text-[#8C1D7D] tracking-wider">
+                {formatCountdown(secondsRemaining)}
               </div>
-
-              <div>
-                <p className="text-xs text-amber-950 font-medium">
-                  আপনার ট্রানজেকশন আইডি ({trxId}) সিস্টেমে গ্রহণ করা হয়েছে।
-                </p>
-                <div className="mt-2 flex items-center justify-center gap-2">
-                  <span className="font-mono text-4xl sm:text-5xl font-black text-[#8C1D7D] tracking-widest">
-                    {formatCountdown(secondsRemaining)}
-                  </span>
-                </div>
-                <p className="text-[11px] text-amber-800 mt-1 font-medium">
-                  বাকি সময় · এই সময়ের মধ্যে ব্যাংক এসএমএস আসলে স্বয়ংক্রিয়ভাবে টিকেট নিশ্চিত হবে
-                </p>
-              </div>
-
-              <div className="border-t border-amber-200/80 pt-3 text-[11px] text-amber-950/90 leading-relaxed text-left space-y-1.5">
-                <p className="font-semibold text-amber-900 flex items-center gap-1">
-                  <span>ℹ️</span> <strong>পেমেন্ট ট্র্যাকিং স্ট্যাটাস:</strong>
-                </p>
-                <p>• ডাটাবেজে আপনার ট্রানজেকশন আইডি সংরক্ষিত হয়েছে।</p>
-                <p>• মার্চেন্ট ফোনে ডাচ-বাংলা ব্যাংক থেকে এসএমএস পৌঁছানোমাত্রই পেজটি স্বয়ংক্রিয়ভাবে রিফ্রেশ হয়ে যাবে।</p>
-                <p>• ১৫ মিনিটের মধ্যে ভেরিফাই না হলে আসনগুলো রিলিজ হয়ে যাবে।</p>
-              </div>
+              <p className="text-[11px] text-slate-600 leading-relaxed">
+                আপনার TrxID: <strong className="font-mono text-slate-900">{trxId}</strong><br />
+                রকেট থেকে এসএমএস নিশ্চিত হওয়ার সাথে সাথেই এই পেজটি স্বয়ংক্রিয়ভাবে আপডেট হয়ে যাবে।
+              </p>
             </div>
 
-            <div className="flex flex-col gap-2 pt-1">
-              <button
-                type="button"
-                onClick={() => {
-                  const query = reference
-                    ? `reference=${encodeURIComponent(reference)}`
-                    : `tran_id=${encodeURIComponent(tranId)}`;
-                  fetch(`/api/v1/payments/rocket/check-status?${query}`)
-                    .then((r) => r.json())
-                    .then((data) => {
-                      if (data.is_confirmed && data.redirect_url) {
-                        window.location.href = data.redirect_url;
-                      } else {
-                        alert("এখনও ব্যাংক এসএমএস প্রসেসিং হচ্ছে। দয়া করে কিছুক্ষণ অপেক্ষা করুন।");
-                      }
-                    });
-                }}
-                className="w-full rounded-xl bg-purple-100 hover:bg-purple-200 text-[#8C1D7D] py-3 text-xs sm:text-sm font-bold transition cursor-pointer flex items-center justify-center gap-2"
-              >
-                <span>⟳</span>
-                <span>এখনই স্ট্যাটাস রিফ্রেশ করুন (Check Again)</span>
-              </button>
+            <button
+              type="button"
+              onClick={() => {
+                const query = reference
+                  ? `reference=${encodeURIComponent(reference)}`
+                  : `tran_id=${encodeURIComponent(tranId)}`;
+                fetch(`/api/v1/payments/rocket/check-status?${query}`)
+                  .then((r) => r.json())
+                  .then((data) => {
+                    if (data.is_confirmed && data.redirect_url) {
+                      window.location.href = data.redirect_url;
+                    } else {
+                      alert("লেনদেনটি এখনও ভেরিফাই হচ্ছে। অনুগ্রহ করে কিছুক্ষণ অপেক্ষা করুন।");
+                    }
+                  });
+              }}
+              className="w-full rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 py-2.5 text-xs font-semibold transition cursor-pointer"
+            >
+              পুনরায় চেক করুন
+            </button>
 
-              <button
-                type="button"
-                onClick={handleCancelPayment}
-                className="text-xs text-slate-500 hover:text-rose-600 font-semibold py-2 transition cursor-pointer text-center"
-              >
-                ✕ পেমেন্ট বাতিল করে আসন মুক্ত করুন
-              </button>
-            </div>
+            <button
+              type="button"
+              onClick={handleCancelPayment}
+              className="w-full text-center text-xs text-slate-500 hover:text-rose-600 py-1 transition cursor-pointer"
+            >
+              পেমেন্ট বাতিল করুন
+            </button>
           </div>
         )}
 
         {/* SCREEN 3: NORMAL REAL PAYMENT ENTRY FORM */}
         {verificationMode === "form" && (
-          <div className="p-5 sm:p-7 space-y-5">
+          <div className="p-6 space-y-5">
             {/* Merchant Account Highlight Box */}
-            <div className="rounded-2xl border-2 border-[#8C1D7D]/30 bg-purple-50/80 p-4 shadow-xs">
-              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-                <div>
-                  <p className="text-[11px] font-bold text-purple-900 uppercase tracking-wide">
-                    রকেট একাউন্ট থেকে পেমেন্ট করুন এই নম্বরে:
-                  </p>
-                  <div className="flex items-center gap-2 mt-1">
-                    <span className="font-mono text-2xl sm:text-3xl font-black text-[#8C1D7D] tracking-wider">
-                      {merchantAccount}
-                    </span>
-                    <span className="rounded-md bg-[#8C1D7D] text-white px-2 py-0.5 text-[10px] font-bold">
-                      মার্চেন্ট
-                    </span>
-                  </div>
+            <div className="rounded-xl border border-purple-200 bg-purple-50/70 p-3.5 flex items-center justify-between">
+              <div>
+                <span className="text-[11px] text-purple-900 font-medium">রকেট মার্চেন্ট নম্বর:</span>
+                <div className="font-mono text-xl font-black text-slate-900 tracking-wider">
+                  {merchantAccount}
                 </div>
-                <button
-                  type="button"
-                  onClick={() => copyToClipboard(merchantAccount, "account")}
-                  className="self-start sm:self-center shrink-0 rounded-xl bg-[#8C1D7D] hover:bg-[#741267] active:scale-95 text-white px-4 py-2.5 text-xs font-bold transition shadow-md cursor-pointer flex items-center gap-1.5"
-                >
-                  <span>{copiedAccount ? "✓ নম্বর কপি হয়েছে!" : "📋 নম্বর কপি করুন"}</span>
-                </button>
               </div>
+              <button
+                type="button"
+                onClick={() => copyToClipboard(merchantAccount, "account")}
+                className="rounded-lg bg-[#8C1D7D] hover:bg-[#741267] text-white px-3 py-1.5 text-xs font-semibold transition cursor-pointer"
+              >
+                {copiedAccount ? "কপি হয়েছে" : "নম্বর কপি"}
+              </button>
             </div>
 
-            {/* Real Payment Procedure Steps */}
-            <div className="rounded-2xl border border-amber-200 bg-amber-50/70 p-4 text-xs text-amber-950 space-y-2.5">
-              <div className="flex items-center gap-2 text-amber-900 font-bold text-sm">
-                <span>📱</span>
-                <span>রকেট পেমেন্ট করার বাস্তব প্রক্রিয়া (Real Payment Procedure):</span>
-              </div>
-
-              <div className="space-y-2 pt-1">
-                {[
-                  { step: "১", title: "রকেট অ্যাপ খুলুন", desc: "আপনার মোবাইল থেকে রকেট অ্যাপ ওপেন করুন অথবা ডায়াল করুন *322#" },
-                  { step: "২", title: "Merchant Pay বেছে নিন", desc: "মেনু থেকে \"Merchant Pay / পেমেন্ট\" অপশন সিলেক্ট করুন" },
-                  { step: "৩", title: "মার্চেন্ট একাউন্ট নম্বর দিন", desc: `মার্চেন্ট নম্বর হিসেবে লিখুন: ${merchantAccount}` },
-                  { step: "৪", title: "টাকার পরিমাণ লিখুন", desc: `সঠিক অগ্রিম টাকা লিখুন: ${formatBDT(numAmount)}` },
-                  { step: "৫", title: "রেফারেন্স নম্বর দিন", desc: `রেফারেন্স বক্সে লিখুন: ${reference || "STL"}` },
-                  { step: "৬", title: "রকেট পিন দিয়ে কনফার্ম করুন", desc: "আপনার নিজস্ব রকেট পিন (PIN) দিয়ে লেনদেন সম্পন্ন করুন" },
-                  { step: "৭", title: "TrxID সংগ্রহ করুন", desc: "পেমেন্ট সফল হলে প্রাপ্ত ফিরতি SMS থেকে Transaction ID (TrxID) সংগ্রহ করুন" },
-                ].map((item) => (
-                  <div key={item.step} className="flex items-start gap-2.5 bg-white/80 rounded-xl p-2 border border-amber-200/60 shadow-xs">
-                    <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-[#8C1D7D] text-white font-bold text-[10px]">
-                      {item.step}
-                    </span>
-                    <div className="text-[11px] leading-tight">
-                      <strong className="text-purple-950 font-bold">{item.title}:</strong>{" "}
-                      <span className="text-slate-700">{item.desc}</span>
-                    </div>
-                  </div>
-                ))}
-              </div>
+            {/* Clean Instructions */}
+            <div className="text-xs text-slate-600 space-y-1.5 pl-1 leading-relaxed border-l-2 border-[#8C1D7D]/40">
+              <p>১. রকেট অ্যাপে যান অথবা ডায়াল করুন <strong>*322#</strong></p>
+              <p>২. <strong>Merchant Pay</strong> নির্বাচন করে মার্চেন্ট নম্বরে <strong>{formatBDT(numAmount)}</strong> পাঠান</p>
+              <p>৩. রেফারেন্সে লিখুন <strong>{reference || "STL"}</strong></p>
+              <p>৪. পেমেন্ট শেষে পাওয়া <strong>TxnID / TrxID</strong> নিচের বক্সে লিখে কনফার্ম করুন</p>
             </div>
 
             {/* Real Transaction Submission Form */}
@@ -502,49 +419,26 @@ function RocketRealPaymentContent() {
               <button
                 type="submit"
                 disabled={loading}
-                className="w-full rounded-2xl bg-gradient-to-r from-[#8C1D7D] to-[#600f55] py-3.5 text-sm sm:text-base font-bold text-white shadow-lg hover:from-[#76156a] hover:to-[#500a46] active:scale-[0.99] transition disabled:opacity-50 cursor-pointer flex items-center justify-center gap-2"
+                className="w-full rounded-xl bg-[#8C1D7D] hover:bg-[#741267] text-white py-3 text-sm font-semibold shadow-xs transition disabled:opacity-60 cursor-pointer"
               >
-                {loading && actionType === "confirm" ? (
-                  <>
-                    <svg className="animate-spin h-5 w-5 text-white" fill="none" viewBox="0 0 24 24">
-                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"></path>
-                    </svg>
-                    <span>ব্যাংক এসএমএস ভেরিফাই করা হচ্ছে...</span>
-                  </>
-                ) : (
-                  <>
-                    <span>✓</span>
-                    <span>পেমেন্ট ও বুকিং নিশ্চিত করুন ({formatBDT(numAmount)})</span>
-                  </>
-                )}
+                {loading ? "যাচাই করা হচ্ছে..." : `পেমেন্ট নিশ্চিত করুন (${formatBDT(numAmount)})`}
               </button>
 
-              {/* Cancel Payment */}
-              <div className="pt-1 text-center">
-                <button
-                  type="button"
-                  disabled={loading}
-                  onClick={handleCancelPayment}
-                  className="text-xs font-semibold text-slate-500 hover:text-rose-600 transition cursor-pointer"
-                >
-                  ✕ পেমেন্ট বাতিল করুন (Cancel Payment)
-                </button>
-              </div>
+              <button
+                type="button"
+                onClick={handleCancelPayment}
+                className="w-full text-center text-xs text-slate-500 hover:text-slate-800 py-1 transition cursor-pointer"
+              >
+                পেমেন্ট বাতিল করুন
+              </button>
             </form>
           </div>
         )}
+      </div>
 
-        {/* Security & Support Footer */}
-        <div className="border-t border-slate-100 bg-slate-50 px-6 py-3 flex flex-wrap items-center justify-between gap-2 text-xs text-slate-500">
-          <div className="flex items-center gap-1.5">
-            <span>🔒</span>
-            <span>Dutch-Bangla Bank Hybrid Smart Matcher</span>
-          </div>
-          <div>
-            রকেট হেল্পলাইন: <strong className="font-mono text-purple-950 font-bold">16216</strong>
-          </div>
-        </div>
+      {/* Clean Footer */}
+      <div className="w-full max-w-md mt-4 text-center text-xs text-slate-500">
+        কোনো সমস্যা হলে যোগাযোগ করুন: <strong>01646-325350</strong>
       </div>
     </main>
   );
@@ -554,8 +448,8 @@ export default function RocketPaymentPage() {
   return (
     <Suspense
       fallback={
-        <div className="flex min-h-screen items-center justify-center bg-[#260422] text-white">
-          <p className="animate-pulse">Loading Rocket Payment Gateway...</p>
+        <div className="flex min-h-screen items-center justify-center bg-[#F3F4F6] text-slate-600">
+          <p>লোড হচ্ছে...</p>
         </div>
       }
     >

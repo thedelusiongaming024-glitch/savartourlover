@@ -51,7 +51,7 @@ export function TourHeroBackgroundSlider({
   useEffect(() => {
     if (typeof window === "undefined" || slides.length === 0) return;
     slides.forEach((slide) => {
-      if (slide.image) {
+      if (slide.image && !slide.image.includes("unsplash.com") && !slide.image.includes("mountain-hero.jpg")) {
         const url = normalizeImageUrl(slide.image);
         if (url) {
           const img = new window.Image();
@@ -101,6 +101,7 @@ export function TourHeroBackgroundSlider({
         {slides.map((slide, idx) => {
           const isActive = idx === currentIndex % total;
           const activeImage = slide.image ? normalizeImageUrl(slide.image) : null;
+          const isMock = activeImage ? (activeImage.includes("unsplash.com") || activeImage.includes("mountain-hero.jpg") || activeImage.includes("placeholder")) : true;
           const isImageFailed = Boolean(failedImages[slide.id]);
 
           return (
@@ -122,7 +123,7 @@ export function TourHeroBackgroundSlider({
                   transform: "translate3d(0, 0, 0)", // Elevates to dedicated GPU compositor layer
                 }}
               >
-                {activeImage && !isImageFailed ? (
+                {activeImage && !isImageFailed && !isMock ? (
                   // eslint-disable-next-line @next/next/no-img-element
                   <img
                     src={activeImage}

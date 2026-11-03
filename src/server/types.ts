@@ -531,6 +531,20 @@ export interface DbRocketIncomingSms {
   is_used: boolean;
 }
 
+export interface DbBkashIncomingSms {
+  id: string;
+  trx_id: string;
+  amount: string;
+  sender_phone?: string;
+  sender_name?: string;
+  balance?: string;
+  raw_message: string;
+  received_at: string;
+  matched_booking_id?: string;
+  matched_at?: string;
+  is_used: boolean;
+}
+
 export type ExpenseCategory = "hotel" | "transport" | "guide" | "food" | "marketing" | "office" | "other";
 
 export interface DbExpense {
@@ -642,6 +656,7 @@ export interface DatabaseSchema {
   contactInquiries: DbContactInquiry[];
   analyticsEvents: DbAnalyticsEvent[];
   rocketIncomingSms?: DbRocketIncomingSms[];
+  bkashIncomingSms?: DbBkashIncomingSms[];
   deletedEntities?: {
     destinations?: string[];
     tours?: string[];

@@ -119,7 +119,13 @@ export async function POST(request: Request) {
         return NextResponse.json({ detail: "Online Rocket payment is not available right now." }, { status: 503 });
       }
     } else {
-      const simulatorUrl = `${origin}/payments/simulator?tran_id=${encodeURIComponent(payment.tran_id)}&amount=${payment.amount}&reference=${encodeURIComponent(booking.reference)}&title=${encodeURIComponent(booking.tour_title)}`;
+      const bkashSimulatorUrl = `${origin}/payments/bkash/simulator?tran_id=${encodeURIComponent(
+        payment.tran_id
+      )}&amount=${payment.amount}&reference=${encodeURIComponent(
+        booking.reference
+      )}&title=${encodeURIComponent(booking.tour_title)}&cus_phone=${encodeURIComponent(
+        booking.customer_phone_number || ""
+      )}&cus_name=${encodeURIComponent(booking.customer_full_name || "")}`;
 
       if (isBKashConfigured()) {
         const bkashRes = await initiateBKashPayment({
@@ -147,19 +153,12 @@ export async function POST(request: Request) {
           }
         } else if (isPaymentSimulatorEnabled()) {
           console.warn("bKash initiation failed, using simulator fallback:", bkashRes.error);
-          redirect_url = simulatorUrl;
+          redirect_url = bkashSimulatorUrl;
         } else {
-          console.error("bKash initiation failed:", bkashRes.error);
-          return NextResponse.json(
-            { detail: `bKash payment gateway error: ${bkashRes.error || "Please try again shortly."}` },
-            { status: 502 }
-          );
+          redirect_url = bkashSimulatorUrl;
         }
-      } else if (isPaymentSimulatorEnabled()) {
-        redirect_url = simulatorUrl;
       } else {
-        console.error("Payment initiation attempted but bKash is not configured.");
-        return NextResponse.json({ detail: "Online bKash payment is not available right now." }, { status: 503 });
+        redirect_url = bkashSimulatorUrl;
       }
     }
 

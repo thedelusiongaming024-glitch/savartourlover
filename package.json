@@ -8,6 +8,7 @@
     "start": "next start",
     "lint": "eslint",
     "sync:supabase": "node scripts/total-sync-supabase.mjs",
+    "migrate:supabase": "node scripts/migrate-to-new-supabase.mjs",
     "change-password": "node scripts/change-admin-password.mjs"
   },
   "dependencies": {

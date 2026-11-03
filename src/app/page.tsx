@@ -120,7 +120,7 @@ export default async function Home() {
                         id: `slide-${d.slug}`,
                         title: d.name,
                         subtitle: d.tagline || d.region,
-                        image_url: d.cover?.imageUrl || "/images/mountain-hero.jpg",
+                        image_url: d.cover?.imageUrl || "",
                       }))
                     : undefined
                   )

@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { executeBKashPayment } from "@/lib/bkash";
-import { confirmPaymentSuccess, getPaymentByTranId, getBookingById, loadDb, deleteIncompleteBooking, ensureDbHydrated } from "@/server/db";
+import { confirmPaymentSuccess, getPaymentByTranId, getBookingById, loadDb, cancelBookingDirectly, ensureDbHydrated } from "@/server/db";
 
 function isAdvanceBooking(booking: any, payment: any): boolean {
   if (!booking) return true;
@@ -46,19 +46,27 @@ async function handleCallback(request: Request) {
   }
 
   // Attempt to locate the payment record
+  let reference = url.searchParams.get("reference") || "";
   let payment = tran_id ? getPaymentByTranId(tran_id) : null;
   if (!payment && paymentID) {
     const db = loadDb();
     payment = db.payments.find((p: any) => p.val_id === paymentID || p.gateway_session_key === paymentID) || null;
   }
 
-  const booking = payment ? getBookingById(payment.booking_id) : null;
-  let reference = booking?.reference || "";
+  let booking = payment ? getBookingById(payment.booking_id) : null;
+  if (!booking && reference) {
+    const db = loadDb();
+    booking = db.bookings.find((b: any) => b.reference === reference) || null;
+  }
+  if (booking && !reference) {
+    reference = booking.reference;
+  }
 
   // If payment was cancelled by customer on bKash page
-  if (status === "cancel") {
-    if (booking && isAdvanceBooking(booking, payment)) {
-      await deleteIncompleteBooking(booking.id, "bKash checkout cancelled by customer");
+  if (status === "cancel" || status === "cancelled") {
+    const cancelTarget = booking ? booking.id : reference;
+    if (cancelTarget) {
+      await cancelBookingDirectly(cancelTarget, "bKash checkout cancelled by customer");
     }
     return NextResponse.redirect(
       `${origin}/payment-result?status=cancel${reference ? `&reference=${encodeURIComponent(reference)}` : ""}`,
@@ -68,8 +76,9 @@ async function handleCallback(request: Request) {
 
   // If payment failed on bKash page
   if (status === "failure" || status === "failed") {
-    if (booking && isAdvanceBooking(booking, payment)) {
-      await deleteIncompleteBooking(booking.id, "bKash checkout payment failed");
+    const cancelTarget = booking ? booking.id : reference;
+    if (cancelTarget) {
+      await cancelBookingDirectly(cancelTarget, "bKash checkout payment failed");
     }
     return NextResponse.redirect(
       `${origin}/payment-result?status=fail${reference ? `&reference=${encodeURIComponent(reference)}` : ""}`,
@@ -87,7 +96,7 @@ async function handleCallback(request: Request) {
     }
 
     // Call bKash execute API
-    const executeRes = await executeBKashPayment(paymentID);
+    const executeRes = await executeBKashPayment(paymentID, tran_id);
 
     if (!executeRes.success) {
       console.error(`[bKash Callback] Payment execution failed for paymentID ${paymentID}:`, executeRes.error);

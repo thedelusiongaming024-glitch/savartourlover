@@ -486,6 +486,10 @@ export async function deleteCustomerFromSupabase(id: string): Promise<boolean> {
 }
 
 export async function syncBookingToSupabase(booking: DbBooking): Promise<boolean> {
+  if (booking.status === "cancelled") {
+    return await deleteBookingFromSupabase(booking.id);
+  }
+
   const supabase = getSupabaseAdminClient();
   try {
     const b = booking as any;
@@ -557,15 +561,27 @@ export async function syncBookingToSupabase(booking: DbBooking): Promise<boolean
   }
 }
 
-export async function deleteBookingFromSupabase(bookingId: string): Promise<boolean> {
+export async function deleteBookingFromSupabase(bookingIdentifier: string): Promise<boolean> {
   const supabase = getSupabaseAdminClient();
   try {
-    await supabase.from("payments").delete().eq("booking_id", bookingId);
-    await supabase.from("clearance_tickets").delete().eq("booking_id", bookingId);
-    const { error } = await supabase.from("bookings").delete().eq("id", bookingId);
-    if (error) {
-      console.warn("[Supabase Postgres] Booking delete warning:", error.message);
-      return false;
+    const { data: found } = await supabase
+      .from("bookings")
+      .select("id, reference")
+      .or(`id.eq.${bookingIdentifier},reference.eq.${bookingIdentifier}`);
+
+    const idsToDelete = new Set<string>([bookingIdentifier]);
+    if (found && Array.isArray(found)) {
+      found.forEach((b: any) => {
+        if (b.id) idsToDelete.add(b.id);
+        if (b.reference) idsToDelete.add(b.reference);
+      });
+    }
+
+    for (const bId of idsToDelete) {
+      await supabase.from("payments").delete().eq("booking_id", bId);
+      await supabase.from("clearance_tickets").delete().eq("booking_id", bId);
+      await supabase.from("bookings").delete().eq("id", bId);
+      await supabase.from("bookings").delete().eq("reference", bId);
     }
     return true;
   } catch (err: any) {
@@ -885,12 +901,18 @@ export async function fetchDatabaseFromSupabase(): Promise<DatabaseSchema | null
       const placesMeta = packingSuggestions.find((p: any) => typeof p === "string" && p.startsWith("meta:places:"))?.slice("meta:places:".length);
       const decodedPlaces = placesMeta ? placesMeta.split("||").filter(Boolean) : [];
 
+      const matchedDest = (mappedDestinations || []).find(
+        (d: any) => d.id === t.destination_id || (d.slug && d.slug.toLowerCase() === (t.destination_slug || "").toLowerCase())
+      );
+      const destinationName = matchedDest?.name || (t.destination_slug ? t.destination_slug.charAt(0).toUpperCase() + t.destination_slug.slice(1) : "Bangladesh");
+
       return {
         id: t.id,
         title: t.title,
         slug: t.slug,
-        destination_slug: t.destination_slug,
-        destination_name: t.destination_slug ? t.destination_slug.charAt(0).toUpperCase() + t.destination_slug.slice(1) : "Bangladesh",
+        destination_id: matchedDest?.id || t.destination_id,
+        destination_slug: matchedDest?.slug || t.destination_slug || "bangladesh",
+        destination_name: destinationName,
         category: t.category,
         short_description: t.overview || "",
         full_description: t.overview || "",
@@ -1061,7 +1083,9 @@ export async function fetchDatabaseFromSupabase(): Promise<DatabaseSchema | null
       paid_at: p.paid_at || undefined,
     }));
 
-    const mappedBookings: DbBooking[] = (bookingsRes.data || []).map((b: any) => {
+    const mappedBookings: DbBooking[] = (bookingsRes.data || [])
+      .filter((b: any) => b.status !== "cancelled")
+      .map((b: any) => {
       let selected_seats: string[] = [];
       if (Array.isArray(b.selected_seats) && b.selected_seats.length > 0) {
         selected_seats = b.selected_seats.map((s: any) => String(s).trim().toUpperCase()).filter(Boolean);
