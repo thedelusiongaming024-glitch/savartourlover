@@ -99,8 +99,6 @@ export default async function ToursPage({
             eyebrowBn="ট্যুর প্যাকেজসমূহ"
             title="Packages built for every kind of traveller"
             titleBn="সকলের জন্য উপযোগী বাছাইকৃত ট্যুর প্যাকেজ"
-            description="Every tour includes a local host, transparent pricing, and flexible payment — book from just 40% advance and settle the balance on tour day."
-            descriptionBn="প্রতিটি ট্যুরে থাকছে লোকাল হোস্ট, স্পষ্ট মূল্য এবং সুবিধাজনক পেমেন্ট — মাত্র ৪০% অগ্রিমে বুক করুন এবং বাকি টাকা ভ্রমণের দিন পরিশোধ করুন।"
           />
         </div>
       </section>

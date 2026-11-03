@@ -61,26 +61,32 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       fetchJournalPosts().catch(() => []),
     ]);
 
-    tourEntries = (tours || []).map((tour) => ({
-      url: `${baseUrl}/tours/${tour.slug}`,
-      lastModified: now,
-      changeFrequency: "daily" as const,
-      priority: 0.85,
-    }));
+    tourEntries = (tours || [])
+      .filter((tour) => tour.slug && tour.slug !== "-" && tour.slug.length > 1)
+      .map((tour) => ({
+        url: `${baseUrl}/tours/${tour.slug}`,
+        lastModified: now,
+        changeFrequency: "daily" as const,
+        priority: 0.85,
+      }));
 
-    destinationEntries = (destinations || []).map((dest) => ({
-      url: `${baseUrl}/destinations/${dest.slug}`,
-      lastModified: now,
-      changeFrequency: "weekly" as const,
-      priority: 0.85,
-    }));
+    destinationEntries = (destinations || [])
+      .filter((dest) => dest.slug && dest.slug !== "-" && dest.slug.length > 1)
+      .map((dest) => ({
+        url: `${baseUrl}/destinations/${dest.slug}`,
+        lastModified: now,
+        changeFrequency: "weekly" as const,
+        priority: 0.85,
+      }));
 
-    journalEntries = (posts || []).map((post) => ({
-      url: `${baseUrl}/journal/${post.slug}`,
-      lastModified: post.date ? new Date(post.date) : now,
-      changeFrequency: "weekly" as const,
-      priority: 0.75,
-    }));
+    journalEntries = (posts || [])
+      .filter((post) => post.slug && post.slug !== "-" && post.slug.length > 1)
+      .map((post) => ({
+        url: `${baseUrl}/journal/${post.slug}`,
+        lastModified: post.date ? new Date(post.date) : now,
+        changeFrequency: "weekly" as const,
+        priority: 0.75,
+      }));
   } catch (err) {
     console.error("[Sitemap] Error generating dynamic routes:", err);
   }

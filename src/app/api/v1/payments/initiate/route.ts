@@ -66,7 +66,13 @@ export async function POST(request: Request) {
       payment_method: resolvedMethod,
     });
 
-    const origin = new URL(request.url).origin;
+    const host = request.headers.get("x-forwarded-host") || request.headers.get("host");
+    const proto = request.headers.get("x-forwarded-proto") || "https";
+    const origin =
+      host && host.includes("savartourlover.com")
+        ? `https://${host}`
+        : process.env.NEXT_PUBLIC_SITE_URL?.replace(/\/+$/, "") ||
+          (host ? `${proto}://${host}` : new URL(request.url).origin);
     let redirect_url: string;
 
     if (isRocket) {

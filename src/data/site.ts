@@ -12,6 +12,7 @@ export const sitePhonesFormatted = ["+880 1620-592884", "+880 1646-325350"];
 export const siteAddressEn = "Savar Pollibidut, Kobarsthan Road, Savar, Dhaka, 1340, Bangladesh";
 export const siteAddressBn = "সাভার পল্লীবিদ্যুৎ, কবরস্থান রোড, সাভার, ঢাকা, ১৩৪০, বাংলাদেশ";
 export const siteEmail = "savartourlover@gmail.com";
+export const siteUrl = "https://savartourlover.com";
 
 export const heroStats: { value: string; label: string }[] = [];
 

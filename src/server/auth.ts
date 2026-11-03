@@ -262,23 +262,27 @@ export function getCustomerFromRequest(request: Request): CustomerJwtPayload | n
  * with no functional loss.
  */
 export function customerCookieOptions() {
+  const isProd = process.env.NODE_ENV === "production";
   return {
     path: "/",
     maxAge: CUSTOMER_TOKEN_EXPIRY_SECONDS,
     sameSite: "lax" as const,
-    secure: process.env.NODE_ENV === "production",
+    secure: isProd,
     httpOnly: true,
+    ...(isProd ? { domain: ".savartourlover.com" } : {}),
   };
 }
 
 /** Attributes to clear the customer session cookie (used on logout). */
 export function clearedCustomerCookieOptions() {
+  const isProd = process.env.NODE_ENV === "production";
   return {
     path: "/",
     maxAge: 0,
     sameSite: "lax" as const,
-    secure: process.env.NODE_ENV === "production",
+    secure: isProd,
     httpOnly: true,
+    ...(isProd ? { domain: ".savartourlover.com" } : {}),
   };
 }
 

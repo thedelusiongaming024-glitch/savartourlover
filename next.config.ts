@@ -27,6 +27,8 @@ const nextConfig: NextConfig = {
       ...(supabaseHost
         ? [{ protocol: "https" as const, hostname: supabaseHost }]
         : []),
+      { protocol: "https", hostname: "savartourlover.com" },
+      { protocol: "https", hostname: "www.savartourlover.com" },
       { protocol: "https", hostname: "*.supabase.co" },
       { protocol: "https", hostname: "images.unsplash.com" },
       { protocol: "https", hostname: "lh3.googleusercontent.com" },
