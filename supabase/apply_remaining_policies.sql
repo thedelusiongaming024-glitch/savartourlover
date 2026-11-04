@@ -1,0 +1,4 @@
+-- DEPRECATED — DO NOT RUN.
+-- This script DISABLED row level security on payments, clearance_tickets, contact_inquiries,
+-- customer_activities, offers, etc. and ran GRANT ALL to anon/authenticated.
+-- Use supabase/secure_rls_policies.sql instead.

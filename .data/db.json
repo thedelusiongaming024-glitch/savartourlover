@@ -1,0 +1,2444 @@
+{
+  "destinations": [],
+  "tours": [
+    {
+      "id": "tour-1793823195065",
+      "title": "Finland",
+      "slug": "finland",
+      "destination_id": null,
+      "destination_slug": "bangladesh",
+      "destination_name": "Bangladesh",
+      "category": "group_tour",
+      "short_description": "",
+      "full_description": "",
+      "hero_image": null,
+      "duration_days": 3,
+      "duration_nights": 2,
+      "base_price": "2500",
+      "discount_type": "none",
+      "discount_value": "0",
+      "final_price": "2500",
+      "allow_partial_payment": true,
+      "advance_payment_percent": "2",
+      "advance_amount": "50",
+      "inclusions": [
+        "AC Bus",
+        "Cottage stay",
+        "3 meals daily",
+        "Guide fee"
+      ],
+      "exclusions": [
+        "Personal expenses",
+        "Tips"
+      ],
+      "accommodation_notes": "Standard hotel / resort",
+      "transportation_notes": "AC Bus / Private Jeep",
+      "meals_notes": "Breakfast included",
+      "places_to_visit": [],
+      "meeting_point": "Dhaka Sayedabad / Fakirapool",
+      "pickup_points": [],
+      "departure_schedule": "Every Thursday night",
+      "total_seats": 40,
+      "itinerary": [],
+      "departures": [
+        {
+          "id": "dep-2026-11-12-1793823190555",
+          "departure_date": "2026-11-12",
+          "total_seats": 40,
+          "seats_remaining": 40,
+          "booked_seats": [],
+          "is_active": true
+        }
+      ],
+      "faqs": [],
+      "gallery": [],
+      "is_featured": true,
+      "status": "published"
+    }
+  ],
+  "tourCategories": [
+    {
+      "id": "cat-group-tour",
+      "icon": "👥",
+      "name": "Group Tour",
+      "slug": "group_tour",
+      "badge": "Most Popular",
+      "is_active": true,
+      "description": "Shared budget-friendly group tours with confirmed weekly departures",
+      "display_order": 1
+    },
+    {
+      "id": "cat-corporate-tour",
+      "icon": "🏢",
+      "name": "Corporate Tour",
+      "slug": "corporate_tour",
+      "badge": "Business",
+      "is_active": true,
+      "description": "Executive team retreats, annual picnics, and tailored conferences",
+      "display_order": 2
+    },
+    {
+      "id": "cat-custom-tour",
+      "icon": "✨",
+      "name": "Customized Tour",
+      "slug": "customized_tour",
+      "badge": "Flexible",
+      "is_active": true,
+      "description": "Private custom-tailored itineraries designed around your preferences",
+      "display_order": 3
+    },
+    {
+      "id": "cat-family-tour",
+      "icon": "👨‍👩‍👧‍👦",
+      "name": "Family Tour",
+      "slug": "family_tour",
+      "badge": "Family Friendly",
+      "is_active": true,
+      "description": "Comfortable, relaxed journeys suitable for children and elders",
+      "display_order": 6
+    },
+    {
+      "id": "cat-day-trip",
+      "icon": "☀️",
+      "name": "Day Trip",
+      "slug": "day_trip",
+      "badge": "1 Day",
+      "is_active": true,
+      "description": "Single-day sightseeing and activities without overnight stay",
+      "display_order": 7
+    }
+  ],
+  "offers": [],
+  "testimonials": [],
+  "blogPosts": [],
+  "homepageBlocks": [
+    {
+      "id": "block_001",
+      "block_type": "hero",
+      "display_order": 1,
+      "content": {
+        "cta_link": "/tours",
+        "cta_text": "Explore Tours",
+        "headline": "Discover Bangladesh, Beautifully",
+        "subheadline": "Curated domestic tours with verified guides and secure booking"
+      },
+      "updated_at": "2026-09-28T07:43:01.533741+00:00"
+    },
+    {
+      "id": "block-hero-1",
+      "block_type": "hero",
+      "display_order": 1,
+      "content": {
+        "eyebrow": "🌍 Discover Bangladesh",
+        "headline": "Savar Tour Lover",
+        "highlight": "--",
+        "hero_slides": [
+          {
+            "alt_text": "Sundarbans Mangrove Forest",
+            "image_url": "https://placehold.co/1920x1080/sea"
+          },
+          {
+            "alt_text": "Chittagong Hill Tracts",
+            "image_url": "https://placehold.co/1920x1080/mountain"
+          }
+        ],
+        "subheadline": "From the Sundarbans to Saint Martin's Island — explore with expert guides.",
+        "hero_video_url": "",
+        "hero_media_type": "video",
+        "primary_cta_href": "/tours",
+        "primary_cta_label": "Explore Tours",
+        "secondary_cta_href": "/about",
+        "secondary_cta_label": "Learn More"
+      },
+      "updated_at": "2026-11-04T20:14:56.407+00:00"
+    },
+    {
+      "id": "block_002",
+      "block_type": "featured_destinations",
+      "display_order": 2,
+      "content": {
+        "heading": "Popular Destinations",
+        "destination_slugs": [
+          "sajek-valley",
+          "coxs-bazar",
+          "sundarbans"
+        ]
+      },
+      "updated_at": "2026-09-28T07:43:01.533741+00:00"
+    },
+    {
+      "id": "block-dest-grid-2",
+      "block_type": "destination_grid",
+      "display_order": 2,
+      "content": {
+        "hidden": false
+      },
+      "updated_at": "2026-09-25T06:19:02.352+00:00"
+    },
+    {
+      "id": "block_003",
+      "block_type": "testimonials",
+      "display_order": 3,
+      "content": {
+        "heading": "What Our Travelers Say"
+      },
+      "updated_at": "2026-09-28T07:43:01.533741+00:00"
+    },
+    {
+      "id": "block-tours-3",
+      "block_type": "featured_tours",
+      "display_order": 3,
+      "content": {
+        "hidden": false
+      },
+      "updated_at": "2026-09-25T06:19:02.352+00:00"
+    },
+    {
+      "id": "block_004",
+      "block_type": "offers_strip",
+      "display_order": 4,
+      "content": {
+        "heading": "Limited-Time Offers"
+      },
+      "updated_at": "2026-09-28T07:43:01.533741+00:00"
+    },
+    {
+      "id": "block-testimonials-4",
+      "block_type": "testimonials",
+      "display_order": 4,
+      "content": {
+        "hidden": false
+      },
+      "updated_at": "2026-09-25T06:19:02.352+00:00"
+    },
+    {
+      "id": "block-home-page",
+      "block_type": "home_page",
+      "display_order": 5,
+      "content": {
+        "cta_title": "Plan your next journey across Bangladesh",
+        "cta_hidden": false,
+        "cta_eyebrow": "Savar Tour Lover",
+        "hero_slides": [
+          {
+            "alt_text": "Sundarbans Mangrove Forest",
+            "image_url": "https://placehold.co/1920x1080/sea"
+          },
+          {
+            "alt_text": "Chittagong Hill Tracts",
+            "image_url": "https://placehold.co/1920x1080/mountain"
+          }
+        ],
+        "tours_title": "Popular tour packages",
+        "hero_eyebrow": "🌍 Discover Bangladesh",
+        "offers_title": "A little reason to book today",
+        "tours_hidden": false,
+        "why_us_items": [
+          {
+            "icon": "users",
+            "title": "Trusted local hosts",
+            "description": "Every tour is led by a verified Bangladeshi host who knows their district like family — not a scripted guide."
+          },
+          {
+            "icon": "receipt",
+            "title": "Transparent pricing",
+            "description": "The price you see is the price you pay. No hidden fees, no last-minute 'fuel surcharges', no surprises."
+          },
+          {
+            "icon": "receipt",
+            "title": "Flexible payment",
+            "description": "Book with a 40% advance and clear the balance on tour day — online or directly with your host, with confirmation to both sides."
+          },
+          {
+            "icon": "ticket",
+            "title": "Zero-friction booking",
+            "description": "From browsing to e-ticket in minutes. Your voucher, digital ticket, and reminders arrive automatically on WhatsApp and email."
+          },
+          {
+            "icon": "support",
+            "title": "Real 24/7 support",
+            "description": "A human answers on WhatsApp throughout your trip — not a chatbot that loops you in circles."
+          },
+          {
+            "icon": "shield",
+            "title": "Money, fully accounted",
+            "description": "Every payment is tracked end-to-end and confirmed to you and our team, so there's never a dispute about what was paid."
+          }
+        ],
+        "why_us_title": "Travel with people who call Bangladesh home",
+        "hero_headline": "Savar Tour Lover",
+        "journal_title": "Stories from the road",
+        "offers_hidden": true,
+        "reviews_title": "Loved by travelers across Bangladesh",
+        "tours_eyebrow": "Tour Packages",
+        "why_us_hidden": false,
+        "hero_highlight": "--",
+        "hero_video_url": "",
+        "journal_hidden": false,
+        "offers_eyebrow": "Special Offers",
+        "reviews_hidden": false,
+        "services_items": [
+          {
+            "icon": "users",
+            "title": "Group Tours",
+            "description": "Curated group departures to every corner of Bangladesh, led by a local host and priced all-inclusive."
+          },
+          {
+            "icon": "route",
+            "title": "Private & Custom Trips",
+            "description": "Your dates, your pace, your budget. We design a private itinerary around exactly what you want to do."
+          },
+          {
+            "icon": "heart",
+            "title": "Honeymoon Packages",
+            "description": "Ocean-view suites, candlelit dinners, and private moments — built for two, from arrival flowers to departure."
+          },
+          {
+            "icon": "home",
+            "title": "Family Holidays",
+            "description": "Kids-first pacing, safe transport, and hosts who handle the logistics so parents actually relax."
+          },
+          {
+            "icon": "briefcase",
+            "title": "Corporate Retreats",
+            "description": "Team trips to the hills or the coast with planning, logistics, and bonding activities handled end to end."
+          },
+          {
+            "icon": "mountain",
+            "title": "Adventure & Trekking",
+            "description": "Hill-tract treks, forest cruises, and off-the-map experiences with certified local guides and permits arranged."
+          }
+        ],
+        "services_title": "Every kind of trip, handled",
+        "tours_cta_href": "/tours",
+        "why_us_eyebrow": "Why Savar Tour Lover",
+        "cta_description": "Tell us where you want to go and when — we'll design a tour around you. Book with a small advance and settle the rest on tour day.",
+        "hero_media_type": "video",
+        "journal_eyebrow": "Travel Journal",
+        "reviews_eyebrow": "Customer Reviews",
+        "services_hidden": false,
+        "tours_cta_label": "Browse all tours",
+        "cta_primary_href": "/contact",
+        "hero_subheadline": "From the Sundarbans to Saint Martin's Island — explore with expert guides.",
+        "journal_cta_href": "/journal",
+        "services_eyebrow": "Services",
+        "cta_primary_label": "Plan My Trip",
+        "journal_cta_label": "All stories",
+        "stats_tours_count": "150+",
+        "tours_description": "Small groups, local hosts, and everything included. Filter by place, duration, or price to find your trip in seconds.",
+        "cta_secondary_href": "/tours",
+        "destinations_title": "Popular destinations across Bangladesh",
+        "offers_description": "Seasonal savings and group perks — applied automatically at checkout with the right code.",
+        "why_us_description": "We're not a booking platform that outsources your trip to strangers. We're local hosts who plan, accompany, and settle every detail — including your final payment, confirmed on both sides.",
+        "cta_secondary_label": "Browse Tours",
+        "destinations_hidden": false,
+        "journal_description": "Field guides, food trails, and honest travel writing from our hosts and guests.",
+        "reviews_description": "Real words from guests who booked, travelled, and settled their balances — all in one seamless flow.",
+        "destinations_eyebrow": "Destinations",
+        "services_description": "Group or private, family or honeymoon, weekend or expedition — if it's in Bangladesh, we'll host it.",
+        "destinations_cta_href": "/destinations",
+        "hero_primary_cta_href": "/tours",
+        "stats_happy_travelers": "5000+",
+        "destinations_cta_label": "All destinations",
+        "featured_section_title": "Featured Destinations",
+        "hero_primary_cta_label": "Explore Tours",
+        "stats_years_experience": "10+",
+        "hero_secondary_cta_href": "/about",
+        "destinations_description": "Beaches, hill tracts, mangrove forests, and tea country — pick a place, we'll handle the rest.",
+        "hero_secondary_cta_label": "Learn More",
+        "stats_destinations_count": "30+",
+        "featured_section_subtitle": "Handpicked by our travel experts"
+      },
+      "updated_at": "2026-11-04T20:14:54.139+00:00"
+    },
+    {
+      "id": "block-about-page",
+      "block_type": "about_page",
+      "display_order": 6,
+      "content": {
+        "team": [
+          {
+            "bio": "Runs the host network and on-ground logistics across all twelve destinations.",
+            "name": "Shimul hasan prince",
+            "role": "Founder & Head of Operations",
+            "scene": "sundarbans",
+            "image_url": "https://scontent.fdac174-1.fna.fbcdn.net/v/t39.99422-6/784251858_1076656198343857_641835457383240422_n.png?stp=dst-jpg_tt6&cstp=mx2045x2048&ctp=s2045x2048&_nc_cat=104&_nc_map=urlgen_bucketless&ccb=1-7&_nc_sid=a5f93a&_nc_eui2=AeFqorxNmftBWCKVqifuLwu6kkyYWr_kn4ySTJhav-SfjCZElEU3oGX8u3I7Vr8VbCHwuK-Ifi_DgzF6OwtP4knu&_nc_ohc=4wmyEtI36BwQ7kNvwEioHEP&_nc_oc=Adok8xVfqQ1Q370ObXxEJ8rWquPykLEYLo9vOtK9Pb6DPe3jZUZVa-WpBdpjXacFCe8&_nc_zt=14&_nc_ht=scontent.fdac174-1.fna&_nc_gid=VRa6-lHOvHmPXTCCGLF3hw&_nc_ss=7b2a8&oh=00_AQOHcpEgOwf14fOz9-EldtMEPWb4_gWfORaQYERx2H8HiQ&oe=6ACAC42A"
+          },
+          {
+            "bio": "Built the secure payment and booking system so every advance and balance is tracked without ambiguity.",
+            "name": "Mehedi Hasan",
+            "role": "Head of Finance",
+            "scene": "coxsbazar",
+            "image_url": "https://scontent.fdac5-2.fna.fbcdn.net/v/t39.30808-6/722132527_4635837609986278_8193219719005108875_n.jpg?stp=dst-jpg_tt6&cstp=mx2048x2048&ctp=s2048x2048&_nc_cat=103&_nc_map=urlgen_bucketless&ccb=1-7&_nc_sid=6ee11a&_nc_eui2=AeGwehPUddia7wT1qZPgf0-3zRzX494Aac7NHNfj3gBpzldelQNOr0khADWv8bPbUqusWzhoJoMNwDtFAEZEqQze&_nc_ohc=JvuzYA0uWuMQ7kNvwGy8uW7&_nc_oc=Adpj8tFfDtjhhEH-dUAPbor7a16wgTpIOCSUtGGQl5PtWvLOQi0m401jgiaI32KG8rg&_nc_zt=23&_nc_ht=scontent.fdac5-2.fna&_nc_gid=cidvygH0xvOpljur-qcbOw&_nc_ss=7b2a8&oh=00_AQOhkc-WrJS514as7usVMrGgeoRlj-wMN6_TU3P-TUMyZw&oe=6ACAABE9"
+          },
+          {
+            "bio": "Experienced storyteller and expedition leader.",
+            "name": "Muktadir Zaki",
+            "role": "Marketing Admin",
+            "scene": "sajek",
+            "image_url": "https://scontent.fdac5-2.fna.fbcdn.net/v/t39.30808-6/672229526_944143844876564_4535943021646671853_n.jpg?stp=cp6_dst-jpg_tt6&cstp=mx1536x2048&ctp=s1536x2048&_nc_cat=101&_nc_map=urlgen_bucketless&ccb=1-7&_nc_sid=833d8c&_nc_eui2=AeELd-gVk8RcSXR-KY02_ScfRId_k5WCKoNEh3-TlYIqgz2wb9ep0SYvEeKB8hqqQSRDCtMVEUO45FVnhX6CHO7O&_nc_ohc=RXEWOkdq6joQ7kNvwH4iKmQ&_nc_oc=AdqCE3iivbRkYkO45V-XVBG9Y5OcWMPS7YXLqpfgpeNGfFhnaJ5grxj94jtlKBWr6rw&_nc_zt=23&_nc_ht=scontent.fdac5-2.fna&_nc_gid=Om_4YwzP9bB04ILVE9JGIw&_nc_ss=7b2a8&oh=00_AQOxpW2gQUxMJVgibePq66PfoFBF85Z7hRSmJCNcRwkxPw&oe=6ACAAA79"
+          },
+          {
+            "bio": "Experienced storyteller and expedition leader.",
+            "name": "Manjiro Redwan",
+            "role": "Co-Admin",
+            "scene": "sajek",
+            "image_url": "https://scontent.fdac5-2.fna.fbcdn.net/v/t39.99422-6/833574322_1117871931104429_1414018234699101895_n.png?stp=dst-jpg_tt6&cstp=mx1536x2048&ctp=s1536x2048&_nc_cat=111&_nc_map=urlgen_bucketless&ccb=1-7&_nc_sid=833d8c&_nc_eui2=AeEI1FARxRridHqEI4RloIkdD5LR-VH_FbQPktH5Uf8VtCp7O_LAFoFJjByiB6QuDC_k7PtYsOGYTb1I1980VpJX&_nc_ohc=NnvmuPDbVloQ7kNvwEy6MSn&_nc_oc=AdpLvc7UVyiT27R7yGrA2naqbvdx3HcxfiNerOwg1bRQBLqlJ86TtkUh-aMoRti0sMA&_nc_zt=14&_nc_ht=scontent.fdac5-2.fna&_nc_gid=E9D1o218ZTudJwbz36rVqQ&_nc_ss=7b2a8&oh=00_AQM9-yJiZbn8h0WXNt7V0K6PdkmgqcdNabCe3oqJmejokg&oe=6ACA996F"
+          },
+          {
+            "bio": "Experienced storyteller and expedition leader.",
+            "name": "Joy Ronjon Das",
+            "role": "Co-Admin",
+            "scene": "sajek",
+            "image_url": "https://scontent.fdac5-2.fna.fbcdn.net/v/t39.30808-6/716251017_1664704968065466_791430614303217112_n.jpg?stp=dst-jpg_tt6&cstp=mx1536x2048&ctp=s1536x2048&_nc_cat=109&_nc_map=urlgen_bucketless&ccb=1-7&_nc_sid=a5f93a&_nc_eui2=AeFuqvAmiQryW4uyibwDO8ge4ycDoqMrC2_jJwOioysLb47BBoPL4zhN0P2aIb9xLM_VHamt_VV3_r2veVvzNorT&_nc_ohc=Dmt4LXfG7_sQ7kNvwGqQkNi&_nc_oc=Adpcpf4l0qgYkZ9k4-2YWw9qsyJu3GvrOSr-3XsJ-nxbet-kFBYS15bu-DRFfSx7oFE&_nc_zt=23&_nc_ht=scontent.fdac5-2.fna&_nc_gid=5elR6vp_5bYDdfixBeYc2A&_nc_ss=7b2a8&oh=00_AQN6e2PJTAhwmV9NY0cGRPlwNnCPyvoG2CXK6XouNRHCFA&oe=6ACACA5F"
+          },
+          {
+            "bio": "Experienced storyteller and expedition leader.",
+            "name": "Ayan Malik",
+            "role": "Co-Admin",
+            "scene": "sajek",
+            "image_url": "https://scontent.fdac5-1.fna.fbcdn.net/v/t39.30808-6/701612721_973089935317300_802129298793121982_n.jpg?stp=dst-jpg_tt6&cstp=mx828x828&ctp=s828x828&_nc_cat=105&_nc_map=urlgen_bucketless&ccb=1-7&_nc_sid=a5f93a&_nc_eui2=AeHaGIcxi8jAgtGudgakQr_OzuzIqVPBDuvO7MipU8EO664x5OCEJtDRXxLd5gqLQuF2POzeurI8DPONqjR-pVAV&_nc_ohc=ZI-1hVk-AgIQ7kNvwElQh5Z&_nc_oc=AdqalgjNd3U8X6MYg-wNKzCyysAgigJfLPfFLoUxWWGNgld4Us43FXDUuBGL6jT2DhI&_nc_zt=23&_nc_ht=scontent.fdac5-1.fna&_nc_gid=fsH6JUuQjgspBdzX4zv8BQ&_nc_ss=7b2a8&oh=00_AQNALJuzOCXiDq5nuv63Ih1oUzQTY7ElyoHdB1_K4iq-fQ&oe=6ACAB3B5"
+          },
+          {
+            "bio": "Experienced storyteller and expedition leader.",
+            "name": "Abu Rayhan",
+            "role": "Moderator",
+            "scene": "sajek",
+            "image_url": "https://scontent.fdac5-2.fna.fbcdn.net/v/t39.30808-6/745045917_122109460317374807_6488918856155766316_n.jpg?stp=dst-jpg_tt6&cstp=mx1536x2048&ctp=s1536x2048&_nc_cat=102&_nc_map=urlgen_bucketless&ccb=1-7&_nc_sid=833d8c&_nc_eui2=AeFObEEHuO6J5Ssw0arXrPtUoRFBFAzNDymhEUEUDM0PKRvdJORZYt8jD4Ky4JezjvnyYoGTijCNrrQp5Qnvc_U1&_nc_ohc=ZjFDj4_lM9QQ7kNvwEGrJ3G&_nc_oc=AdpSRf3DbXigW0seqByhO8abbOyYTaHLbDYGyXQ3dkxUGTRRlmRdqTn05dlEmW-fVec&_nc_zt=23&_nc_ht=scontent.fdac5-2.fna&_nc_gid=5I54Yf6Rvp6NZ9ubvNDNew&_nc_ss=7b2a8&oh=00_AQMoOOM4wy5GRydWfxAZoI_v1BNhZbhCbd8KyOlQN-igpA&oe=6ACAB87D"
+          },
+          {
+            "bio": "Experienced storyteller and expedition leader.",
+            "name": "Robiul Hasan Emon",
+            "role": "Moderator",
+            "scene": "sajek",
+            "image_url": "https://scontent.fdac5-2.fna.fbcdn.net/v/t39.99422-6/839441228_1045421115164644_5149183040221531197_n.png?stp=dst-jpg_tt6&cstp=mx1536x2048&ctp=s1536x2048&_nc_cat=111&_nc_map=urlgen_bucketless&ccb=1-7&_nc_sid=833d8c&_nc_eui2=AeHMM876brCFACRMdlcIVO9S_CTx1ZCfniT8JPHVkJ-eJAvGNgigMMRU1yD36daWbZZM_uOZfT7Z8lgJNO5t8FZC&_nc_ohc=PjKTuVcLJKsQ7kNvwHQO_I6&_nc_oc=AdrqtxzHinUGnrF6I1Rbo8pvCxGJcgX4-3mLg_xTgQUhOeZ6JR5EiYYFUxMOzhioyiE&_nc_zt=14&_nc_ht=scontent.fdac5-2.fna&_nc_gid=oEqRtp0pyaiLp7tV8v_42Q&_nc_ss=7b2a8&oh=00_AQOue-sELldcXd7SEYlaBhjSwEwxY_0oFPBkq6S63Ake6Q&oe=6ACAABFE"
+          },
+          {
+            "bio": "Experienced storyteller and expedition leader.",
+            "name": "Israfil Hossain",
+            "role": "Moderator",
+            "scene": "sajek",
+            "image_url": "https://scontent.fdac5-1.fna.fbcdn.net/v/t39.99422-6/838612088_947050935134409_3838425962148914919_n.png?stp=dst-jpg_tt6&cstp=mx1536x2048&ctp=s1536x2048&_nc_cat=109&_nc_map=urlgen_bucketless&ccb=1-7&_nc_sid=833d8c&_nc_eui2=AeF1Kp6bM_XrAb0rf32fAM_lULFC1WRiBctQsULVZGIFy3ihF0JFOKL2O91ldgDK3PpyPIZy0rBGqbuJwMfp5LMM&_nc_ohc=WjTfm3gCNwoQ7kNvwGZXw0U&_nc_oc=Adp-hMnNw4YifvrIPlf5Db_-PRJH0pFXkubH2IQgchIs3yVEGnbONqgvcQJ_9e0ED14&_nc_zt=14&_nc_ht=scontent.fdac5-1.fna&_nc_gid=gcgvmeSPa9KOUXB9Cmbmsg&_nc_ss=7b2a8&oh=00_AQOVErmN0APFoHPRj59nuVmbzGL9whl00xwQT7d2dp-UEA&oe=6ACAA682"
+          },
+          {
+            "bio": "Experienced storyteller and expedition leader.",
+            "name": "Tasbir Hossain",
+            "role": "Moderator",
+            "scene": "sajek",
+            "image_url": "https://scontent.fdac5-2.fna.fbcdn.net/v/t39.30808-6/675418313_989619400316537_2292867335395767940_n.jpg?stp=dst-jpg_tt6&cstp=mx1477x1470&ctp=s1477x1470&_nc_cat=107&_nc_map=urlgen_bucketless&ccb=1-7&_nc_sid=a5f93a&_nc_eui2=AeEtUgKExGMoxCw2SI0mGDjDQnpnGzvHJARCemcbO8ckBBo2kHR6Jyhy3U-A5ipjvovb4tRoIlwpQ55LegkNok_E&_nc_ohc=oWAaInJ9c7kQ7kNvwEU0xig&_nc_oc=AdrsWgXb5auav5M8-yveRALiKDASk1CHq7VDtCZ8FzpGKTaL1BKXanKN2oh8-xT42o4&_nc_zt=23&_nc_ht=scontent.fdac5-2.fna&_nc_gid=OMXSpHv6AWp1NmuKAvzFVw&_nc_ss=7b2a8&oh=00_AQPtz9tlhG263n80xWXOhCMUnNHAlgF4HZi8LyIrgqmhBw&oe=6ACAA32A"
+          }
+        ],
+        "values": [
+          {
+            "icon": "compass",
+            "title": "Authenticity",
+            "description": "We showcase real Bangladesh."
+          },
+          {
+            "icon": "heart",
+            "title": "Safety",
+            "description": "Your safety is our priority."
+          },
+          {
+            "icon": "users",
+            "title": "Sustainability",
+            "description": "We protect what we explore."
+          }
+        ],
+        "cta_href": "/contact",
+        "cta_label": "Plan My Trip",
+        "cta_title": "Ready to Explore?",
+        "hero_title": "About Savar Tour Lover",
+        "story_body": "Founded in 2014 with a passion for exploring Bangladesh's hidden gems, we have grown to serve over 5,000 satisfied travelers from around the world.",
+        "team_title": "A few of the people who'll host you",
+        "story_badge": "Our Story",
+        "story_title": "Our Story",
+        "vision_body": "To be the most trusted travel company in South Asia.",
+        "cta_subtitle": "Let's plan your perfect Bangladesh adventure.",
+        "hero_eyebrow": "About Savar Tour Lover",
+        "mission_body": "To provide authentic, sustainable, and unforgettable travel experiences across Bangladesh.",
+        "mission_text": "To make domestic travel across Bangladesh seamless, transparent, and genuinely memorable — while ensuring tourism directly benefits the local communities and guides who make these places special.",
+        "team_eyebrow": "The team",
+        "team_members": [
+          {
+            "bio": "10+ years of travel expertise.",
+            "name": "Arko Rahman",
+            "role": "CEO & Lead Guide",
+            "photo": "https://placehold.co/200x200/blue"
+          },
+          {
+            "bio": "Logistics and planning specialist.",
+            "name": "Nadia Islam",
+            "role": "Operations Manager",
+            "photo": "https://placehold.co/200x200/pink"
+          }
+        ],
+        "vision_title": "Our Vision",
+        "booking_title": "Zero-friction, start to finish",
+        "hero_subtitle": "Your Trusted Bangladesh Travel Partner Since 2014",
+        "mission_title": "Our Mission",
+        "payment_badge": "Payment & Confirmation",
+        "payment_title": "How your money is handled, end to end",
+        "booking_eyebrow": "How booking works",
+        "cta_button_href": "/contact",
+        "cta_description": "Tell us where you want to go — we'll take it from there, right through to your final confirmed payment.",
+        "cta_button_label": "Plan My Trip",
+        "payment_cta_href": "/contact",
+        "story_paragraphs": [
+          "Most domestic travel in Bangladesh was broken in two ways: either you were on your own navigating erratic transport, unverified hotels, and hidden costs — or you were packed into a thirty-person bus tour with fixed buffets and thirty-minute photo stops.",
+          "We wanted something different: trips designed the way an experienced friend would show you their hometown. Small groups, handpicked local hosts, honest pricing, and genuine hospitality.",
+          "Today, Atithi runs curated journeys to twelve destinations across Bangladesh — from the tea valleys of Sreemangal to the coral reefs of Saint Martin. Every trip is led by someone who actually lives there."
+        ],
+        "payment_cta_label": "Talk to us",
+        "team_section_title": "Meet Our Team",
+        "booking_description": "From your first search to your final confirmed payment, every step is designed to remove friction and ambiguity.",
+        "payment_description": "Pay in full or pay a small advance through bKash, Nagad, Rocket, or card at booking. If you paid partially, the remaining balance is settled on the day of the tour — either online or in cash directly with your host. The moment it clears, both you and our team get a WhatsApp and email confirmation, so there's a clean record of what was paid, when, on both sides.",
+        "hero_background_image": "https://placehold.co/1920x600/green",
+        "team_section_subtitle": "Passionate locals who know every corner of Bangladesh."
+      },
+      "updated_at": "2026-11-01T08:21:13.244+00:00"
+    },
+    {
+      "id": "block-journal-page",
+      "block_type": "journal_page",
+      "display_order": 8,
+      "content": {
+        "hero_title": "Travel Journal",
+        "recent_label": "Latest Articles",
+        "hero_subtitle": "Stories, Tips & Inspiration from the Road",
+        "featured_label": "Editor's Pick",
+        "categories_label": "Browse by Category",
+        "cta_newsletter_title": "Stay Inspired",
+        "hero_background_image": "https://placehold.co/1920x600/jungle",
+        "cta_newsletter_subtitle": "Subscribe for weekly travel stories and exclusive deals.",
+        "cta_newsletter_placeholder": "Your email address",
+        "cta_newsletter_button_label": "Subscribe"
+      },
+      "updated_at": "2026-09-28T03:53:41.03+00:00"
+    },
+    {
+      "id": "block-tour-categories",
+      "block_type": "service_list",
+      "display_order": 99,
+      "content": {
+        "categories": [
+          {
+            "id": "cat-group-tour",
+            "icon": "👥",
+            "name": "Group Tour",
+            "slug": "group_tour",
+            "badge": "Most Popular",
+            "is_active": true,
+            "description": "Shared budget-friendly group tours with confirmed weekly departures",
+            "display_order": 1
+          },
+          {
+            "id": "cat-corporate-tour",
+            "icon": "🏢",
+            "name": "Corporate Tour",
+            "slug": "corporate_tour",
+            "badge": "Business",
+            "is_active": true,
+            "description": "Executive team retreats, annual picnics, and tailored conferences",
+            "display_order": 2
+          },
+          {
+            "id": "cat-custom-tour",
+            "icon": "✨",
+            "name": "Customized Tour",
+            "slug": "customized_tour",
+            "badge": "Flexible",
+            "is_active": true,
+            "description": "Private custom-tailored itineraries designed around your preferences",
+            "display_order": 3
+          },
+          {
+            "id": "cat-family-tour",
+            "icon": "👨‍👩‍👧‍👦",
+            "name": "Family Tour",
+            "slug": "family_tour",
+            "badge": "Family Friendly",
+            "is_active": true,
+            "description": "Comfortable, relaxed journeys suitable for children and elders",
+            "display_order": 6
+          },
+          {
+            "id": "cat-day-trip",
+            "icon": "☀️",
+            "name": "Day Trip",
+            "slug": "day_trip",
+            "badge": "1 Day",
+            "is_active": true,
+            "description": "Single-day sightseeing and activities without overnight stay",
+            "display_order": 7
+          }
+        ],
+        "updated_at": "2026-11-04T17:51:40.121Z"
+      },
+      "updated_at": "2026-11-01T04:00:04.461+00:00"
+    },
+    {
+      "id": "block-seo-settings",
+      "block_type": "seo_settings",
+      "display_order": 100,
+      "content": {
+        "pages": {
+          "home": {
+            "title": "Savar Tour Lover — আপনার স্বপ্ন উড়তে দিন | Top Bangladesh Tour Packages",
+            "keywords": [
+              "Savar Tour Lover",
+              "সাভার ট্যুর লাভার",
+              "Bangladesh tour package",
+              "সাজেক ট্যুর",
+              "কক্সবাজার ট্যুর"
+            ],
+            "description": "Book authentic domestic tour packages in Bangladesh with verified local hosts. Sajek Valley, Cox's Bazar, Saint Martin, Sylhet, Sundarbans & more."
+          },
+          "about": {
+            "title": "About Savar Tour Lover | Trusted Local Travel Agency in Bangladesh",
+            "keywords": [
+              "about Savar Tour Lover",
+              "আমাদের সম্পর্কে",
+              "best travel agency savar"
+            ],
+            "description": "Learn about Savar Tour Lover's story, verified local hosts, radical transparency in pricing, and commitment to domestic tourism in Bangladesh."
+          },
+          "tours": {
+            "title": "All Tour Packages in Bangladesh | Savar Tour Lover",
+            "keywords": [
+              "Bangladesh tour packages",
+              "ট্যুর প্যাকেজ",
+              "sajek tour",
+              "coxs bazar package",
+              "saint martin package"
+            ],
+            "description": "Browse all curated domestic tour packages across Bangladesh. Fixed departures, small groups, transparent pricing with only 40% advance."
+          },
+          "contact": {
+            "title": "Contact & Booking Support | Savar Tour Lover",
+            "keywords": [
+              "contact Savar Tour Lover",
+              "সাভার ট্যুর লাভার যোগাযোগ",
+              "travel agency phone number"
+            ],
+            "description": "Reach Savar Tour Lover 24/7 on WhatsApp or call our hotline. Office at Savar Pollibidut, Dhaka."
+          },
+          "journal": {
+            "title": "Travel Journal & Bangladesh Travel Guides | Savar Tour Lover",
+            "keywords": [
+              "Bangladesh travel guide",
+              "ভ্রমণ গাইড",
+              "travel blog bangladesh"
+            ],
+            "description": "Honest travel stories, itinerary guides, packing lists, and local food tips from experienced Bangladeshi hosts."
+          },
+          "destinations": {
+            "title": "Popular Travel Destinations in Bangladesh | Savar Tour Lover",
+            "keywords": [
+              "Bangladesh tourist destinations",
+              "বাংলাদেশের দর্শনীয় স্থান",
+              "Sajek",
+              "Coxs Bazar",
+              "Saint Martin",
+              "Sylhet"
+            ],
+            "description": "Explore top tourist destinations across Bangladesh — hill tracts, sea beaches, mangrove forests, tea estates, and historical landmarks."
+          }
+        },
+        "keywords": [
+          "Savar Tour Lover",
+          "সাভার ট্যুর লাভার",
+          "Bangladesh tour package",
+          "বাংলাদেশ ট্যুর প্যাকেজ",
+          "Sajek tour package",
+          "সাজেক ট্যুর প্যাকেজ",
+          "Cox's Bazar tour package",
+          "কক্সবাজার ভ্রমণ প্যাকেজ",
+          "Saint Martin tour package",
+          "সেন্টমার্টিন জাহাজ টিকিট প্যাকেজ",
+          "Sylhet tour package",
+          "সিলেট ভ্রমণ প্যাকেজ",
+          "Sreemangal tea garden tour",
+          "শ্রীমঙ্গল চা বাগান ট্যুর",
+          "Sundarbans tour package",
+          "সুন্দরবন ভ্রমণ প্যাকেজ",
+          "Bandarban tour package",
+          "বান্দরবান ট্যুর প্যাকেজ",
+          "cheap tour package Bangladesh",
+          "কম খরচে ভ্রমণ বাংলাদেশ",
+          "domestic tours Bangladesh",
+          "সেরা ট্রাভেল এজেন্সি সাভার",
+          "best travel agency in Savar Dhaka",
+          "family tour package BD",
+          "corporate tour Bangladesh",
+          "Saint Martin ship ticket booking",
+          "আপনার স্বপ্ন উড়তে দিন"
+        ],
+        "site_name": "Savar Tour Lover BD",
+        "geo_region": "BD-13",
+        "site_title": "Savar Tour Lover — আপনার স্বপ্ন উড়তে দিন | Best Bangladesh Tour Packages",
+        "tiktok_url": "",
+        "price_range": "৳৳",
+        "youtube_url": "",
+        "facebook_url": "https://facebook.com/savartourlover",
+        "geo_latitude": "23.8583",
+        "robots_index": true,
+        "contact_email": "info@savartourlover.com",
+        "contact_phone": "+880 1620-592884",
+        "geo_longitude": "90.2667",
+        "geo_placename": "Savar, Dhaka, Bangladesh",
+        "instagram_url": "https://instagram.com/savartourlover",
+        "opening_hours": "Mo-Su 00:00-23:59",
+        "robots_follow": true,
+        "site_title_bn": "সাভার ট্যুর লাভার — আপনার স্বপ্ন উড়তে দিন | সেরা বাংলাদেশ ট্যুর প্যাকেজ",
+        "title_template": "%s | Savar Tour Lover — আপনার স্বপ্ন উড়তে দিন",
+        "twitter_handle": "@savartourlover",
+        "business_name_bn": "সাভার ট্যুর লাভার",
+        "business_name_en": "Savar Tour Lover",
+        "default_og_image": "/images/logo-badge.png",
+        "meta_description": "Savar Tour Lover (সাভার ট্যুর লাভার) offers premium, budget-friendly domestic tour packages across Bangladesh. Explore Sajek Valley, Cox's Bazar, Saint Martin, Sylhet, Sreemangal & Sundarbans with trusted local hosts. Book with a 40% advance.",
+        "contact_phone_alt": "+880 1700-000000",
+        "facebook_pixel_id": "",
+        "office_address_bn": "সাভার পল্লীবিদ্যুৎ, কবরস্থান রোড, সাভার, ঢাকা ১৩৪০",
+        "office_address_en": "Savar Pollibidut, Kobarsthan Road, Savar, Dhaka 1340, Bangladesh",
+        "baidu_verification": "",
+        "canonical_base_url": "https://savartourlover.com",
+        "google_analytics_id": "",
+        "meta_description_bn": "সাভার ট্যুর লাভার (Savar Tour Lover) — আপনার স্বপ্ন উড়তে দিন। সাজেক, কক্সবাজার, সেন্টমার্টিন, সিলেট, শ্রীমঙ্গল ও সুন্দরবন সহ বাংলাদেশের সেরা সব ভ্রমণ প্যাকেজ। বিশ্বস্ত হোস্ট, স্বচ্ছ মূল্য ও সহজ কিস্তি।",
+        "yandex_verification": "",
+        "bing_site_verification": "",
+        "google_site_verification": "JQwJSF2P50EVVHz3dkxb3Nnnr6ZnrGDmwkn8xU_cLHk"
+      },
+      "updated_at": "2026-11-03T22:25:29.953+00:00"
+    },
+    {
+      "id": "block-expenses-data",
+      "block_type": "custom",
+      "display_order": 991,
+      "content": {
+        "expenses": [],
+        "updated_at": "2026-11-04T17:22:15.520Z"
+      },
+      "updated_at": "2026-11-04T10:39:45.294781+00:00"
+    },
+    {
+      "id": "block-suppliers-data",
+      "block_type": "custom",
+      "display_order": 992,
+      "content": {
+        "suppliers": [],
+        "updated_at": "2026-11-04T17:22:15.607Z"
+      },
+      "updated_at": "2026-11-04T10:39:45.385053+00:00"
+    }
+  ],
+  "staffUsers": [
+    {
+      "id": "usr-admin-1",
+      "username": "admin",
+      "password_hash": "210000$de114e3ded15edb546d1266d0d34918b44908858e011fd962a38f1a0b986af67a631bb2f6c4919d37eea531f6be7375af019da6253783e322b595c7a4d77caa2",
+      "salt": "8e4c1ce665ceb8419ff57a1aefb13252",
+      "role": "super_admin",
+      "phone_number": "+8801929582426",
+      "email": "savartourlover@gmail.com",
+      "first_name": "Savar",
+      "last_name": "Admin"
+    }
+  ],
+  "customers": [
+    {
+      "id": "cust-1791544962712-959",
+      "phone_number": "+8801613574834",
+      "full_name": "rasel",
+      "created_at": "2026-10-09T11:22:42.712+00:00",
+      "updated_at": "2026-10-09T11:22:42.712+00:00",
+      "last_login_at": "2026-10-09T11:22:42.712+00:00",
+      "activities": []
+    },
+    {
+      "id": "cust-1792478208255-188",
+      "phone_number": "+8801700000000",
+      "full_name": "Test Customer",
+      "created_at": "2026-10-20T06:36:48.255+00:00",
+      "updated_at": "2026-10-20T06:36:48.255+00:00",
+      "last_login_at": "2026-10-20T06:36:48.255+00:00",
+      "activities": []
+    },
+    {
+      "id": "cust-1792489578542-568",
+      "phone_number": "+8801620593007",
+      "full_name": "Shimul Hasan",
+      "email": "shimul@example.com",
+      "created_at": "2026-10-20T09:46:18.542+00:00",
+      "updated_at": "2026-10-20T09:46:18.542+00:00",
+      "last_login_at": "2026-10-20T09:46:18.542+00:00",
+      "activities": []
+    },
+    {
+      "id": "cust-1792819513158-717",
+      "phone_number": "+8801822504678",
+      "full_name": "Guggu",
+      "created_at": "2026-10-24T05:25:13.158+00:00",
+      "updated_at": "2026-10-24T05:25:13.158+00:00",
+      "last_login_at": "2026-10-24T05:25:13.158+00:00",
+      "activities": []
+    },
+    {
+      "id": "cust-1793116090815-378",
+      "phone_number": "+8801700112233",
+      "full_name": "Rafiqul Islam Simulation",
+      "email": "rafiqul.sim@example.com",
+      "created_at": "2026-10-27T15:48:10.815+00:00",
+      "updated_at": "2026-10-27T15:52:17.194+00:00",
+      "last_login_at": "2026-10-27T15:48:10.815+00:00",
+      "activities": []
+    },
+    {
+      "id": "cust-1793732299269-427",
+      "phone_number": "+8801410207480",
+      "full_name": "Savar tour travel",
+      "email": "savartourlover@gmail.com",
+      "created_at": "2026-11-03T18:58:19.269+00:00",
+      "updated_at": "2026-11-03T18:58:19.269+00:00",
+      "last_login_at": "2026-11-03T18:58:19.269+00:00",
+      "activities": []
+    },
+    {
+      "id": "cust-1793799069607-550",
+      "phone_number": "+8801811223344",
+      "full_name": "Rahim Ahmed Simulation",
+      "email": "rahim.sim@example.com",
+      "created_at": "2026-11-04T13:31:09.607+00:00",
+      "updated_at": "2026-11-04T13:59:47.824+00:00",
+      "last_login_at": "2026-11-04T13:59:45.868+00:00",
+      "activities": []
+    }
+  ],
+  "bookings": [],
+  "payments": [],
+  "clearanceTickets": [],
+  "alerts": [
+    {
+      "id": "alt-del-cancel-1793800993202-aad1",
+      "alert_type": "booking_cancelled",
+      "severity": "info",
+      "message": "Booking STL-2026-00006 cancelled and automatically deleted from database (Manually set to cancelled by admin). Seats released: B3.",
+      "is_acknowledged": false,
+      "created_at": "2026-11-04T14:03:13.202+00:00"
+    },
+    {
+      "id": "alt-del-cancel-1793800802064-8b8f",
+      "alert_type": "booking_cancelled",
+      "severity": "info",
+      "message": "Booking STL-2026-00007 cancelled and automatically deleted from database (Manually set to cancelled by admin). Seats released: A1, A2.",
+      "is_acknowledged": false,
+      "created_at": "2026-11-04T14:00:02.064+00:00"
+    },
+    {
+      "id": "alt-cash-apprv-1793800789508-4f63c9",
+      "alert_type": "cash_payment_approved",
+      "severity": "info",
+      "message": "Physical cash payment (ADVANCE) of ৳5,600 for booking STL-2026-00007 was approved by admin.",
+      "is_acknowledged": false,
+      "created_at": "2026-11-04T13:59:49.509+00:00"
+    },
+    {
+      "id": "alt-book-1793800787825",
+      "alert_type": "new_booking",
+      "severity": "info",
+      "message": "New booking STL-2026-00007 created for Simulation Cox's Bazar Eco Retreat (Updated) (2 traveler(s) · Seats: A1, A2 · Pick-up: Savar Bus Stand).",
+      "is_acknowledged": false,
+      "created_at": "2026-11-04T13:59:47.825+00:00"
+    },
+    {
+      "id": "alt-inq-1793800785036",
+      "alert_type": "new_inquiry",
+      "severity": "info",
+      "message": "Trip inquiry from Simulation Visitor for sajek-valley.",
+      "is_acknowledged": false,
+      "created_at": "2026-11-04T13:59:45.036+00:00"
+    },
+    {
+      "id": "alt-book-1793800695606",
+      "alert_type": "new_booking",
+      "severity": "info",
+      "message": "New booking STL-2026-00006 created for Booking Test Tour (1 traveler(s) · Seats: B3 · Pick-up: Dhaka Sayedabad / Fakirapool).",
+      "is_acknowledged": false,
+      "created_at": "2026-11-04T13:58:15.606+00:00"
+    },
+    {
+      "id": "alt-book-1793800319490",
+      "alert_type": "new_booking",
+      "severity": "info",
+      "message": "New booking STL-2026-00001 created for Booking Test Tour (1 traveler(s) · Seats: B1 · Pick-up: Dhaka Sayedabad / Fakirapool).",
+      "is_acknowledged": false,
+      "created_at": "2026-11-04T13:51:59.49+00:00"
+    },
+    {
+      "id": "alt-exp-del-1793800235420-266a",
+      "alert_type": "booking_cancelled",
+      "severity": "warning",
+      "message": "Incomplete booking STL-2026-00004 was auto-cancelled & deleted: advance was not paid within the 10-minute window. Seats released: A1, A2.",
+      "is_acknowledged": false,
+      "created_at": "2026-11-04T13:50:35.42+00:00"
+    },
+    {
+      "id": "alt-exp-del-1793800205149-d09c",
+      "alert_type": "booking_cancelled",
+      "severity": "warning",
+      "message": "Incomplete booking STL-2026-00003 was auto-cancelled & deleted: advance was not paid within the 10-minute window. Seats released: A1, A2.",
+      "is_acknowledged": false,
+      "created_at": "2026-11-04T13:50:05.149+00:00"
+    },
+    {
+      "id": "alt-exp-del-1793800054097-e499",
+      "alert_type": "booking_cancelled",
+      "severity": "warning",
+      "message": "Incomplete booking STL-2026-00002 was auto-cancelled & deleted: advance was not paid within the 10-minute window. Seats released: A1, A2.",
+      "is_acknowledged": false,
+      "created_at": "2026-11-04T13:47:34.097+00:00"
+    },
+    {
+      "id": "alt-del-cancel-1793799878179-57f1",
+      "alert_type": "booking_cancelled",
+      "severity": "info",
+      "message": "Booking book-1793799866377-7cfb845b815b57f1 cancelled and automatically deleted from database (Manually set to cancelled by admin). Seats released: None.",
+      "is_acknowledged": false,
+      "created_at": "2026-11-04T13:44:38.179+00:00"
+    },
+    {
+      "id": "alt-book-1793799866379",
+      "alert_type": "new_booking",
+      "severity": "info",
+      "message": "New booking STL-2026-00005 created for Simulation Cox's Bazar Eco Retreat (Updated) (2 traveler(s) · Seats: A1, A2 · Pick-up: Savar Bus Stand).",
+      "is_acknowledged": false,
+      "created_at": "2026-11-04T13:44:26.379+00:00"
+    },
+    {
+      "id": "alt-inq-1793799863975",
+      "alert_type": "new_inquiry",
+      "severity": "info",
+      "message": "Trip inquiry from Simulation Visitor for sajek-valley.",
+      "is_acknowledged": false,
+      "created_at": "2026-11-04T13:44:23.975+00:00"
+    },
+    {
+      "id": "alt-del-cancel-1793799863657-6308",
+      "alert_type": "booking_cancelled",
+      "severity": "warning",
+      "message": "Booking STL-2026-00001 was cancelled and automatically deleted from database. Seats released: A1, A2.",
+      "is_acknowledged": false,
+      "created_at": "2026-11-04T13:44:23.657+00:00"
+    },
+    {
+      "id": "alt-exp-del-1793799830695-6308",
+      "alert_type": "booking_cancelled",
+      "severity": "warning",
+      "message": "Incomplete booking STL-2026-00001 was auto-cancelled & deleted: advance was not paid within the 10-minute window. Seats released: A1, A2.",
+      "is_acknowledged": false,
+      "created_at": "2026-11-04T13:43:50.695+00:00"
+    },
+    {
+      "id": "alt-del-cancel-1793799772399-8893",
+      "alert_type": "booking_cancelled",
+      "severity": "info",
+      "message": "Booking book-1793799761655-cff0d3f7d0a88893 cancelled and automatically deleted from database (Manually set to cancelled by admin). Seats released: None.",
+      "is_acknowledged": false,
+      "created_at": "2026-11-04T13:42:52.399+00:00"
+    },
+    {
+      "id": "alt-inq-1793799759299",
+      "alert_type": "new_inquiry",
+      "severity": "info",
+      "message": "Trip inquiry from Simulation Visitor for sajek-valley.",
+      "is_acknowledged": false,
+      "created_at": "2026-11-04T13:42:39.299+00:00"
+    },
+    {
+      "id": "alt-del-cancel-1793799688996-d7ae",
+      "alert_type": "booking_cancelled",
+      "severity": "info",
+      "message": "Booking STL-2026-00005 cancelled and automatically deleted from database (Manually set to cancelled by admin). Seats released: A1, A2.",
+      "is_acknowledged": false,
+      "created_at": "2026-11-04T13:41:28.996+00:00"
+    },
+    {
+      "id": "alt-cash-apprv-1793799678863-73873d",
+      "alert_type": "cash_payment_approved",
+      "severity": "info",
+      "message": "Physical cash payment (ADVANCE) of ৳5,600 for booking STL-2026-00005 was approved by admin.",
+      "is_acknowledged": false,
+      "created_at": "2026-11-04T13:41:18.918+00:00"
+    },
+    {
+      "id": "alt-book-1793799673403",
+      "alert_type": "new_booking",
+      "severity": "info",
+      "message": "New booking STL-2026-00005 created for Simulation Cox's Bazar Eco Retreat (Updated) (2 traveler(s) · Seats: A1, A2 · Pick-up: Savar Bus Stand).",
+      "is_acknowledged": false,
+      "created_at": "2026-11-04T13:41:13.403+00:00"
+    },
+    {
+      "id": "alt-inq-1793799671231",
+      "alert_type": "new_inquiry",
+      "severity": "info",
+      "message": "Trip inquiry from Simulation Visitor for sajek-valley.",
+      "is_acknowledged": false,
+      "created_at": "2026-11-04T13:41:11.231+00:00"
+    },
+    {
+      "id": "alt-book-1793799622990",
+      "alert_type": "new_booking",
+      "severity": "info",
+      "message": "New booking STL-2026-00004 created for Booking Test Tour (2 traveler(s) · Seats: A1, A2 · Pick-up: Dhaka).",
+      "is_acknowledged": false,
+      "created_at": "2026-11-04T13:40:22.99+00:00"
+    },
+    {
+      "id": "alt-book-1793799591605",
+      "alert_type": "new_booking",
+      "severity": "info",
+      "message": "New booking STL-2026-00003 created for Simulation Cox's Bazar Eco Retreat (Updated) (2 traveler(s) · Seats: A1, A2 · Pick-up: Savar Bus Stand).",
+      "is_acknowledged": false,
+      "created_at": "2026-11-04T13:39:51.605+00:00"
+    },
+    {
+      "id": "alt-book-1793799446862",
+      "alert_type": "new_booking",
+      "severity": "info",
+      "message": "New booking STL-2026-00002 created for Simulation Cox's Bazar Eco Retreat (Updated) (2 traveler(s) · Seats: A1, A2 · Pick-up: Savar Bus Stand).",
+      "is_acknowledged": false,
+      "created_at": "2026-11-04T13:37:26.862+00:00"
+    },
+    {
+      "id": "alt-inq-1793799445017",
+      "alert_type": "new_inquiry",
+      "severity": "info",
+      "message": "Trip inquiry from Simulation Visitor for sajek-valley.",
+      "is_acknowledged": false,
+      "created_at": "2026-11-04T13:37:25.017+00:00"
+    },
+    {
+      "id": "alt-inq-1793799218220",
+      "alert_type": "new_inquiry",
+      "severity": "info",
+      "message": "Trip inquiry from Simulation Visitor for sajek-valley.",
+      "is_acknowledged": false,
+      "created_at": "2026-11-04T13:33:38.22+00:00"
+    },
+    {
+      "id": "alt-inq-1793799068310",
+      "alert_type": "new_inquiry",
+      "severity": "info",
+      "message": "Trip inquiry from Simulation Visitor for sajek-valley.",
+      "is_acknowledged": false,
+      "created_at": "2026-11-04T13:31:08.31+00:00"
+    },
+    {
+      "id": "alt-exp-del-1793791351750-b4d3",
+      "alert_type": "booking_cancelled",
+      "severity": "warning",
+      "message": "Incomplete booking STL-2026-00001 was auto-cancelled & deleted: advance was not paid within the 10-minute window. Seats released: A1, J2.",
+      "is_acknowledged": false,
+      "created_at": "2026-11-04T11:22:31.75+00:00"
+    },
+    {
+      "id": "alt-del-cancel-1793745596048-8855",
+      "alert_type": "booking_cancelled",
+      "severity": "info",
+      "message": "Booking book-1793692290655-c5e2f49311358855 cancelled and automatically deleted from database (Manually set to cancelled by admin). Seats released: None.",
+      "is_acknowledged": false,
+      "created_at": "2026-11-03T22:39:56.048+00:00"
+    },
+    {
+      "id": "alt-del-cancel-1793744482486-23a1",
+      "alert_type": "booking_cancelled",
+      "severity": "info",
+      "message": "Booking STL-2026-00009 cancelled and automatically deleted from database (Manually set to cancelled by admin). Seats released: C1, C2, D1, D2, E1, E2.",
+      "is_acknowledged": false,
+      "created_at": "2026-11-03T22:21:22.486+00:00"
+    },
+    {
+      "id": "alt-del-cancel-1793744442374-8855",
+      "alert_type": "booking_cancelled",
+      "severity": "info",
+      "message": "Booking STL-2026-00012 cancelled and automatically deleted from database (Manually set to cancelled by admin). Seats released: B2.",
+      "is_acknowledged": false,
+      "created_at": "2026-11-03T22:20:42.374+00:00"
+    },
+    {
+      "id": "alt-del-cancel-1793744412283-4480",
+      "alert_type": "booking_cancelled",
+      "severity": "info",
+      "message": "Booking book-1792489579315-ecd449c68c2c4480 cancelled and automatically deleted from database (Manually set to cancelled by admin). Seats released: None.",
+      "is_acknowledged": false,
+      "created_at": "2026-11-03T22:20:12.283+00:00"
+    },
+    {
+      "id": "alt-del-cancel-1793744366529-8855",
+      "alert_type": "booking_cancelled",
+      "severity": "info",
+      "message": "Booking STL-2026-00012 cancelled and automatically deleted from database (Manually set to cancelled by admin). Seats released: B2.",
+      "is_acknowledged": false,
+      "created_at": "2026-11-03T22:19:26.529+00:00"
+    },
+    {
+      "id": "alt-del-cancel-1793739633781-8855",
+      "alert_type": "booking_cancelled",
+      "severity": "info",
+      "message": "Booking STL-2026-00012 cancelled and automatically deleted from database (Manually set to cancelled by admin). Seats released: B2.",
+      "is_acknowledged": false,
+      "created_at": "2026-11-03T21:00:33.781+00:00"
+    },
+    {
+      "id": "alt-del-cancel-1793739484174-3436",
+      "alert_type": "booking_cancelled",
+      "severity": "info",
+      "message": "Booking STL-2026-00011 cancelled and automatically deleted from database (Manually set to cancelled by admin). Seats released: D3, D4.",
+      "is_acknowledged": false,
+      "created_at": "2026-11-03T20:58:04.174+00:00"
+    },
+    {
+      "id": "alt-del-cancel-1793739480002-4480",
+      "alert_type": "booking_cancelled",
+      "severity": "info",
+      "message": "Booking STL-2026-00010 cancelled and automatically deleted from database (Manually set to cancelled by admin). Seats released: A1, A2.",
+      "is_acknowledged": false,
+      "created_at": "2026-11-03T20:58:00.002+00:00"
+    },
+    {
+      "id": "alt-exp-del-1793736259745-1242",
+      "alert_type": "booking_cancelled",
+      "severity": "warning",
+      "message": "Incomplete booking STL-2026-00013 was auto-cancelled & deleted: advance was not paid within the 10-minute window. Seats released: F3, F4.",
+      "is_acknowledged": false,
+      "created_at": "2026-11-03T20:04:19.745+00:00"
+    },
+    {
+      "id": "alt-exp-del-1793736229539-6883",
+      "alert_type": "booking_cancelled",
+      "severity": "warning",
+      "message": "Incomplete booking STL-2026-00013 was auto-cancelled & deleted: advance was not paid within the 10-minute window. Seats released: B3, B4.",
+      "is_acknowledged": false,
+      "created_at": "2026-11-03T20:03:49.539+00:00"
+    },
+    {
+      "id": "alt-exp-del-1793736199323-05e8",
+      "alert_type": "booking_cancelled",
+      "severity": "warning",
+      "message": "Incomplete booking STL-2026-00013 was auto-cancelled & deleted: advance was not paid within the 10-minute window. Seats released: B3, B4.",
+      "is_acknowledged": false,
+      "created_at": "2026-11-03T20:03:19.323+00:00"
+    },
+    {
+      "id": "alt-exp-del-1793736199323-880f",
+      "alert_type": "booking_cancelled",
+      "severity": "warning",
+      "message": "Incomplete booking STL-2026-00013 was auto-cancelled & deleted: advance was not paid within the 10-minute window. Seats released: A3, A4, B3, B4.",
+      "is_acknowledged": false,
+      "created_at": "2026-11-03T20:03:19.323+00:00"
+    },
+    {
+      "id": "alt-del-cancel-1793735551985-0013",
+      "alert_type": "booking_cancelled",
+      "severity": "info",
+      "message": "Booking STL-2026-00013 cancelled and automatically deleted from database (bKash checkout cancelled by customer). Seats released: None.",
+      "is_acknowledged": false,
+      "created_at": "2026-11-03T19:52:31.985+00:00"
+    },
+    {
+      "id": "alt-del-cancel-1793735365040-880f",
+      "alert_type": "booking_cancelled",
+      "severity": "info",
+      "message": "Booking STL-2026-00013 cancelled and automatically deleted from database (Manually set to cancelled by admin). Seats released: A3, A4, B3, B4.",
+      "is_acknowledged": false,
+      "created_at": "2026-11-03T19:49:25.041+00:00"
+    },
+    {
+      "id": "alt-del-cancel-1793733631874-23a1",
+      "alert_type": "booking_cancelled",
+      "severity": "info",
+      "message": "Booking book-1791544963481-c2011f7eb50d23a1 cancelled and automatically deleted from database (Manually set to cancelled by admin). Seats released: None.",
+      "is_acknowledged": false,
+      "created_at": "2026-11-03T19:20:31.874+00:00"
+    },
+    {
+      "id": "alt-exp-del-1793732907804-1a59",
+      "alert_type": "booking_cancelled",
+      "severity": "warning",
+      "message": "Incomplete booking STL-2026-00013 was auto-cancelled & deleted: advance was not paid within the 10-minute window. Seats released: A1, B2, D3, E4.",
+      "is_acknowledged": false,
+      "created_at": "2026-11-03T19:08:27.804+00:00"
+    },
+    {
+      "id": "alt-del-cancel-1793731261391-23a1",
+      "alert_type": "booking_cancelled",
+      "severity": "info",
+      "message": "Booking STL-2026-00009 cancelled and automatically deleted from database (Manually set to cancelled by admin). Seats released: C1, C2, D1, D2, E1, E2.",
+      "is_acknowledged": false,
+      "created_at": "2026-11-03T18:41:01.391+00:00"
+    },
+    {
+      "id": "alt-del-cancel-1793729691194-ef46",
+      "alert_type": "booking_cancelled",
+      "severity": "warning",
+      "message": "Booking STL-2026-00013 was cancelled and automatically deleted from database. Seats released: A1, A2, B2, C2.",
+      "is_acknowledged": false,
+      "created_at": "2026-11-03T18:14:51.194+00:00"
+    },
+    {
+      "id": "alt-del-cancel-1793729672787-ef46",
+      "alert_type": "booking_cancelled",
+      "severity": "warning",
+      "message": "Booking STL-2026-00013 was cancelled and automatically deleted from database. Seats released: A1, A2, B2, C2.",
+      "is_acknowledged": false,
+      "created_at": "2026-11-03T18:14:32.787+00:00"
+    },
+    {
+      "id": "alt-del-cancel-1793729613530-ef46",
+      "alert_type": "booking_cancelled",
+      "severity": "warning",
+      "message": "Booking STL-2026-00013 was cancelled and automatically deleted from database. Seats released: A1, A2, B2, C2.",
+      "is_acknowledged": false,
+      "created_at": "2026-11-03T18:13:33.53+00:00"
+    },
+    {
+      "id": "alt-exp-del-1793728709033-ef46",
+      "alert_type": "booking_cancelled",
+      "severity": "warning",
+      "message": "Incomplete booking STL-2026-00013 was auto-cancelled & deleted: advance was not paid within the 10-minute window. Seats released: A1, A2, B2, C2.",
+      "is_acknowledged": false,
+      "created_at": "2026-11-03T17:58:29.033+00:00"
+    },
+    {
+      "id": "alt-del-cancel-1793728089811-ef46",
+      "alert_type": "booking_cancelled",
+      "severity": "info",
+      "message": "Booking STL-2026-00013 cancelled and automatically deleted from database (bKash checkout cancelled by customer). Seats released: A1, A2, B2, C2.",
+      "is_acknowledged": false,
+      "created_at": "2026-11-03T17:48:09.811+00:00"
+    },
+    {
+      "id": "alt-del-cancel-1793728038509-23a1",
+      "alert_type": "booking_cancelled",
+      "severity": "info",
+      "message": "Booking STL-2026-00009 cancelled and automatically deleted from database (Manually set to cancelled by admin). Seats released: C1, C2, D1, D2, E1, E2.",
+      "is_acknowledged": false,
+      "created_at": "2026-11-03T17:47:18.509+00:00"
+    },
+    {
+      "id": "alt-del-cancel-1793727969247-23a1",
+      "alert_type": "booking_cancelled",
+      "severity": "info",
+      "message": "Booking STL-2026-00009 cancelled and automatically deleted from database (Manually set to cancelled by admin). Seats released: C1, C2, D1, D2, E1, E2.",
+      "is_acknowledged": false,
+      "created_at": "2026-11-03T17:46:09.247+00:00"
+    },
+    {
+      "id": "alt-del-cancel-1793727693433-6562",
+      "alert_type": "booking_cancelled",
+      "severity": "warning",
+      "message": "Booking STL-2026-00013 was cancelled and automatically deleted from database. Seats released: G3, G4.",
+      "is_acknowledged": false,
+      "created_at": "2026-11-03T17:41:33.433+00:00"
+    },
+    {
+      "id": "alt-del-cancel-1793727693432-4e7d",
+      "alert_type": "booking_cancelled",
+      "severity": "warning",
+      "message": "Booking STL-2026-00013 was cancelled and automatically deleted from database. Seats released: J4.",
+      "is_acknowledged": false,
+      "created_at": "2026-11-03T17:41:33.432+00:00"
+    },
+    {
+      "id": "alt-del-cancel-1793727515872-6562",
+      "alert_type": "booking_cancelled",
+      "severity": "warning",
+      "message": "Booking STL-2026-00013 was cancelled and automatically deleted from database. Seats released: G3, G4.",
+      "is_acknowledged": false,
+      "created_at": "2026-11-03T17:38:35.872+00:00"
+    },
+    {
+      "id": "alt-exp-del-1793726504377-4e7d",
+      "alert_type": "booking_cancelled",
+      "severity": "warning",
+      "message": "Incomplete booking STL-2026-00013 was auto-cancelled & deleted: advance was not paid within the 10-minute window. Seats released: J4.",
+      "is_acknowledged": false,
+      "created_at": "2026-11-03T17:21:44.377+00:00"
+    },
+    {
+      "id": "alt-exp-del-1793726443961-6562",
+      "alert_type": "booking_cancelled",
+      "severity": "warning",
+      "message": "Incomplete booking STL-2026-00013 was auto-cancelled & deleted: advance was not paid within the 10-minute window. Seats released: G3, G4.",
+      "is_acknowledged": false,
+      "created_at": "2026-11-03T17:20:43.962+00:00"
+    },
+    {
+      "id": "alt-exp-cancel-1793726433758-4e7d",
+      "alert_type": "booking_cancelled",
+      "severity": "warning",
+      "message": "Booking STL-2026-00013 was auto-cancelled (Payment was not completed within the checkout window). Seats released: J4.",
+      "is_acknowledged": false,
+      "created_at": "2026-11-03T17:20:33.758+00:00"
+    },
+    {
+      "id": "alt-exp-cancel-1793726360144-6562",
+      "alert_type": "booking_cancelled",
+      "severity": "warning",
+      "message": "Booking STL-2026-00013 was auto-cancelled (Payment was not completed within the checkout window). Seats released: G3, G4.",
+      "is_acknowledged": false,
+      "created_at": "2026-11-03T17:19:20.144+00:00"
+    },
+    {
+      "id": "alt-exp-del-1793726053281-6562",
+      "alert_type": "booking_cancelled",
+      "severity": "warning",
+      "message": "Incomplete booking STL-2026-00013 was auto-cancelled & deleted: advance was not paid within the 10-minute window. Seats released: G3, G4.",
+      "is_acknowledged": false,
+      "created_at": "2026-11-03T17:14:13.281+00:00"
+    },
+    {
+      "id": "alt-exp-del-1793726017702-6562",
+      "alert_type": "booking_cancelled",
+      "severity": "warning",
+      "message": "Incomplete booking STL-2026-00013 was auto-cancelled & deleted: advance was not paid within the 10-minute window. Seats released: G3, G4.",
+      "is_acknowledged": false,
+      "created_at": "2026-11-03T17:13:37.702+00:00"
+    },
+    {
+      "id": "alt-exp-del-1793725954923-6562",
+      "alert_type": "booking_cancelled",
+      "severity": "warning",
+      "message": "Incomplete booking STL-2026-00013 was auto-cancelled & deleted: advance was not paid within the 10-minute window. Seats released: G3, G4.",
+      "is_acknowledged": false,
+      "created_at": "2026-11-03T17:12:34.923+00:00"
+    },
+    {
+      "id": "alt-exp-del-1793725507486-6562",
+      "alert_type": "booking_cancelled",
+      "severity": "warning",
+      "message": "Incomplete booking STL-2026-00013 was auto-cancelled & deleted: advance was not paid within the 10-minute window. Seats released: G3, G4.",
+      "is_acknowledged": false,
+      "created_at": "2026-11-03T17:05:07.486+00:00"
+    },
+    {
+      "id": "alt-del-unpaid-1793724850119-6562",
+      "alert_type": "booking_cancelled",
+      "severity": "info",
+      "message": "Incomplete booking STL-2026-00013 cancelled & deleted: advance was not paid (Rocket checkout cancelled by customer). Seats released: G3, G4.",
+      "is_acknowledged": false,
+      "created_at": "2026-11-03T16:54:10.119+00:00"
+    },
+    {
+      "id": "alt-exp-del-1793724812395-4e7d",
+      "alert_type": "booking_cancelled",
+      "severity": "warning",
+      "message": "Incomplete booking STL-2026-00013 was auto-cancelled & deleted: advance was not paid within the 10-minute window. Seats released: J4.",
+      "is_acknowledged": false,
+      "created_at": "2026-11-03T16:53:32.395+00:00"
+    },
+    {
+      "id": "alt-exp-del-1793723807719-6f65",
+      "alert_type": "booking_cancelled",
+      "severity": "warning",
+      "message": "Incomplete booking STL-2026-00013 was auto-cancelled & deleted: advance was not paid within the 10-minute window. Seats released: C1, C2, C3, C4, D1, D2.",
+      "is_acknowledged": false,
+      "created_at": "2026-11-03T16:36:47.719+00:00"
+    },
+    {
+      "id": "alt-exp-del-1793723807716-69c8",
+      "alert_type": "booking_cancelled",
+      "severity": "warning",
+      "message": "Incomplete booking STL-2026-00014 was auto-cancelled & deleted: advance was not paid within the 10-minute window. Seats released: A1, B2, D3, E4.",
+      "is_acknowledged": false,
+      "created_at": "2026-11-03T16:36:47.716+00:00"
+    },
+    {
+      "id": "alt-exp-del-1793694228294-69c8",
+      "alert_type": "booking_cancelled",
+      "severity": "warning",
+      "message": "Incomplete booking STL-2026-00014 was auto-cancelled & deleted: advance was not paid within the 10-minute window. Seats released: A1, B2, D3, E4.",
+      "is_acknowledged": false,
+      "created_at": "2026-11-03T08:23:48.294+00:00"
+    },
+    {
+      "id": "alt-exp-del-1793693986571-6f65",
+      "alert_type": "booking_cancelled",
+      "severity": "warning",
+      "message": "Incomplete booking STL-2026-00013 was auto-cancelled & deleted: advance was not paid within the 10-minute window. Seats released: C1, C2, C3, C4, D1, D2.",
+      "is_acknowledged": false,
+      "created_at": "2026-11-03T08:19:46.571+00:00"
+    },
+    {
+      "id": "alt-del-unpaid-1793693349675-6f65",
+      "alert_type": "booking_cancelled",
+      "severity": "info",
+      "message": "Incomplete booking STL-2026-00013 cancelled & deleted: advance was not paid (bKash TrxID could not be verified in records). Seats released: C1, C2, C3, C4, D1, D2.",
+      "is_acknowledged": false,
+      "created_at": "2026-11-03T08:09:09.675+00:00"
+    },
+    {
+      "id": "alt-del-unpaid-1793693279493-0839",
+      "alert_type": "booking_cancelled",
+      "severity": "info",
+      "message": "Incomplete booking STL-2026-00013 cancelled & deleted: advance was not paid (Rocket checkout cancelled by customer). Seats released: A2, B2, E2.",
+      "is_acknowledged": false,
+      "created_at": "2026-11-03T08:07:59.493+00:00"
+    },
+    {
+      "id": "alt-del-unpaid-1793692905447-6f65",
+      "alert_type": "booking_cancelled",
+      "severity": "info",
+      "message": "Incomplete booking STL-2026-00013 cancelled & deleted: advance was not paid (fuck you). Seats released: C1, C2, C3, C4, D1, D2.",
+      "is_acknowledged": false,
+      "created_at": "2026-11-03T08:01:45.447+00:00"
+    },
+    {
+      "id": "alt-pay-1793692630961-7fbe11",
+      "alert_type": "payment_confirmed",
+      "severity": "info",
+      "message": "Payment of ৳3,500 received for booking STL-2026-00012 (Minhazul Islam).",
+      "is_acknowledged": false,
+      "created_at": "2026-11-03T07:57:10.962+00:00"
+    },
+    {
+      "id": "alt-bka-hold-1793692592067-958da5",
+      "alert_type": "bkash_hold_pending",
+      "severity": "warning",
+      "message": "⏳ bKash TrxID [7GU68HKHBKH] submitted for STL-2026-00012 (৫ ই নভেম্বর কক্সবাজার রিলাক্স ট্যুর). SMS not yet received. 15-minute verification hold active.",
+      "is_acknowledged": false,
+      "created_at": "2026-11-03T07:56:32.068+00:00"
+    },
+    {
+      "id": "alt-exp-del-1793691780293-08ea",
+      "alert_type": "booking_cancelled",
+      "severity": "warning",
+      "message": "Incomplete booking STL-2026-00012 was auto-cancelled & deleted: advance was not paid within the 10-minute window. Seats released: A1.",
+      "is_acknowledged": false,
+      "created_at": "2026-11-03T07:43:00.293+00:00"
+    },
+    {
+      "id": "alt-exp-del-1793691055224-fc38",
+      "alert_type": "booking_cancelled",
+      "severity": "warning",
+      "message": "Incomplete booking STL-2026-00012 was auto-cancelled & deleted: advance was not paid within the 10-minute window. Seats released: E1.",
+      "is_acknowledged": false,
+      "created_at": "2026-11-03T07:30:55.224+00:00"
+    },
+    {
+      "id": "alt-book-1793690448519",
+      "alert_type": "new_booking",
+      "severity": "info",
+      "message": "New booking STL-2026-00012 created for america (1 traveler(s) · Seats: E1 · Pick-up: Savar Thana Stand (09:00 PM)).",
+      "is_acknowledged": false,
+      "created_at": "2026-11-03T07:20:48.519+00:00"
+    },
+    {
+      "id": "alt-exp-del-1793479840654-d61a",
+      "alert_type": "booking_cancelled",
+      "severity": "warning",
+      "message": "Incomplete booking STL-2026-00012 was auto-cancelled & deleted: advance was not paid within the 10-minute window. Seats released: D3.",
+      "is_acknowledged": false,
+      "created_at": "2026-10-31T20:50:40.654+00:00"
+    },
+    {
+      "id": "alt-inq-1793116342515",
+      "alert_type": "new_inquiry",
+      "severity": "info",
+      "message": "Trip inquiry from Nasir Uddin Simulation for Cox's Bazar.",
+      "is_acknowledged": false,
+      "created_at": "2026-10-27T15:52:22.515+00:00"
+    },
+    {
+      "id": "alt-cash-apprv-1793116337890-72a9cb",
+      "alert_type": "cash_payment_approved",
+      "severity": "info",
+      "message": "Physical cash payment (ADVANCE) of ৳3,840 for booking STL-2026-00013 was approved by superadmin_sim.",
+      "is_acknowledged": false,
+      "created_at": "2026-10-27T15:52:17.891+00:00"
+    },
+    {
+      "id": "alt-cash-1793116337197",
+      "alert_type": "cash_payment_pending",
+      "severity": "warning",
+      "message": "New \"Pay Cash by Hand\" booking STL-2026-00013 created for Ratargul Swamp Simulation Tour (Updated) (2 traveler(s)). Admin approval required within 10 minutes or it will auto-cancel.",
+      "is_acknowledged": false,
+      "created_at": "2026-10-27T15:52:17.197+00:00"
+    },
+    {
+      "id": "alt-inq-1793116096781",
+      "alert_type": "new_inquiry",
+      "severity": "info",
+      "message": "Trip inquiry from Nasir Uddin Simulation for Cox's Bazar.",
+      "is_acknowledged": false,
+      "created_at": "2026-10-27T15:48:16.781+00:00"
+    },
+    {
+      "id": "alt-cash-apprv-1793116091849-9bb949",
+      "alert_type": "cash_payment_approved",
+      "severity": "info",
+      "message": "Physical cash payment (ADVANCE) of ৳3,840 for booking STL-2026-00012 was approved by superadmin_sim.",
+      "is_acknowledged": false,
+      "created_at": "2026-10-27T15:48:11.849+00:00"
+    },
+    {
+      "id": "alt-cash-1793116090986",
+      "alert_type": "cash_payment_pending",
+      "severity": "warning",
+      "message": "New \"Pay Cash by Hand\" booking STL-2026-00012 created for Ratargul Swamp Simulation Tour (Updated) (2 traveler(s)). Admin approval required within 10 minutes or it will auto-cancel.",
+      "is_acknowledged": false,
+      "created_at": "2026-10-27T15:48:10.986+00:00"
+    },
+    {
+      "id": "alt-exp-del-1792820114638-35dc",
+      "alert_type": "booking_cancelled",
+      "severity": "warning",
+      "message": "Incomplete booking STL-2026-00012 was auto-cancelled & deleted: advance was not paid within the 10-minute window. Seats released: A1, A2, E1, F1, G2.",
+      "is_acknowledged": false,
+      "created_at": "2026-10-24T05:35:14.638+00:00"
+    },
+    {
+      "id": "alt-book-1792819513442",
+      "alert_type": "new_booking",
+      "severity": "info",
+      "message": "New booking STL-2026-00012 created for 20 tharik কক্সবাজার রিলাক্স ট্যুর (5 traveler(s) · Seats: A1, A2, E1, F1, G2 · Pick-up: Savar Pollibidut (09:15 PM)).",
+      "is_acknowledged": false,
+      "created_at": "2026-10-24T05:25:13.442+00:00"
+    },
+    {
+      "id": "alt-hold-1792498610197-0729cd",
+      "alert_type": "rocket_hold_pending",
+      "severity": "warning",
+      "message": "⏳ Rocket TrxID [FAKE_610161] submitted for STL-2026-00011 (20 tharik কক্সবাজার রিলাক্স ট্যুর). SMS not yet received. 15-minute verification hold active.",
+      "is_acknowledged": false,
+      "created_at": "2026-10-20T12:16:50.198+00:00"
+    },
+    {
+      "id": "alt-rkt-1792498610117-b0191e",
+      "alert_type": "rocket_auto_verified",
+      "severity": "info",
+      "message": "✓ Rocket Payment Auto-Verified by DBBL SMS: Booking STL-2026-00011 (20 tharik কক্সবাজার রিলাক্স ট্যুর) confirmed for ৳1500.00 with TrxID DELAYED_609950.",
+      "is_acknowledged": false,
+      "created_at": "2026-10-20T12:16:50.118+00:00"
+    },
+    {
+      "id": "alt-hold-1792498610029-c13d56",
+      "alert_type": "rocket_hold_pending",
+      "severity": "warning",
+      "message": "⏳ Rocket TrxID [DELAYED_609950] submitted for STL-2026-00011 (20 tharik কক্সবাজার রিলাক্স ট্যুর). SMS not yet received. 15-minute verification hold active.",
+      "is_acknowledged": false,
+      "created_at": "2026-10-20T12:16:50.03+00:00"
+    },
+    {
+      "id": "alt-hold-1792498586867-01a2ed",
+      "alert_type": "rocket_hold_pending",
+      "severity": "warning",
+      "message": "⏳ Rocket TrxID [DELAYED_586796] submitted for STL-2026-00011 (20 tharik কক্সবাজার রিলাক্স ট্যুর). SMS not yet received. 15-minute verification hold active.",
+      "is_acknowledged": false,
+      "created_at": "2026-10-20T12:16:26.868+00:00"
+    },
+    {
+      "id": "alt-pay-1792491372783-04b137",
+      "alert_type": "payment_confirmed",
+      "severity": "info",
+      "message": "Payment of ৳2,030 received for booking STL-2026-00011 (Savar tour lover).",
+      "is_acknowledged": false,
+      "created_at": "2026-10-20T10:16:12.784+00:00"
+    },
+    {
+      "id": "alt-book-1792491356821",
+      "alert_type": "new_booking",
+      "severity": "info",
+      "message": "New booking STL-2026-00011 created for 20 tharik কক্সবাজার রিলাক্স ট্যুর (2 traveler(s) · Seats: D3, D4 · Pick-up: Savar Thana Stand (09:00 PM)).",
+      "is_acknowledged": false,
+      "created_at": "2026-10-20T10:15:56.821+00:00"
+    },
+    {
+      "id": "alt-pay-1792489579895-68ad75",
+      "alert_type": "payment_confirmed",
+      "severity": "info",
+      "message": "Payment of ৳2,030 received for booking STL-2026-00010 (Shimul Hasan).",
+      "is_acknowledged": false,
+      "created_at": "2026-10-20T09:46:19.896+00:00"
+    },
+    {
+      "id": "alt-book-1792489579318",
+      "alert_type": "new_booking",
+      "severity": "info",
+      "message": "New booking STL-2026-00010 created for 20 tharik কক্সবাজার রিলাক্স ট্যুর (2 traveler(s) · Seats: A1, A2 · Pick-up: Dhaka Sayedabad / Fakirapool).",
+      "is_acknowledged": false,
+      "created_at": "2026-10-20T09:46:19.318+00:00"
+    },
+    {
+      "id": "alt-exp-del-1792478946903-9b5a",
+      "alert_type": "booking_cancelled",
+      "severity": "warning",
+      "message": "Incomplete booking STL-2026-00011 was auto-cancelled & deleted: advance was not paid within the 10-minute window. Seats released: C2, C3.",
+      "is_acknowledged": false,
+      "created_at": "2026-10-20T06:49:06.903+00:00"
+    },
+    {
+      "id": "alt-exp-del-1792478906260-9b5a",
+      "alert_type": "booking_cancelled",
+      "severity": "warning",
+      "message": "Incomplete booking STL-2026-00011 was auto-cancelled & deleted: advance was not paid within the 10-minute window. Seats released: C2, C3.",
+      "is_acknowledged": false,
+      "created_at": "2026-10-20T06:48:26.26+00:00"
+    },
+    {
+      "id": "alt-exp-del-1792478725169-9a1d",
+      "alert_type": "booking_cancelled",
+      "severity": "warning",
+      "message": "Incomplete booking STL-2026-00010 was auto-cancelled & deleted: advance was not paid within the 10-minute window. Seats released: B2.",
+      "is_acknowledged": false,
+      "created_at": "2026-10-20T06:45:25.169+00:00"
+    },
+    {
+      "id": "alt-exp-del-1792478705159-9a1d",
+      "alert_type": "booking_cancelled",
+      "severity": "warning",
+      "message": "Incomplete booking STL-2026-00010 was auto-cancelled & deleted: advance was not paid within the 10-minute window. Seats released: B2.",
+      "is_acknowledged": false,
+      "created_at": "2026-10-20T06:45:05.159+00:00"
+    },
+    {
+      "id": "alt-book-1792478302364",
+      "alert_type": "new_booking",
+      "severity": "info",
+      "message": "New booking STL-2026-00011 created for 20 tharik কক্সবাজার রিলাক্স ট্যুর (2 traveler(s) · Seats: C2, C3 · Pick-up: Savar Thana Stand (09:00 PM)).",
+      "is_acknowledged": false,
+      "created_at": "2026-10-20T06:38:22.364+00:00"
+    },
+    {
+      "id": "alt-book-1792478209122",
+      "alert_type": "new_booking",
+      "severity": "info",
+      "message": "New booking STL-2026-00011 created for সীতাকুণ্ড ডে লং ট্যুর (1 traveler(s) · Seats: A1 · Pick-up: Nabinagar).",
+      "is_acknowledged": false,
+      "created_at": "2026-10-20T06:36:49.122+00:00"
+    },
+    {
+      "id": "alt-book-1792478085737",
+      "alert_type": "new_booking",
+      "severity": "info",
+      "message": "New booking STL-2026-00010 created for 20 tharik কক্সবাজার রিলাক্স ট্যুর (1 traveler(s) · Seats: B2 · Pick-up: Savar Thana Stand (09:00 PM)).",
+      "is_acknowledged": false,
+      "created_at": "2026-10-20T06:34:45.737+00:00"
+    },
+    {
+      "id": "alt-cash-apprv-1791545002433-d3c079",
+      "alert_type": "cash_payment_approved",
+      "severity": "info",
+      "message": "Physical cash payment (ADVANCE) of ৳2,520 for booking STL-2026-00009 was approved by admin.",
+      "is_acknowledged": false,
+      "created_at": "2026-10-09T11:23:22.433+00:00"
+    },
+    {
+      "id": "alt-cash-1791544963482",
+      "alert_type": "cash_payment_pending",
+      "severity": "warning",
+      "message": "New \"Pay Cash by Hand\" booking STL-2026-00009 created for সীতাকুণ্ড ডে লং ট্যুর (6 traveler(s)). Admin approval required within 10 minutes or it will auto-cancel.",
+      "is_acknowledged": false,
+      "created_at": "2026-10-09T11:22:43.482+00:00"
+    },
+    {
+      "id": "alt-cash-apprv-1791202593762-0e8d46",
+      "alert_type": "cash_payment_approved",
+      "severity": "info",
+      "message": "Physical cash payment (ADVANCE) of ৳1,000 for booking STL-2026-00008 was approved by admin.",
+      "is_acknowledged": false,
+      "created_at": "2026-10-05T12:16:33.762+00:00"
+    },
+    {
+      "id": "alt-cash-1791202191934",
+      "alert_type": "cash_payment_pending",
+      "severity": "warning",
+      "message": "New \"Pay Cash by Hand\" booking STL-2026-00008 created for 20 ই অক্টোবর পঞ্চগড় ডে লং ট্যুর  (2 traveler(s)). Admin approval required within 10 minutes or it will auto-cancel.",
+      "is_acknowledged": false,
+      "created_at": "2026-10-05T12:09:51.934+00:00"
+    },
+    {
+      "id": "alt-exp-del-1791201759082-77ad",
+      "alert_type": "booking_cancelled",
+      "severity": "warning",
+      "message": "Incomplete booking STL-2026-00008 was auto-cancelled & deleted: advance was not paid within the 10-minute window. Seats released: G2.",
+      "is_acknowledged": true,
+      "created_at": "2026-10-05T12:02:39.082+00:00"
+    },
+    {
+      "id": "alt-cash-1791201118584",
+      "alert_type": "cash_payment_pending",
+      "severity": "warning",
+      "message": "New \"Pay Cash by Hand\" booking STL-2026-00008 created for 20 ই অক্টোবর পঞ্চগড় ডে লং ট্যুর মাত্র 2000 টাকায় (1 traveler(s)). Admin approval required within 10 minutes or it will auto-cancel.",
+      "is_acknowledged": false,
+      "created_at": "2026-10-05T11:51:58.584+00:00"
+    },
+    {
+      "id": "alt-cash-apprv-1791178337137-c3227d",
+      "alert_type": "cash_payment_approved",
+      "severity": "info",
+      "message": "Physical cash payment (ADVANCE) of ৳2,400 for booking STL-2026-00007 was approved by admin.",
+      "is_acknowledged": true,
+      "created_at": "2026-10-05T05:32:17.138+00:00"
+    },
+    {
+      "id": "alt-cash-1791178311949",
+      "alert_type": "cash_payment_pending",
+      "severity": "warning",
+      "message": "New \"Pay Cash by Hand\" booking STL-2026-00007 created for Cox's Bazar Relax Tour  (2 traveler(s)). Admin approval required within 10 minutes or it will auto-cancel.",
+      "is_acknowledged": true,
+      "created_at": "2026-10-05T05:31:51.949+00:00"
+    },
+    {
+      "id": "alt-del-unpaid-1791042328692-a346",
+      "alert_type": "booking_cancelled",
+      "severity": "info",
+      "message": "Incomplete booking STL-2026-00007 cancelled & deleted: advance was not paid (Cash reservation rejected by admin: Physical cash was not received at counter.). Seats released: A1, A2, A3, A4, B1, B2.",
+      "is_acknowledged": false,
+      "created_at": "2026-10-03T15:45:28.692+00:00"
+    },
+    {
+      "id": "alt-cash-1791042235045",
+      "alert_type": "cash_payment_pending",
+      "severity": "warning",
+      "message": "New \"Pay Cash by Hand\" booking STL-2026-00007 created for Cox’s  (6 traveler(s)). Admin approval required within 10 minutes or it will auto-cancel.",
+      "is_acknowledged": true,
+      "created_at": "2026-10-03T15:43:55.045+00:00"
+    },
+    {
+      "id": "alt-exp-del-1791040941857-f044",
+      "alert_type": "booking_cancelled",
+      "severity": "warning",
+      "message": "Incomplete booking STL-2026-00007 was auto-cancelled & deleted: advance was not paid within the 10-minute window. Seats released: A2, A3, A4.",
+      "is_acknowledged": true,
+      "created_at": "2026-10-03T15:22:21.857+00:00"
+    },
+    {
+      "id": "alt-cash-1791040292787",
+      "alert_type": "cash_payment_pending",
+      "severity": "warning",
+      "message": "New \"Pay Cash by Hand\" booking STL-2026-00007 created for Bandarban Nilgiri Trek (3 traveler(s)). Admin approval required within 10 minutes or it will auto-cancel.",
+      "is_acknowledged": true,
+      "created_at": "2026-10-03T15:11:32.787+00:00"
+    },
+    {
+      "id": "alt-exp-del-1790876943187-a44c",
+      "alert_type": "booking_cancelled",
+      "severity": "warning",
+      "message": "Incomplete booking STL-2026-00009 was auto-cancelled & deleted: advance was not paid within the 10-minute window. Seats released: B3.",
+      "is_acknowledged": true,
+      "created_at": "2026-10-01T17:49:03.187+00:00"
+    },
+    {
+      "id": "alt-exp-del-1790876822291-42e1",
+      "alert_type": "booking_cancelled",
+      "severity": "warning",
+      "message": "Incomplete booking STL-2026-00008 was auto-cancelled & deleted: advance was not paid within the 10-minute window. Seats released: B1, B2.",
+      "is_acknowledged": true,
+      "created_at": "2026-10-01T17:47:02.291+00:00"
+    },
+    {
+      "id": "alt-exp-del-1790876519535-d0a7",
+      "alert_type": "booking_cancelled",
+      "severity": "warning",
+      "message": "Incomplete booking STL-2026-00007 was auto-cancelled & deleted: advance was not paid within the 10-minute window. Seats released: C1, C2.",
+      "is_acknowledged": true,
+      "created_at": "2026-10-01T17:41:59.535+00:00"
+    },
+    {
+      "id": "alt-book-1790876301189",
+      "alert_type": "new_booking",
+      "severity": "info",
+      "message": "New booking STL-2026-00009 created for Cox's Bazar Beach Escape (1 traveler(s) · Seats: B3 · Pick-up: Savar Thana Stand (09:00 PM)).",
+      "is_acknowledged": true,
+      "created_at": "2026-10-01T17:38:21.189+00:00"
+    },
+    {
+      "id": "alt-book-1790876194884",
+      "alert_type": "new_booking",
+      "severity": "info",
+      "message": "New booking STL-2026-00008 created for Cox's Bazar Beach Escape (2 traveler(s) · Seats: B1, B2 · Pick-up: Savar Thana Stand (09:00 PM)).",
+      "is_acknowledged": true,
+      "created_at": "2026-10-01T17:36:34.884+00:00"
+    },
+    {
+      "id": "alt-book-1790875913653",
+      "alert_type": "new_booking",
+      "severity": "info",
+      "message": "New booking STL-2026-00007 created for Bandarban Nilgiri Trek (2 traveler(s) · Seats: C1, C2 · Pick-up: Sayedabad Janapath (11:00 PM)).",
+      "is_acknowledged": true,
+      "created_at": "2026-10-01T17:31:53.653+00:00"
+    },
+    {
+      "id": "alt-exp-del-1790872171527-48e8",
+      "alert_type": "booking_cancelled",
+      "severity": "warning",
+      "message": "Incomplete booking STL-2026-00007 was auto-cancelled & deleted: advance was not paid within the 10-minute window. Seats released: E1, E2, F1, F2, G1, G2.",
+      "is_acknowledged": true,
+      "created_at": "2026-10-01T16:29:31.527+00:00"
+    },
+    {
+      "id": "alt-book-1790871540708",
+      "alert_type": "new_booking",
+      "severity": "info",
+      "message": "New booking STL-2026-00007 created for Cox's Bazar Beach Escape (6 traveler(s) · Seats: E1, E2, F1, F2, G1, G2 · Pick-up: Nabinagar Bus Terminal (09:30 PM)).",
+      "is_acknowledged": true,
+      "created_at": "2026-10-01T16:19:00.708+00:00"
+    },
+    {
+      "id": "alt-del-unpaid-1790861011579-8e04",
+      "alert_type": "booking_cancelled",
+      "severity": "info",
+      "message": "Incomplete booking STL-2026-00007 cancelled & deleted: advance was not paid (bKash checkout cancelled by customer). Seats released: B1, B2.",
+      "is_acknowledged": true,
+      "created_at": "2026-10-01T13:23:31.579+00:00"
+    },
+    {
+      "id": "alt-book-1790860975782",
+      "alert_type": "new_booking",
+      "severity": "info",
+      "message": "New booking STL-2026-00007 created for Cox's Bazar Beach Escape (2 traveler(s) · Seats: B1, B2 · Pick-up: Savar Thana Stand (09:00 PM)).",
+      "is_acknowledged": true,
+      "created_at": "2026-10-01T13:22:55.782+00:00"
+    },
+    {
+      "id": "alt-cash-apprv-1790609978490-8f8336",
+      "alert_type": "cash_payment_approved",
+      "severity": "info",
+      "message": "Physical cash payment (ADVANCE) of ৳11,520 for booking STL-2026-00006 was approved by admin.",
+      "is_acknowledged": true,
+      "created_at": "2026-09-28T15:39:38.49+00:00"
+    },
+    {
+      "id": "alt-cash-1790609948261",
+      "alert_type": "cash_payment_pending",
+      "severity": "warning",
+      "message": "New \"Pay Cash by Hand\" booking STL-2026-00006 created for Bandarban Nilgiri Trek (4 traveler(s)). Admin approval required within 10 minutes or it will auto-cancel.",
+      "is_acknowledged": true,
+      "created_at": "2026-09-28T15:39:08.261+00:00"
+    },
+    {
+      "id": "alt-pay-1790608362086-fb148a",
+      "alert_type": "payment_confirmed",
+      "severity": "info",
+      "message": "Payment of ৳20,400 received for booking STL-2026-00005 (Minhazul Islam).",
+      "is_acknowledged": true,
+      "created_at": "2026-09-28T15:12:42.086+00:00"
+    },
+    {
+      "id": "alt-pay-1790608291522-81fb36",
+      "alert_type": "payment_confirmed",
+      "severity": "info",
+      "message": "Payment of ৳13,600 received for booking STL-2026-00005 (Minhazul Islam).",
+      "is_acknowledged": true,
+      "created_at": "2026-09-28T15:11:31.524+00:00"
+    },
+    {
+      "id": "alt-book-1790608166191",
+      "alert_type": "new_booking",
+      "severity": "info",
+      "message": "New booking STL-2026-00005 created for Cox's Bazar Beach Escape (4 traveler(s) · Seats: C3, C4, D4, E3 · Pick-up: Savar Thana Stand (09:00 PM)).",
+      "is_acknowledged": true,
+      "created_at": "2026-09-28T15:09:26.191+00:00"
+    },
+    {
+      "id": "alt-del-unpaid-1790584326783-12cd",
+      "alert_type": "booking_cancelled",
+      "severity": "info",
+      "message": "Incomplete booking STL-2026-00005 cancelled & deleted: advance was not paid (bKash checkout payment failed). Seats released: B3, B4, D4.",
+      "is_acknowledged": true,
+      "created_at": "2026-09-28T08:32:06.783+00:00"
+    },
+    {
+      "id": "alt-book-1790584276362",
+      "alert_type": "new_booking",
+      "severity": "info",
+      "message": "New booking STL-2026-00005 created for Cox's Bazar Beach Escape (3 traveler(s) · Seats: B3, B4, D4 · Pick-up: Savar Thana Stand (09:00 PM)).",
+      "is_acknowledged": true,
+      "created_at": "2026-09-28T08:31:16.362+00:00"
+    },
+    {
+      "id": "alt-del-unpaid-1790583510067-e031",
+      "alert_type": "booking_cancelled",
+      "severity": "info",
+      "message": "Incomplete booking STL-2026-00005 cancelled & deleted: advance was not paid (bKash checkout payment failed). Seats released: B1, B2.",
+      "is_acknowledged": true,
+      "created_at": "2026-09-28T08:18:30.067+00:00"
+    },
+    {
+      "id": "alt-book-1790583483257",
+      "alert_type": "new_booking",
+      "severity": "info",
+      "message": "New booking STL-2026-00005 created for Cox's Bazar Beach Escape (2 traveler(s) · Seats: B1, B2 · Pick-up: Savar Thana Stand (09:00 PM)).",
+      "is_acknowledged": true,
+      "created_at": "2026-09-28T08:18:03.257+00:00"
+    },
+    {
+      "id": "alt-exp-del-1790583239821-1656",
+      "alert_type": "booking_cancelled",
+      "severity": "warning",
+      "message": "Incomplete booking STL-2026-00003 was auto-cancelled & deleted: advance was not paid within the 10-minute window. Seats released: B1, B2.",
+      "is_acknowledged": true,
+      "created_at": "2026-09-28T08:13:59.821+00:00"
+    },
+    {
+      "id": "alt-cash-apprv-1790583154801-3ef957",
+      "alert_type": "cash_payment_approved",
+      "severity": "info",
+      "message": "Physical cash payment (FULL) of ৳8,500 for booking STL-2026-00004 was approved by admin.",
+      "is_acknowledged": true,
+      "created_at": "2026-09-28T08:12:34.802+00:00"
+    },
+    {
+      "id": "alt-inq-1790583011012",
+      "alert_type": "new_inquiry",
+      "severity": "info",
+      "message": "Trip inquiry from Md Rakib Mia for custom destination.",
+      "is_acknowledged": true,
+      "created_at": "2026-09-28T08:10:11.012+00:00"
+    },
+    {
+      "id": "alt-exp-del-1790582831078-a040",
+      "alert_type": "booking_cancelled",
+      "severity": "warning",
+      "message": "Incomplete booking STL-2026-00001 was auto-cancelled & deleted: advance was not paid within the 10-minute window. Seats released: A1.",
+      "is_acknowledged": true,
+      "created_at": "2026-09-28T08:07:11.078+00:00"
+    },
+    {
+      "id": "alt-cash-1790582801479",
+      "alert_type": "cash_payment_pending",
+      "severity": "warning",
+      "message": "New \"Pay Cash by Hand\" booking STL-2026-00004 created for Cox's Bazar Beach Escape (1 traveler(s)). Admin approval required within 10 minutes or it will auto-cancel.",
+      "is_acknowledged": false,
+      "created_at": "2026-09-28T08:06:41.479+00:00"
+    },
+    {
+      "id": "alt-del-unpaid-1790582755509-169f",
+      "alert_type": "booking_cancelled",
+      "severity": "info",
+      "message": "Incomplete booking STL-2026-00004 cancelled & deleted: advance was not paid (bKash checkout payment failed). Seats released: C1.",
+      "is_acknowledged": true,
+      "created_at": "2026-09-28T08:05:55.509+00:00"
+    },
+    {
+      "id": "alt-book-1790582720353",
+      "alert_type": "new_booking",
+      "severity": "info",
+      "message": "New booking STL-2026-00004 created for Cox's Bazar Beach Escape (1 traveler(s) · Seats: C1 · Pick-up: Savar Thana Stand (09:00 PM)).",
+      "is_acknowledged": true,
+      "created_at": "2026-09-28T08:05:20.353+00:00"
+    },
+    {
+      "id": "alt-book-1790582626764",
+      "alert_type": "new_booking",
+      "severity": "info",
+      "message": "New booking STL-2026-00003 created for Cox's Bazar Beach Escape (2 traveler(s) · Seats: B1, B2 · Pick-up: Savar Thana Stand (09:00 PM)).",
+      "is_acknowledged": true,
+      "created_at": "2026-09-28T08:03:46.764+00:00"
+    },
+    {
+      "id": "alt-pay-1790582553634-aaba3f",
+      "alert_type": "payment_confirmed",
+      "severity": "info",
+      "message": "Payment of ৳8,500 received for booking STL-2026-00002 (Md Rakib Mia).",
+      "is_acknowledged": true,
+      "created_at": "2026-09-28T08:02:33.634+00:00"
+    },
+    {
+      "id": "alt-book-1790582531619",
+      "alert_type": "new_booking",
+      "severity": "info",
+      "message": "New booking STL-2026-00002 created for Cox's Bazar Beach Escape (1 traveler(s) · Seats: A2 · Pick-up: Savar Thana Stand (09:00 PM)).",
+      "is_acknowledged": true,
+      "created_at": "2026-09-28T08:02:11.619+00:00"
+    },
+    {
+      "id": "alt-del-unpaid-1790582467622-250c",
+      "alert_type": "booking_cancelled",
+      "severity": "info",
+      "message": "Incomplete booking STL-2026-00002 cancelled & deleted: advance was not paid (bKash checkout payment failed). Seats released: A2.",
+      "is_acknowledged": true,
+      "created_at": "2026-09-28T08:01:07.622+00:00"
+    },
+    {
+      "id": "alt-book-1790582415080",
+      "alert_type": "new_booking",
+      "severity": "info",
+      "message": "New booking STL-2026-00002 created for Cox's Bazar Beach Escape (1 traveler(s) · Seats: A2 · Pick-up: Savar Thana Stand (09:00 PM)).",
+      "is_acknowledged": true,
+      "created_at": "2026-09-28T08:00:15.08+00:00"
+    },
+    {
+      "id": "alt-book-1790582222845",
+      "alert_type": "new_booking",
+      "severity": "info",
+      "message": "New booking STL-2026-00001 created for Cox's Bazar Beach Escape (1 traveler(s) · Seats: A1 · Pick-up: Savar Thana Stand (09:00 PM)).",
+      "is_acknowledged": true,
+      "created_at": "2026-09-28T07:57:02.845+00:00"
+    },
+    {
+      "id": "alt-inq-1790571066802",
+      "alert_type": "new_inquiry",
+      "severity": "info",
+      "message": "Trip inquiry from Spontaneous Inquirer for Sylhet.",
+      "is_acknowledged": true,
+      "created_at": "2026-09-28T04:51:06.802+00:00"
+    },
+    {
+      "id": "alt-book-1790571065206",
+      "alert_type": "new_booking",
+      "severity": "info",
+      "message": "New booking STL-2026-00032 created for Spontaneous Tea Garden Tour (2 traveler(s) · Pick-up: Savar Bus Stand).",
+      "is_acknowledged": true,
+      "created_at": "2026-09-28T04:51:05.206+00:00"
+    },
+    {
+      "id": "alt-inq-1790570675068",
+      "alert_type": "new_inquiry",
+      "severity": "info",
+      "message": "Trip inquiry from Spontaneous Inquirer for Sylhet.",
+      "is_acknowledged": true,
+      "created_at": "2026-09-28T04:44:35.068+00:00"
+    },
+    {
+      "id": "alt-book-1790569195050",
+      "alert_type": "new_booking",
+      "severity": "info",
+      "message": "New booking STL-2026-00031 created for Sajek Valley Cloud Camp Tour (1 traveler(s) · Seats: C4 · Pick-up: Savar Thana Stand (09:00 PM)).",
+      "is_acknowledged": true,
+      "created_at": "2026-09-28T04:19:55.05+00:00"
+    },
+    {
+      "id": "alt-exp-del-1790568451400-3ffb",
+      "alert_type": "booking_cancelled",
+      "severity": "warning",
+      "message": "Incomplete booking STL-2026-00001 was auto-cancelled & deleted: advance was not paid within the 10-minute window. Seats released: None.",
+      "is_acknowledged": true,
+      "created_at": "2026-09-28T04:07:31.4+00:00"
+    },
+    {
+      "id": "alt-exp-del-1790568451400-f525",
+      "alert_type": "booking_cancelled",
+      "severity": "warning",
+      "message": "Incomplete booking STL-2026-00029 was auto-cancelled & deleted: advance was not paid within the 10-minute window. Seats released: None.",
+      "is_acknowledged": true,
+      "created_at": "2026-09-28T04:07:31.4+00:00"
+    },
+    {
+      "id": "alt-exp-del-1790568391047-71cb",
+      "alert_type": "booking_cancelled",
+      "severity": "warning",
+      "message": "Incomplete booking STL-2026-00027 was auto-cancelled & deleted: advance was not paid within the 10-minute window. Seats released: None.",
+      "is_acknowledged": true,
+      "created_at": "2026-09-28T04:06:31.047+00:00"
+    },
+    {
+      "id": "alt-pay-1790465753847-c14115",
+      "alert_type": "payment_confirmed",
+      "severity": "info",
+      "message": "Payment of ৳7,200 received for booking STL-2026-00021 (Arko Roket).",
+      "is_acknowledged": true,
+      "created_at": "2026-09-26T23:35:53.848+00:00"
+    },
+    {
+      "id": "alt-pay-1790465264241-6aa92a",
+      "alert_type": "payment_confirmed",
+      "severity": "info",
+      "message": "Payment of ৳4,950 received for booking STL-2026-00020 (Rocket Verified Customer).",
+      "is_acknowledged": true,
+      "created_at": "2026-09-26T23:27:44.242+00:00"
+    },
+    {
+      "id": "alt-book-1790465257202",
+      "alert_type": "new_booking",
+      "severity": "info",
+      "message": "New booking STL-2026-00020 created for Bandarban Hill & Cloud Package Tour (2 traveler(s) · Seats: D1, D2 · Pick-up: Dhaka Sayedabad / Fakirapool).",
+      "is_acknowledged": true,
+      "created_at": "2026-09-26T23:27:37.202+00:00"
+    },
+    {
+      "id": "alt-del-unpaid-1790465257192-aab9",
+      "alert_type": "booking_cancelled",
+      "severity": "info",
+      "message": "Incomplete booking STL-2026-00020 cancelled & deleted: advance was not paid (Rocket checkout cancelled by customer). Seats released: C1, C2.",
+      "is_acknowledged": true,
+      "created_at": "2026-09-26T23:27:37.192+00:00"
+    },
+    {
+      "id": "alt-book-1790465257158",
+      "alert_type": "new_booking",
+      "severity": "info",
+      "message": "New booking STL-2026-00020 created for Bandarban Hill & Cloud Package Tour (2 traveler(s) · Seats: C1, C2 · Pick-up: Dhaka Sayedabad / Fakirapool).",
+      "is_acknowledged": true,
+      "created_at": "2026-09-26T23:27:37.158+00:00"
+    },
+    {
+      "id": "alt-exp-del-1790449149662-863d",
+      "alert_type": "booking_cancelled",
+      "severity": "warning",
+      "message": "Incomplete booking STL-2026-00018 was auto-cancelled & deleted: advance was not paid within the 10-minute window. Seats released: A1, A2, B1, B2.",
+      "is_acknowledged": true,
+      "created_at": "2026-09-26T18:59:09.662+00:00"
+    },
+    {
+      "id": "alt-exp-del-1790446271947-7eaf",
+      "alert_type": "booking_cancelled",
+      "severity": "warning",
+      "message": "Incomplete booking AT-2026-00005 was auto-cancelled & deleted: advance was not paid within the 10-minute window. Seats released: B3, C3.",
+      "is_acknowledged": true,
+      "created_at": "2026-09-26T18:11:11.947+00:00"
+    },
+    {
+      "id": "alt-exp-del-1790446271946-6dd5",
+      "alert_type": "booking_cancelled",
+      "severity": "warning",
+      "message": "Incomplete booking AT-2026-00006 was auto-cancelled & deleted: advance was not paid within the 10-minute window. Seats released: B3, B4.",
+      "is_acknowledged": true,
+      "created_at": "2026-09-26T18:11:11.946+00:00"
+    },
+    {
+      "id": "alt-exp-del-1790446271946-cf6f",
+      "alert_type": "booking_cancelled",
+      "severity": "warning",
+      "message": "Incomplete booking STL-2026-00014 was auto-cancelled & deleted: advance was not paid within the 10-minute window. Seats released: B1.",
+      "is_acknowledged": true,
+      "created_at": "2026-09-26T18:11:11.946+00:00"
+    },
+    {
+      "id": "alt-exp-del-1790446271942-a298",
+      "alert_type": "booking_cancelled",
+      "severity": "warning",
+      "message": "Incomplete booking STL-2026-00015 was auto-cancelled & deleted: advance was not paid within the 10-minute window. Seats released: B3, B4.",
+      "is_acknowledged": true,
+      "created_at": "2026-09-26T18:11:11.942+00:00"
+    },
+    {
+      "id": "alt-pay-1790430672541-965b0f",
+      "alert_type": "payment_confirmed",
+      "severity": "info",
+      "message": "Payment of ৳12,000 received for booking STL-2026-00019 (prince han).",
+      "is_acknowledged": true,
+      "created_at": "2026-09-26T13:51:12.542+00:00"
+    },
+    {
+      "id": "alt-book-1790430604842",
+      "alert_type": "new_booking",
+      "severity": "info",
+      "message": "New booking STL-2026-00019 created for Sajek Valley Cloud Camp Tour (2 traveler(s) · Seats: A3, A4 · Pick-up: Gabtoli Bus Terminal (09:45 PM)).",
+      "is_acknowledged": true,
+      "created_at": "2026-09-26T13:50:04.842+00:00"
+    },
+    {
+      "id": "alt-cash-apprv-1790429970345-390cea",
+      "alert_type": "cash_payment_approved",
+      "severity": "info",
+      "message": "Physical cash payment (ADVANCE) of ৳9,900 for booking STL-2026-00018 was approved by admin.",
+      "is_acknowledged": true,
+      "created_at": "2026-09-26T13:39:30.346+00:00"
+    },
+    {
+      "id": "alt-cash-1790429902802",
+      "alert_type": "cash_payment_pending",
+      "severity": "warning",
+      "message": "New \"Pay Cash by Hand\" booking STL-2026-00018 created for Bandarban Hill & Cloud Package Tour (4 traveler(s)). Admin approval required within 10 minutes or it will auto-cancel.",
+      "is_acknowledged": false,
+      "created_at": "2026-09-26T13:38:22.802+00:00"
+    },
+    {
+      "id": "alt-exp-del-1790429256363-01b7",
+      "alert_type": "booking_cancelled",
+      "severity": "warning",
+      "message": "Incomplete booking STL-2026-00017 was auto-cancelled & deleted: advance was not paid within the 10-minute window. Seats released: F4.",
+      "is_acknowledged": true,
+      "created_at": "2026-09-26T13:27:36.363+00:00"
+    },
+    {
+      "id": "alt-cash-1790422608240",
+      "alert_type": "cash_payment_pending",
+      "severity": "warning",
+      "message": "New \"Pay Cash by Hand\" booking STL-2026-00017 created for Bandarban Hill & Cloud Package Tour (1 traveler(s)). Admin approval required within 10 minutes or it will auto-cancel.",
+      "is_acknowledged": false,
+      "created_at": "2026-09-26T11:36:48.24+00:00"
+    },
+    {
+      "id": "alt-cash-apprv-1790422251151-9bc890",
+      "alert_type": "cash_payment_approved",
+      "severity": "info",
+      "message": "Physical cash payment (DUE) of ৳3,025 for booking STL-2026-00016 was approved by admin.",
+      "is_acknowledged": true,
+      "created_at": "2026-09-26T11:30:51.152+00:00"
+    },
+    {
+      "id": "alt-due-cash-1790422227748-62a320",
+      "alert_type": "due_cash_pending",
+      "severity": "warning",
+      "message": "Due balance of ৳3,025 for booking STL-2026-00016 (Md Rakib Mia) requested to be paid by Hand Cash. Host collection required on tour day.",
+      "is_acknowledged": true,
+      "created_at": "2026-09-26T11:30:27.749+00:00"
+    },
+    {
+      "id": "alt-due-cash-1790422221010-a1f59c",
+      "alert_type": "due_cash_pending",
+      "severity": "warning",
+      "message": "Due balance of ৳3,025 for booking STL-2026-00016 (Md Rakib Mia) requested to be paid by Hand Cash. Host collection required on tour day.",
+      "is_acknowledged": true,
+      "created_at": "2026-09-26T11:30:21.01+00:00"
+    },
+    {
+      "id": "alt-due-cash-1790422213178-591fc2",
+      "alert_type": "due_cash_pending",
+      "severity": "warning",
+      "message": "Due balance of ৳3,025 for booking STL-2026-00016 (Md Rakib Mia) requested to be paid by Hand Cash. Host collection required on tour day.",
+      "is_acknowledged": true,
+      "created_at": "2026-09-26T11:30:13.179+00:00"
+    },
+    {
+      "id": "alt-due-cash-1790422197854-369935",
+      "alert_type": "due_cash_pending",
+      "severity": "warning",
+      "message": "Due balance of ৳3,025 for booking STL-2026-00016 (Md Rakib Mia) requested to be paid by Hand Cash. Host collection required on tour day.",
+      "is_acknowledged": true,
+      "created_at": "2026-09-26T11:29:57.855+00:00"
+    },
+    {
+      "id": "alt-due-cash-1790422196023-892d90",
+      "alert_type": "due_cash_pending",
+      "severity": "warning",
+      "message": "Due balance of ৳3,025 for booking STL-2026-00016 (Md Rakib Mia) requested to be paid by Hand Cash. Host collection required on tour day.",
+      "is_acknowledged": true,
+      "created_at": "2026-09-26T11:29:56.029+00:00"
+    },
+    {
+      "id": "alt-due-cash-1790422191243-0f2ed2",
+      "alert_type": "due_cash_pending",
+      "severity": "warning",
+      "message": "Due balance of ৳3,025 for booking STL-2026-00016 (Md Rakib Mia) requested to be paid by Hand Cash. Host collection required on tour day.",
+      "is_acknowledged": true,
+      "created_at": "2026-09-26T11:29:51.244+00:00"
+    },
+    {
+      "id": "alt-pay-1790422063714-109053",
+      "alert_type": "payment_confirmed",
+      "severity": "info",
+      "message": "Payment of ৳2,475 received for booking STL-2026-00016 (Md Rakib Mia).",
+      "is_acknowledged": true,
+      "created_at": "2026-09-26T11:27:43.716+00:00"
+    },
+    {
+      "id": "alt-book-1790422006676",
+      "alert_type": "new_booking",
+      "severity": "info",
+      "message": "New booking STL-2026-00016 created for Bandarban Hill & Cloud Package Tour (1 traveler(s) · Seats: A4 · Pick-up: Savar Thana Stand (09:00 PM)).",
+      "is_acknowledged": true,
+      "created_at": "2026-09-26T11:26:46.676+00:00"
+    },
+    {
+      "id": "alt-pay-1790406599026-6bd130",
+      "alert_type": "payment_confirmed",
+      "severity": "info",
+      "message": "Payment of ৳11,000 received for booking STL-2026-00015 (tonuza khanam).",
+      "is_acknowledged": true,
+      "created_at": "2026-09-26T07:09:59.027+00:00"
+    },
+    {
+      "id": "alt-book-1790406241395",
+      "alert_type": "new_booking",
+      "severity": "info",
+      "message": "New booking STL-2026-00015 created for Bandarban Hill & Cloud Package Tour (2 traveler(s) · Seats: B3, B4 · Pick-up: Savar Thana Stand (09:00 PM)).",
+      "is_acknowledged": true,
+      "created_at": "2026-09-26T07:04:01.395+00:00"
+    },
+    {
+      "id": "alt-cash-apprv-1790364435133-e6a4be",
+      "alert_type": "cash_payment_approved",
+      "severity": "info",
+      "message": "Physical cash payment (DUE) of ৳14,400 for booking STL-2026-00013 was approved by admin.",
+      "is_acknowledged": true,
+      "created_at": "2026-09-25T19:27:15.134+00:00"
+    },
+    {
+      "id": "alt-due-cash-1790364386904-c8e3b1",
+      "alert_type": "due_cash_pending",
+      "severity": "warning",
+      "message": "Due balance of ৳14,400 for booking STL-2026-00013 (karim) requested to be paid by Hand Cash. Host collection required on tour day.",
+      "is_acknowledged": true,
+      "created_at": "2026-09-25T19:26:26.908+00:00"
+    },
+    {
+      "id": "alt-cash-apprv-1790350962575-85d559",
+      "alert_type": "cash_payment_approved",
+      "severity": "info",
+      "message": "Physical cash payment of ৳9,600 for booking STL-2026-00013 was approved by admin.",
+      "is_acknowledged": true,
+      "created_at": "2026-09-25T15:42:42.576+00:00"
+    },
+    {
+      "id": "alt-cash-1790350830506",
+      "alert_type": "cash_payment_pending",
+      "severity": "warning",
+      "message": "New \"Pay Cash by Hand\" booking STL-2026-00013 created for Sajek Valley Cloud Camp Tour (4 traveler(s)). Admin approval required within 10 minutes or it will auto-cancel.",
+      "is_acknowledged": false,
+      "created_at": "2026-09-25T15:40:30.506+00:00"
+    },
+    {
+      "id": "alt-cash-apprv-1790350634678-786884",
+      "alert_type": "cash_payment_approved",
+      "severity": "info",
+      "message": "Physical cash payment of ৳9,600 for booking STL-2026-00012 was approved by admin.",
+      "is_acknowledged": true,
+      "created_at": "2026-09-25T15:37:14.68+00:00"
+    },
+    {
+      "id": "alt-cash-1790350608354",
+      "alert_type": "cash_payment_pending",
+      "severity": "warning",
+      "message": "New \"Pay Cash by Hand\" booking STL-2026-00012 created for Sajek Valley Cloud Camp Tour (4 traveler(s)). Admin approval required within 10 minutes or it will auto-cancel.",
+      "is_acknowledged": false,
+      "created_at": "2026-09-25T15:36:48.354+00:00"
+    },
+    {
+      "id": "alt-pay-1790350344690-4dc6db",
+      "alert_type": "payment_confirmed",
+      "severity": "info",
+      "message": "Payment of ৳12,375 received for booking STL-2026-00011 (Md Rakib Mia).",
+      "is_acknowledged": true,
+      "created_at": "2026-09-25T15:32:24.691+00:00"
+    },
+    {
+      "id": "alt-cash-apprv-1790319261307-c6b219",
+      "alert_type": "cash_payment_approved",
+      "severity": "info",
+      "message": "Physical cash payment of ৳4,400 for booking AT-E371A5 was approved by admin.",
+      "is_acknowledged": true,
+      "created_at": "2026-09-25T06:54:21.308+00:00"
+    },
+    {
+      "id": "alt-cash-1790319237076",
+      "alert_type": "cash_payment_pending",
+      "severity": "warning",
+      "message": "New \"Pay Cash by Hand\" booking STL-2026-00010 created for Bandarban Hill & Cloud Package Tour (2 traveler(s)). Admin approval required within 10 minutes or it will auto-cancel.",
+      "is_acknowledged": false,
+      "created_at": "2026-09-25T06:53:57.076+00:00"
+    },
+    {
+      "id": "alt-cash-apprv-1790311968535-54748e",
+      "alert_type": "cash_payment_approved",
+      "severity": "info",
+      "message": "Physical cash payment of ৳4,400 for booking AT-2026-00008 was approved by admin.",
+      "is_acknowledged": true,
+      "created_at": "2026-09-25T04:52:48.536+00:00"
+    },
+    {
+      "id": "alt-cash-apprv-1790311943689-601da4",
+      "alert_type": "cash_payment_approved",
+      "severity": "info",
+      "message": "Physical cash payment of ৳6,600 for booking AT-2026-00009 was approved by admin.",
+      "is_acknowledged": true,
+      "created_at": "2026-09-25T04:52:23.689+00:00"
+    },
+    {
+      "id": "alt-cash-apprv-1790311827575-76fcf9",
+      "alert_type": "cash_payment_approved",
+      "severity": "info",
+      "message": "Physical cash payment of ৳4,400 for booking AT-2026-00009 was approved by admin.",
+      "is_acknowledged": true,
+      "created_at": "2026-09-25T04:50:27.576+00:00"
+    },
+    {
+      "id": "alt-cash-1790311821376",
+      "alert_type": "cash_payment_pending",
+      "severity": "warning",
+      "message": "New \"Pay Cash by Hand\" booking AT-2026-00009 created for Bandarban Hill & Cloud Package Tour (2 traveler(s)). Admin approval required within 10 minutes or it will auto-cancel.",
+      "is_acknowledged": false,
+      "created_at": "2026-09-25T04:50:21.376+00:00"
+    },
+    {
+      "id": "alt-cash-1790311797882",
+      "alert_type": "cash_payment_pending",
+      "severity": "warning",
+      "message": "New \"Pay Cash by Hand\" booking AT-2026-00008 created for Bandarban Hill & Cloud Package Tour (2 traveler(s)). Admin approval required within 10 minutes or it will auto-cancel.",
+      "is_acknowledged": false,
+      "created_at": "2026-09-25T04:49:57.882+00:00"
+    },
+    {
+      "id": "alt-pay-1790298891415-4d45a8",
+      "alert_type": "payment_confirmed",
+      "severity": "info",
+      "message": "Payment of ৳4,400 received for booking AT-2026-00007 (Md Rakib Mia).",
+      "is_acknowledged": true,
+      "created_at": "2026-09-25T01:14:51.416+00:00"
+    },
+    {
+      "id": "alt-book-1790298874808",
+      "alert_type": "new_booking",
+      "severity": "info",
+      "message": "New booking AT-2026-00007 created for Bandarban Hill & Cloud Package Tour (2 traveler(s) · Seats: H1, H2 · Pick-up: Uttara).",
+      "is_acknowledged": true,
+      "created_at": "2026-09-25T01:14:34.808+00:00"
+    },
+    {
+      "id": "alt-cash-apprv-1790246791401-d312d4",
+      "alert_type": "cash_payment_approved",
+      "severity": "info",
+      "message": "Physical cash payment of ৳11,000 for booking AT-2026-00004 was approved by admin.",
+      "is_acknowledged": true,
+      "created_at": "2026-09-24T10:46:31.402+00:00"
+    },
+    {
+      "id": "alt-cash-1790246695095",
+      "alert_type": "cash_payment_pending",
+      "severity": "warning",
+      "message": "New \"Pay Cash by Hand\" booking AT-2026-00004 created for Bandarban Hill & Cloud Package Tour (2 traveler(s)). Admin approval required within 10 minutes or it will auto-cancel.",
+      "is_acknowledged": false,
+      "created_at": "2026-09-24T10:44:55.095+00:00"
+    }
+  ],
+  "expenses": [],
+  "suppliers": [],
+  "contactInquiries": [],
+  "analyticsEvents": [
+    {
+      "event_name": "page_view",
+      "path": "/tours",
+      "title": "Tour Packages Across Bangladesh | Savar Tour Lover — আপনার স্বপ্ন উড়তে দিন",
+      "referrer": "http://localhost:3000/tours",
+      "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/156.0.0.0 Safari/537.36",
+      "ip_hash": "7b08e160e223f699",
+      "session_id": "sid-mvzsx38z-u3bmbz",
+      "visitor_id": "vid-mvzsx38z-iuy68t",
+      "metadata": {},
+      "id": "evt-1793827471510-eeb262eb",
+      "created_at": "2026-11-04T21:24:31.511Z"
+    },
+    {
+      "event_name": "page_view",
+      "path": "/tours?category=Corporate+Tour",
+      "title": "Tour Packages Across Bangladesh | Savar Tour Lover — আপনার স্বপ্ন উড়তে দিন",
+      "referrer": "http://localhost:3000/tours",
+      "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/156.0.0.0 Safari/537.36",
+      "ip_hash": "7b08e160e223f699",
+      "session_id": "sid-mvzsx38z-u3bmbz",
+      "visitor_id": "vid-mvzsx38z-iuy68t",
+      "metadata": {},
+      "id": "evt-1793827468789-ac461f8d",
+      "created_at": "2026-11-04T21:24:28.790Z"
+    }
+  ],
+  "deletedEntities": {
+    "destinations": [],
+    "tours": [],
+    "offers": [],
+    "testimonials": [],
+    "blogPosts": [],
+    "homepageBlocks": [],
+    "tourCategories": [],
+    "bookings": [],
+    "staffUsers": [],
+    "customers": [],
+    "contactInquiries": []
+  },
+  "rocketIncomingSms": [],
+  "bkashIncomingSms": []
+}
