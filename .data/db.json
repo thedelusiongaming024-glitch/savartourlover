@@ -1,0 +1,816 @@
+{
+  "destinations": [],
+  "tours": [],
+  "tourCategories": [
+    {
+      "id": "cat-group-tour",
+      "icon": "👥",
+      "name": "Group Tour",
+      "slug": "group_tour",
+      "badge": "Most Popular",
+      "is_active": true,
+      "description": "Shared budget-friendly group tours with confirmed weekly departures",
+      "display_order": 1
+    },
+    {
+      "id": "cat-corporate-tour",
+      "icon": "🏢",
+      "name": "Corporate Tour",
+      "slug": "corporate_tour",
+      "badge": "Business",
+      "is_active": true,
+      "description": "Executive team retreats, annual picnics, and tailored conferences",
+      "display_order": 2
+    },
+    {
+      "id": "cat-custom-tour",
+      "icon": "✨",
+      "name": "Customized Tour",
+      "slug": "customized_tour",
+      "badge": "Flexible",
+      "is_active": true,
+      "description": "Private custom-tailored itineraries designed around your preferences",
+      "display_order": 3
+    },
+    {
+      "id": "cat-family-tour",
+      "icon": "👨‍👩‍👧‍👦",
+      "name": "Family Tour",
+      "slug": "family_tour",
+      "badge": "Family Friendly",
+      "is_active": true,
+      "description": "Comfortable, relaxed journeys suitable for children and elders",
+      "display_order": 6
+    },
+    {
+      "id": "cat-day-trip",
+      "icon": "☀️",
+      "name": "Day Trip",
+      "slug": "day_trip",
+      "badge": "1 Day",
+      "is_active": true,
+      "description": "Single-day sightseeing and activities without overnight stay",
+      "display_order": 7
+    }
+  ],
+  "offers": [],
+  "testimonials": [],
+  "blogPosts": [],
+  "homepageBlocks": [
+    {
+      "id": "block_001",
+      "block_type": "hero",
+      "display_order": 1,
+      "content": {
+        "cta_link": "/tours",
+        "cta_text": "Explore Tours",
+        "headline": "Discover Bangladesh, Beautifully",
+        "subheadline": "Curated domestic tours with verified guides and secure booking"
+      },
+      "updated_at": "2026-09-28T07:43:01.533741+00:00"
+    },
+    {
+      "id": "block-hero-1",
+      "block_type": "hero",
+      "display_order": 1,
+      "content": {
+        "eyebrow": "🌍 Discover Bangladesh",
+        "headline": "Savar Tour Lover",
+        "highlight": "--",
+        "hero_slides": [
+          {
+            "alt_text": "Sundarbans Mangrove Forest",
+            "image_url": "https://placehold.co/1920x1080/sea"
+          },
+          {
+            "alt_text": "Chittagong Hill Tracts",
+            "image_url": "https://placehold.co/1920x1080/mountain"
+          }
+        ],
+        "subheadline": "From the Sundarbans to Saint Martin's Island — explore with expert guides.",
+        "hero_video_url": "",
+        "hero_media_type": "video",
+        "primary_cta_href": "/tours",
+        "primary_cta_label": "Explore Tours",
+        "secondary_cta_href": "/about",
+        "secondary_cta_label": "Learn More"
+      },
+      "updated_at": "2026-11-04T12:30:58.256+00:00"
+    },
+    {
+      "id": "block_002",
+      "block_type": "featured_destinations",
+      "display_order": 2,
+      "content": {
+        "heading": "Popular Destinations",
+        "destination_slugs": [
+          "sajek-valley",
+          "coxs-bazar",
+          "sundarbans"
+        ]
+      },
+      "updated_at": "2026-09-28T07:43:01.533741+00:00"
+    },
+    {
+      "id": "block-dest-grid-2",
+      "block_type": "destination_grid",
+      "display_order": 2,
+      "content": {
+        "hidden": false
+      },
+      "updated_at": "2026-09-25T06:19:02.352+00:00"
+    },
+    {
+      "id": "block_003",
+      "block_type": "testimonials",
+      "display_order": 3,
+      "content": {
+        "heading": "What Our Travelers Say"
+      },
+      "updated_at": "2026-09-28T07:43:01.533741+00:00"
+    },
+    {
+      "id": "block-tours-3",
+      "block_type": "featured_tours",
+      "display_order": 3,
+      "content": {
+        "hidden": false
+      },
+      "updated_at": "2026-09-25T06:19:02.352+00:00"
+    },
+    {
+      "id": "block_004",
+      "block_type": "offers_strip",
+      "display_order": 4,
+      "content": {
+        "heading": "Limited-Time Offers"
+      },
+      "updated_at": "2026-09-28T07:43:01.533741+00:00"
+    },
+    {
+      "id": "block-testimonials-4",
+      "block_type": "testimonials",
+      "display_order": 4,
+      "content": {
+        "hidden": false
+      },
+      "updated_at": "2026-09-25T06:19:02.352+00:00"
+    },
+    {
+      "id": "block-home-page",
+      "block_type": "home_page",
+      "display_order": 5,
+      "content": {
+        "cta_title": "Plan your next journey across Bangladesh",
+        "cta_hidden": false,
+        "cta_eyebrow": "Savar Tour Lover",
+        "hero_slides": [
+          {
+            "alt_text": "Sundarbans Mangrove Forest",
+            "image_url": "https://placehold.co/1920x1080/sea"
+          },
+          {
+            "alt_text": "Chittagong Hill Tracts",
+            "image_url": "https://placehold.co/1920x1080/mountain"
+          }
+        ],
+        "tours_title": "Popular tour packages",
+        "hero_eyebrow": "🌍 Discover Bangladesh",
+        "offers_title": "A little reason to book today",
+        "tours_hidden": false,
+        "why_us_items": [
+          {
+            "icon": "users",
+            "title": "Trusted local hosts",
+            "description": "Every tour is led by a verified Bangladeshi host who knows their district like family — not a scripted guide."
+          },
+          {
+            "icon": "receipt",
+            "title": "Transparent pricing",
+            "description": "The price you see is the price you pay. No hidden fees, no last-minute 'fuel surcharges', no surprises."
+          },
+          {
+            "icon": "receipt",
+            "title": "Flexible payment",
+            "description": "Book with a 40% advance and clear the balance on tour day — online or directly with your host, with confirmation to both sides."
+          },
+          {
+            "icon": "ticket",
+            "title": "Zero-friction booking",
+            "description": "From browsing to e-ticket in minutes. Your voucher, digital ticket, and reminders arrive automatically on WhatsApp and email."
+          },
+          {
+            "icon": "support",
+            "title": "Real 24/7 support",
+            "description": "A human answers on WhatsApp throughout your trip — not a chatbot that loops you in circles."
+          },
+          {
+            "icon": "shield",
+            "title": "Money, fully accounted",
+            "description": "Every payment is tracked end-to-end and confirmed to you and our team, so there's never a dispute about what was paid."
+          }
+        ],
+        "why_us_title": "Travel with people who call Bangladesh home",
+        "hero_headline": "Savar Tour Lover",
+        "journal_title": "Stories from the road",
+        "offers_hidden": true,
+        "reviews_title": "Loved by travelers across Bangladesh",
+        "tours_eyebrow": "Tour Packages",
+        "why_us_hidden": false,
+        "hero_highlight": "--",
+        "hero_video_url": "",
+        "journal_hidden": false,
+        "offers_eyebrow": "Special Offers",
+        "reviews_hidden": false,
+        "services_items": [
+          {
+            "icon": "users",
+            "title": "Group Tours",
+            "description": "Curated group departures to every corner of Bangladesh, led by a local host and priced all-inclusive."
+          },
+          {
+            "icon": "route",
+            "title": "Private & Custom Trips",
+            "description": "Your dates, your pace, your budget. We design a private itinerary around exactly what you want to do."
+          },
+          {
+            "icon": "heart",
+            "title": "Honeymoon Packages",
+            "description": "Ocean-view suites, candlelit dinners, and private moments — built for two, from arrival flowers to departure."
+          },
+          {
+            "icon": "home",
+            "title": "Family Holidays",
+            "description": "Kids-first pacing, safe transport, and hosts who handle the logistics so parents actually relax."
+          },
+          {
+            "icon": "briefcase",
+            "title": "Corporate Retreats",
+            "description": "Team trips to the hills or the coast with planning, logistics, and bonding activities handled end to end."
+          },
+          {
+            "icon": "mountain",
+            "title": "Adventure & Trekking",
+            "description": "Hill-tract treks, forest cruises, and off-the-map experiences with certified local guides and permits arranged."
+          }
+        ],
+        "services_title": "Every kind of trip, handled",
+        "tours_cta_href": "/tours",
+        "why_us_eyebrow": "Why ATITHI",
+        "cta_description": "Tell us where you want to go and when — we'll design a tour around you. Book with a small advance and settle the rest on tour day.",
+        "hero_media_type": "video",
+        "journal_eyebrow": "Travel Journal",
+        "reviews_eyebrow": "Customer Reviews",
+        "services_hidden": false,
+        "tours_cta_label": "Browse all tours",
+        "cta_primary_href": "/contact",
+        "hero_subheadline": "From the Sundarbans to Saint Martin's Island — explore with expert guides.",
+        "journal_cta_href": "/journal",
+        "services_eyebrow": "Services",
+        "cta_primary_label": "Plan My Trip",
+        "journal_cta_label": "All stories",
+        "stats_tours_count": "150+",
+        "tours_description": "Small groups, local hosts, and everything included. Filter by place, duration, or price to find your trip in seconds.",
+        "cta_secondary_href": "/tours",
+        "destinations_title": "Popular destinations across Bangladesh",
+        "offers_description": "Seasonal savings and group perks — applied automatically at checkout with the right code.",
+        "why_us_description": "We're not a booking platform that outsources your trip to strangers. We're local hosts who plan, accompany, and settle every detail — including your final payment, confirmed on both sides.",
+        "cta_secondary_label": "Browse Tours",
+        "destinations_hidden": false,
+        "journal_description": "Field guides, food trails, and honest travel writing from our hosts and guests.",
+        "reviews_description": "Real words from guests who booked, travelled, and settled their balances — all in one seamless flow.",
+        "destinations_eyebrow": "Destinations",
+        "services_description": "Group or private, family or honeymoon, weekend or expedition — if it's in Bangladesh, we'll host it.",
+        "destinations_cta_href": "/destinations",
+        "hero_primary_cta_href": "/tours",
+        "stats_happy_travelers": "5000+",
+        "destinations_cta_label": "All destinations",
+        "featured_section_title": "Featured Destinations",
+        "hero_primary_cta_label": "Explore Tours",
+        "stats_years_experience": "10+",
+        "hero_secondary_cta_href": "/about",
+        "destinations_description": "Beaches, hill tracts, mangrove forests, and tea country — pick a place, we'll handle the rest.",
+        "hero_secondary_cta_label": "Learn More",
+        "stats_destinations_count": "30+",
+        "featured_section_subtitle": "Handpicked by our travel experts"
+      },
+      "updated_at": "2026-11-04T12:30:57.393+00:00"
+    },
+    {
+      "id": "block-about-page",
+      "block_type": "about_page",
+      "display_order": 6,
+      "content": {
+        "team": [
+          {
+            "bio": "Runs the host network and on-ground logistics across all twelve destinations.",
+            "name": "Shimul hasan prince",
+            "role": "Founder & Head of Operations",
+            "scene": "sundarbans",
+            "image_url": "https://scontent.fdac174-1.fna.fbcdn.net/v/t39.99422-6/784251858_1076656198343857_641835457383240422_n.png?stp=dst-jpg_tt6&cstp=mx2045x2048&ctp=s2045x2048&_nc_cat=104&_nc_map=urlgen_bucketless&ccb=1-7&_nc_sid=a5f93a&_nc_eui2=AeFqorxNmftBWCKVqifuLwu6kkyYWr_kn4ySTJhav-SfjCZElEU3oGX8u3I7Vr8VbCHwuK-Ifi_DgzF6OwtP4knu&_nc_ohc=4wmyEtI36BwQ7kNvwEioHEP&_nc_oc=Adok8xVfqQ1Q370ObXxEJ8rWquPykLEYLo9vOtK9Pb6DPe3jZUZVa-WpBdpjXacFCe8&_nc_zt=14&_nc_ht=scontent.fdac174-1.fna&_nc_gid=VRa6-lHOvHmPXTCCGLF3hw&_nc_ss=7b2a8&oh=00_AQOHcpEgOwf14fOz9-EldtMEPWb4_gWfORaQYERx2H8HiQ&oe=6ACAC42A"
+          },
+          {
+            "bio": "Built the secure payment and booking system so every advance and balance is tracked without ambiguity.",
+            "name": "Mehedi Hasan",
+            "role": "Head of Finance",
+            "scene": "coxsbazar",
+            "image_url": "https://scontent.fdac5-2.fna.fbcdn.net/v/t39.30808-6/722132527_4635837609986278_8193219719005108875_n.jpg?stp=dst-jpg_tt6&cstp=mx2048x2048&ctp=s2048x2048&_nc_cat=103&_nc_map=urlgen_bucketless&ccb=1-7&_nc_sid=6ee11a&_nc_eui2=AeGwehPUddia7wT1qZPgf0-3zRzX494Aac7NHNfj3gBpzldelQNOr0khADWv8bPbUqusWzhoJoMNwDtFAEZEqQze&_nc_ohc=JvuzYA0uWuMQ7kNvwGy8uW7&_nc_oc=Adpj8tFfDtjhhEH-dUAPbor7a16wgTpIOCSUtGGQl5PtWvLOQi0m401jgiaI32KG8rg&_nc_zt=23&_nc_ht=scontent.fdac5-2.fna&_nc_gid=cidvygH0xvOpljur-qcbOw&_nc_ss=7b2a8&oh=00_AQOhkc-WrJS514as7usVMrGgeoRlj-wMN6_TU3P-TUMyZw&oe=6ACAABE9"
+          },
+          {
+            "bio": "Experienced storyteller and expedition leader.",
+            "name": "Muktadir Zaki",
+            "role": "Marketing Admin",
+            "scene": "sajek",
+            "image_url": "https://scontent.fdac5-2.fna.fbcdn.net/v/t39.30808-6/672229526_944143844876564_4535943021646671853_n.jpg?stp=cp6_dst-jpg_tt6&cstp=mx1536x2048&ctp=s1536x2048&_nc_cat=101&_nc_map=urlgen_bucketless&ccb=1-7&_nc_sid=833d8c&_nc_eui2=AeELd-gVk8RcSXR-KY02_ScfRId_k5WCKoNEh3-TlYIqgz2wb9ep0SYvEeKB8hqqQSRDCtMVEUO45FVnhX6CHO7O&_nc_ohc=RXEWOkdq6joQ7kNvwH4iKmQ&_nc_oc=AdqCE3iivbRkYkO45V-XVBG9Y5OcWMPS7YXLqpfgpeNGfFhnaJ5grxj94jtlKBWr6rw&_nc_zt=23&_nc_ht=scontent.fdac5-2.fna&_nc_gid=Om_4YwzP9bB04ILVE9JGIw&_nc_ss=7b2a8&oh=00_AQOxpW2gQUxMJVgibePq66PfoFBF85Z7hRSmJCNcRwkxPw&oe=6ACAAA79"
+          },
+          {
+            "bio": "Experienced storyteller and expedition leader.",
+            "name": "Manjiro Redwan",
+            "role": "Co-Admin",
+            "scene": "sajek",
+            "image_url": "https://scontent.fdac5-2.fna.fbcdn.net/v/t39.99422-6/833574322_1117871931104429_1414018234699101895_n.png?stp=dst-jpg_tt6&cstp=mx1536x2048&ctp=s1536x2048&_nc_cat=111&_nc_map=urlgen_bucketless&ccb=1-7&_nc_sid=833d8c&_nc_eui2=AeEI1FARxRridHqEI4RloIkdD5LR-VH_FbQPktH5Uf8VtCp7O_LAFoFJjByiB6QuDC_k7PtYsOGYTb1I1980VpJX&_nc_ohc=NnvmuPDbVloQ7kNvwEy6MSn&_nc_oc=AdpLvc7UVyiT27R7yGrA2naqbvdx3HcxfiNerOwg1bRQBLqlJ86TtkUh-aMoRti0sMA&_nc_zt=14&_nc_ht=scontent.fdac5-2.fna&_nc_gid=E9D1o218ZTudJwbz36rVqQ&_nc_ss=7b2a8&oh=00_AQM9-yJiZbn8h0WXNt7V0K6PdkmgqcdNabCe3oqJmejokg&oe=6ACA996F"
+          },
+          {
+            "bio": "Experienced storyteller and expedition leader.",
+            "name": "Joy Ronjon Das",
+            "role": "Co-Admin",
+            "scene": "sajek",
+            "image_url": "https://scontent.fdac5-2.fna.fbcdn.net/v/t39.30808-6/716251017_1664704968065466_791430614303217112_n.jpg?stp=dst-jpg_tt6&cstp=mx1536x2048&ctp=s1536x2048&_nc_cat=109&_nc_map=urlgen_bucketless&ccb=1-7&_nc_sid=a5f93a&_nc_eui2=AeFuqvAmiQryW4uyibwDO8ge4ycDoqMrC2_jJwOioysLb47BBoPL4zhN0P2aIb9xLM_VHamt_VV3_r2veVvzNorT&_nc_ohc=Dmt4LXfG7_sQ7kNvwGqQkNi&_nc_oc=Adpcpf4l0qgYkZ9k4-2YWw9qsyJu3GvrOSr-3XsJ-nxbet-kFBYS15bu-DRFfSx7oFE&_nc_zt=23&_nc_ht=scontent.fdac5-2.fna&_nc_gid=5elR6vp_5bYDdfixBeYc2A&_nc_ss=7b2a8&oh=00_AQN6e2PJTAhwmV9NY0cGRPlwNnCPyvoG2CXK6XouNRHCFA&oe=6ACACA5F"
+          },
+          {
+            "bio": "Experienced storyteller and expedition leader.",
+            "name": "Ayan Malik",
+            "role": "Co-Admin",
+            "scene": "sajek",
+            "image_url": "https://scontent.fdac5-1.fna.fbcdn.net/v/t39.30808-6/701612721_973089935317300_802129298793121982_n.jpg?stp=dst-jpg_tt6&cstp=mx828x828&ctp=s828x828&_nc_cat=105&_nc_map=urlgen_bucketless&ccb=1-7&_nc_sid=a5f93a&_nc_eui2=AeHaGIcxi8jAgtGudgakQr_OzuzIqVPBDuvO7MipU8EO664x5OCEJtDRXxLd5gqLQuF2POzeurI8DPONqjR-pVAV&_nc_ohc=ZI-1hVk-AgIQ7kNvwElQh5Z&_nc_oc=AdqalgjNd3U8X6MYg-wNKzCyysAgigJfLPfFLoUxWWGNgld4Us43FXDUuBGL6jT2DhI&_nc_zt=23&_nc_ht=scontent.fdac5-1.fna&_nc_gid=fsH6JUuQjgspBdzX4zv8BQ&_nc_ss=7b2a8&oh=00_AQNALJuzOCXiDq5nuv63Ih1oUzQTY7ElyoHdB1_K4iq-fQ&oe=6ACAB3B5"
+          },
+          {
+            "bio": "Experienced storyteller and expedition leader.",
+            "name": "Abu Rayhan",
+            "role": "Moderator",
+            "scene": "sajek",
+            "image_url": "https://scontent.fdac5-2.fna.fbcdn.net/v/t39.30808-6/745045917_122109460317374807_6488918856155766316_n.jpg?stp=dst-jpg_tt6&cstp=mx1536x2048&ctp=s1536x2048&_nc_cat=102&_nc_map=urlgen_bucketless&ccb=1-7&_nc_sid=833d8c&_nc_eui2=AeFObEEHuO6J5Ssw0arXrPtUoRFBFAzNDymhEUEUDM0PKRvdJORZYt8jD4Ky4JezjvnyYoGTijCNrrQp5Qnvc_U1&_nc_ohc=ZjFDj4_lM9QQ7kNvwEGrJ3G&_nc_oc=AdpSRf3DbXigW0seqByhO8abbOyYTaHLbDYGyXQ3dkxUGTRRlmRdqTn05dlEmW-fVec&_nc_zt=23&_nc_ht=scontent.fdac5-2.fna&_nc_gid=5I54Yf6Rvp6NZ9ubvNDNew&_nc_ss=7b2a8&oh=00_AQMoOOM4wy5GRydWfxAZoI_v1BNhZbhCbd8KyOlQN-igpA&oe=6ACAB87D"
+          },
+          {
+            "bio": "Experienced storyteller and expedition leader.",
+            "name": "Robiul Hasan Emon",
+            "role": "Moderator",
+            "scene": "sajek",
+            "image_url": "https://scontent.fdac5-2.fna.fbcdn.net/v/t39.99422-6/839441228_1045421115164644_5149183040221531197_n.png?stp=dst-jpg_tt6&cstp=mx1536x2048&ctp=s1536x2048&_nc_cat=111&_nc_map=urlgen_bucketless&ccb=1-7&_nc_sid=833d8c&_nc_eui2=AeHMM876brCFACRMdlcIVO9S_CTx1ZCfniT8JPHVkJ-eJAvGNgigMMRU1yD36daWbZZM_uOZfT7Z8lgJNO5t8FZC&_nc_ohc=PjKTuVcLJKsQ7kNvwHQO_I6&_nc_oc=AdrqtxzHinUGnrF6I1Rbo8pvCxGJcgX4-3mLg_xTgQUhOeZ6JR5EiYYFUxMOzhioyiE&_nc_zt=14&_nc_ht=scontent.fdac5-2.fna&_nc_gid=oEqRtp0pyaiLp7tV8v_42Q&_nc_ss=7b2a8&oh=00_AQOue-sELldcXd7SEYlaBhjSwEwxY_0oFPBkq6S63Ake6Q&oe=6ACAABFE"
+          },
+          {
+            "bio": "Experienced storyteller and expedition leader.",
+            "name": "Israfil Hossain",
+            "role": "Moderator",
+            "scene": "sajek",
+            "image_url": "https://scontent.fdac5-1.fna.fbcdn.net/v/t39.99422-6/838612088_947050935134409_3838425962148914919_n.png?stp=dst-jpg_tt6&cstp=mx1536x2048&ctp=s1536x2048&_nc_cat=109&_nc_map=urlgen_bucketless&ccb=1-7&_nc_sid=833d8c&_nc_eui2=AeF1Kp6bM_XrAb0rf32fAM_lULFC1WRiBctQsULVZGIFy3ihF0JFOKL2O91ldgDK3PpyPIZy0rBGqbuJwMfp5LMM&_nc_ohc=WjTfm3gCNwoQ7kNvwGZXw0U&_nc_oc=Adp-hMnNw4YifvrIPlf5Db_-PRJH0pFXkubH2IQgchIs3yVEGnbONqgvcQJ_9e0ED14&_nc_zt=14&_nc_ht=scontent.fdac5-1.fna&_nc_gid=gcgvmeSPa9KOUXB9Cmbmsg&_nc_ss=7b2a8&oh=00_AQOVErmN0APFoHPRj59nuVmbzGL9whl00xwQT7d2dp-UEA&oe=6ACAA682"
+          },
+          {
+            "bio": "Experienced storyteller and expedition leader.",
+            "name": "Tasbir Hossain",
+            "role": "Moderator",
+            "scene": "sajek",
+            "image_url": "https://scontent.fdac5-2.fna.fbcdn.net/v/t39.30808-6/675418313_989619400316537_2292867335395767940_n.jpg?stp=dst-jpg_tt6&cstp=mx1477x1470&ctp=s1477x1470&_nc_cat=107&_nc_map=urlgen_bucketless&ccb=1-7&_nc_sid=a5f93a&_nc_eui2=AeEtUgKExGMoxCw2SI0mGDjDQnpnGzvHJARCemcbO8ckBBo2kHR6Jyhy3U-A5ipjvovb4tRoIlwpQ55LegkNok_E&_nc_ohc=oWAaInJ9c7kQ7kNvwEU0xig&_nc_oc=AdrsWgXb5auav5M8-yveRALiKDASk1CHq7VDtCZ8FzpGKTaL1BKXanKN2oh8-xT42o4&_nc_zt=23&_nc_ht=scontent.fdac5-2.fna&_nc_gid=OMXSpHv6AWp1NmuKAvzFVw&_nc_ss=7b2a8&oh=00_AQPtz9tlhG263n80xWXOhCMUnNHAlgF4HZi8LyIrgqmhBw&oe=6ACAA32A"
+          }
+        ],
+        "values": [
+          {
+            "icon": "compass",
+            "title": "Authenticity",
+            "description": "We showcase real Bangladesh."
+          },
+          {
+            "icon": "heart",
+            "title": "Safety",
+            "description": "Your safety is our priority."
+          },
+          {
+            "icon": "users",
+            "title": "Sustainability",
+            "description": "We protect what we explore."
+          }
+        ],
+        "cta_href": "/contact",
+        "cta_label": "Plan My Trip",
+        "cta_title": "Ready to Explore?",
+        "hero_title": "About Savar Tour Lover",
+        "story_body": "Founded in 2014 with a passion for exploring Bangladesh's hidden gems, we have grown to serve over 5,000 satisfied travelers from around the world.",
+        "team_title": "A few of the people who'll host you",
+        "story_badge": "Our Story",
+        "story_title": "Our Story",
+        "vision_body": "To be the most trusted travel company in South Asia.",
+        "cta_subtitle": "Let's plan your perfect Bangladesh adventure.",
+        "hero_eyebrow": "About Savar Tour Lover",
+        "mission_body": "To provide authentic, sustainable, and unforgettable travel experiences across Bangladesh.",
+        "mission_text": "To make domestic travel across Bangladesh seamless, transparent, and genuinely memorable — while ensuring tourism directly benefits the local communities and guides who make these places special.",
+        "team_eyebrow": "The team",
+        "team_members": [
+          {
+            "bio": "10+ years of travel expertise.",
+            "name": "Arko Rahman",
+            "role": "CEO & Lead Guide",
+            "photo": "https://placehold.co/200x200/blue"
+          },
+          {
+            "bio": "Logistics and planning specialist.",
+            "name": "Nadia Islam",
+            "role": "Operations Manager",
+            "photo": "https://placehold.co/200x200/pink"
+          }
+        ],
+        "vision_title": "Our Vision",
+        "booking_title": "Zero-friction, start to finish",
+        "hero_subtitle": "Your Trusted Bangladesh Travel Partner Since 2014",
+        "mission_title": "Our Mission",
+        "payment_badge": "Payment & Confirmation",
+        "payment_title": "How your money is handled, end to end",
+        "booking_eyebrow": "How booking works",
+        "cta_button_href": "/contact",
+        "cta_description": "Tell us where you want to go — we'll take it from there, right through to your final confirmed payment.",
+        "cta_button_label": "Plan My Trip",
+        "payment_cta_href": "/contact",
+        "story_paragraphs": [
+          "Most domestic travel in Bangladesh was broken in two ways: either you were on your own navigating erratic transport, unverified hotels, and hidden costs — or you were packed into a thirty-person bus tour with fixed buffets and thirty-minute photo stops.",
+          "We wanted something different: trips designed the way an experienced friend would show you their hometown. Small groups, handpicked local hosts, honest pricing, and genuine hospitality.",
+          "Today, Atithi runs curated journeys to twelve destinations across Bangladesh — from the tea valleys of Sreemangal to the coral reefs of Saint Martin. Every trip is led by someone who actually lives there."
+        ],
+        "payment_cta_label": "Talk to us",
+        "team_section_title": "Meet Our Team",
+        "booking_description": "From your first search to your final confirmed payment, every step is designed to remove friction and ambiguity.",
+        "payment_description": "Pay in full or pay a small advance through bKash, Nagad, Rocket, or card at booking. If you paid partially, the remaining balance is settled on the day of the tour — either online or in cash directly with your host. The moment it clears, both you and our team get a WhatsApp and email confirmation, so there's a clean record of what was paid, when, on both sides.",
+        "hero_background_image": "https://placehold.co/1920x600/green",
+        "team_section_subtitle": "Passionate locals who know every corner of Bangladesh."
+      },
+      "updated_at": "2026-11-01T08:21:13.244+00:00"
+    },
+    {
+      "id": "block-journal-page",
+      "block_type": "journal_page",
+      "display_order": 8,
+      "content": {
+        "hero_title": "Travel Journal",
+        "recent_label": "Latest Articles",
+        "hero_subtitle": "Stories, Tips & Inspiration from the Road",
+        "featured_label": "Editor's Pick",
+        "categories_label": "Browse by Category",
+        "cta_newsletter_title": "Stay Inspired",
+        "hero_background_image": "https://placehold.co/1920x600/jungle",
+        "cta_newsletter_subtitle": "Subscribe for weekly travel stories and exclusive deals.",
+        "cta_newsletter_placeholder": "Your email address",
+        "cta_newsletter_button_label": "Subscribe"
+      },
+      "updated_at": "2026-09-28T03:53:41.03+00:00"
+    },
+    {
+      "id": "block-tour-categories",
+      "block_type": "service_list",
+      "display_order": 99,
+      "content": {
+        "categories": [
+          {
+            "id": "cat-group-tour",
+            "icon": "👥",
+            "name": "Group Tour",
+            "slug": "group_tour",
+            "badge": "Most Popular",
+            "is_active": true,
+            "description": "Shared budget-friendly group tours with confirmed weekly departures",
+            "display_order": 1
+          },
+          {
+            "id": "cat-corporate-tour",
+            "icon": "🏢",
+            "name": "Corporate Tour",
+            "slug": "corporate_tour",
+            "badge": "Business",
+            "is_active": true,
+            "description": "Executive team retreats, annual picnics, and tailored conferences",
+            "display_order": 2
+          },
+          {
+            "id": "cat-custom-tour",
+            "icon": "✨",
+            "name": "Customized Tour",
+            "slug": "customized_tour",
+            "badge": "Flexible",
+            "is_active": true,
+            "description": "Private custom-tailored itineraries designed around your preferences",
+            "display_order": 3
+          },
+          {
+            "id": "cat-family-tour",
+            "icon": "👨‍👩‍👧‍👦",
+            "name": "Family Tour",
+            "slug": "family_tour",
+            "badge": "Family Friendly",
+            "is_active": true,
+            "description": "Comfortable, relaxed journeys suitable for children and elders",
+            "display_order": 6
+          },
+          {
+            "id": "cat-day-trip",
+            "icon": "☀️",
+            "name": "Day Trip",
+            "slug": "day_trip",
+            "badge": "1 Day",
+            "is_active": true,
+            "description": "Single-day sightseeing and activities without overnight stay",
+            "display_order": 7
+          }
+        ],
+        "updated_at": "2026-11-04T17:51:40.121Z"
+      },
+      "updated_at": "2026-11-01T04:00:04.461+00:00"
+    },
+    {
+      "id": "block-seo-settings",
+      "block_type": "seo_settings",
+      "display_order": 100,
+      "content": {
+        "pages": {
+          "home": {
+            "title": "Savar Tour Lover — আপনার স্বপ্ন উড়তে দিন | Top Bangladesh Tour Packages",
+            "keywords": [
+              "Savar Tour Lover",
+              "সাভার ট্যুর লাভার",
+              "Bangladesh tour package",
+              "সাজেক ট্যুর",
+              "কক্সবাজার ট্যুর"
+            ],
+            "description": "Book authentic domestic tour packages in Bangladesh with verified local hosts. Sajek Valley, Cox's Bazar, Saint Martin, Sylhet, Sundarbans & more."
+          },
+          "about": {
+            "title": "About Savar Tour Lover | Trusted Local Travel Agency in Bangladesh",
+            "keywords": [
+              "about Savar Tour Lover",
+              "আমাদের সম্পর্কে",
+              "best travel agency savar"
+            ],
+            "description": "Learn about Savar Tour Lover's story, verified local hosts, radical transparency in pricing, and commitment to domestic tourism in Bangladesh."
+          },
+          "tours": {
+            "title": "All Tour Packages in Bangladesh | Savar Tour Lover",
+            "keywords": [
+              "Bangladesh tour packages",
+              "ট্যুর প্যাকেজ",
+              "sajek tour",
+              "coxs bazar package",
+              "saint martin package"
+            ],
+            "description": "Browse all curated domestic tour packages across Bangladesh. Fixed departures, small groups, transparent pricing with only 40% advance."
+          },
+          "contact": {
+            "title": "Contact & Booking Support | Savar Tour Lover",
+            "keywords": [
+              "contact Savar Tour Lover",
+              "সাভার ট্যুর লাভার যোগাযোগ",
+              "travel agency phone number"
+            ],
+            "description": "Reach Savar Tour Lover 24/7 on WhatsApp or call our hotline. Office at Savar Pollibidut, Dhaka."
+          },
+          "journal": {
+            "title": "Travel Journal & Bangladesh Travel Guides | Savar Tour Lover",
+            "keywords": [
+              "Bangladesh travel guide",
+              "ভ্রমণ গাইড",
+              "travel blog bangladesh"
+            ],
+            "description": "Honest travel stories, itinerary guides, packing lists, and local food tips from experienced Bangladeshi hosts."
+          },
+          "destinations": {
+            "title": "Popular Travel Destinations in Bangladesh | Savar Tour Lover",
+            "keywords": [
+              "Bangladesh tourist destinations",
+              "বাংলাদেশের দর্শনীয় স্থান",
+              "Sajek",
+              "Coxs Bazar",
+              "Saint Martin",
+              "Sylhet"
+            ],
+            "description": "Explore top tourist destinations across Bangladesh — hill tracts, sea beaches, mangrove forests, tea estates, and historical landmarks."
+          }
+        },
+        "keywords": [
+          "Savar Tour Lover",
+          "সাভার ট্যুর লাভার",
+          "Bangladesh tour package",
+          "বাংলাদেশ ট্যুর প্যাকেজ",
+          "Sajek tour package",
+          "সাজেক ট্যুর প্যাকেজ",
+          "Cox's Bazar tour package",
+          "কক্সবাজার ভ্রমণ প্যাকেজ",
+          "Saint Martin tour package",
+          "সেন্টমার্টিন জাহাজ টিকিট প্যাকেজ",
+          "Sylhet tour package",
+          "সিলেট ভ্রমণ প্যাকেজ",
+          "Sreemangal tea garden tour",
+          "শ্রীমঙ্গল চা বাগান ট্যুর",
+          "Sundarbans tour package",
+          "সুন্দরবন ভ্রমণ প্যাকেজ",
+          "Bandarban tour package",
+          "বান্দরবান ট্যুর প্যাকেজ",
+          "cheap tour package Bangladesh",
+          "কম খরচে ভ্রমণ বাংলাদেশ",
+          "domestic tours Bangladesh",
+          "সেরা ট্রাভেল এজেন্সি সাভার",
+          "best travel agency in Savar Dhaka",
+          "family tour package BD",
+          "corporate tour Bangladesh",
+          "Saint Martin ship ticket booking",
+          "আপনার স্বপ্ন উড়তে দিন"
+        ],
+        "site_name": "Savar Tour Lover BD",
+        "geo_region": "BD-13",
+        "site_title": "Savar Tour Lover — আপনার স্বপ্ন উড়তে দিন | Best Bangladesh Tour Packages",
+        "tiktok_url": "",
+        "price_range": "৳৳",
+        "youtube_url": "",
+        "facebook_url": "https://facebook.com/savartourlover",
+        "geo_latitude": "23.8583",
+        "robots_index": true,
+        "contact_email": "info@savartourlover.com",
+        "contact_phone": "+880 1620-592884",
+        "geo_longitude": "90.2667",
+        "geo_placename": "Savar, Dhaka, Bangladesh",
+        "instagram_url": "https://instagram.com/savartourlover",
+        "opening_hours": "Mo-Su 00:00-23:59",
+        "robots_follow": true,
+        "site_title_bn": "সাভার ট্যুর লাভার — আপনার স্বপ্ন উড়তে দিন | সেরা বাংলাদেশ ট্যুর প্যাকেজ",
+        "title_template": "%s | Savar Tour Lover — আপনার স্বপ্ন উড়তে দিন",
+        "twitter_handle": "@savartourlover",
+        "business_name_bn": "সাভার ট্যুর লাভার",
+        "business_name_en": "Savar Tour Lover",
+        "default_og_image": "/images/logo-badge.png",
+        "meta_description": "Savar Tour Lover (সাভার ট্যুর লাভার) offers premium, budget-friendly domestic tour packages across Bangladesh. Explore Sajek Valley, Cox's Bazar, Saint Martin, Sylhet, Sreemangal & Sundarbans with trusted local hosts. Book with a 40% advance.",
+        "contact_phone_alt": "+880 1700-000000",
+        "facebook_pixel_id": "",
+        "office_address_bn": "সাভার পল্লীবিদ্যুৎ, কবরস্থান রোড, সাভার, ঢাকা ১৩৪০",
+        "office_address_en": "Savar Pollibidut, Kobarsthan Road, Savar, Dhaka 1340, Bangladesh",
+        "baidu_verification": "",
+        "canonical_base_url": "https://savartourlover.com",
+        "google_analytics_id": "",
+        "meta_description_bn": "সাভার ট্যুর লাভার (Savar Tour Lover) — আপনার স্বপ্ন উড়তে দিন। সাজেক, কক্সবাজার, সেন্টমার্টিন, সিলেট, শ্রীমঙ্গল ও সুন্দরবন সহ বাংলাদেশের সেরা সব ভ্রমণ প্যাকেজ। বিশ্বস্ত হোস্ট, স্বচ্ছ মূল্য ও সহজ কিস্তি।",
+        "yandex_verification": "",
+        "bing_site_verification": "",
+        "google_site_verification": "JQwJSF2P50EVVHz3dkxb3Nnnr6ZnrGDmwkn8xU_cLHk"
+      },
+      "updated_at": "2026-11-03T22:25:29.953+00:00"
+    },
+    {
+      "id": "block-expenses-data",
+      "block_type": "custom",
+      "display_order": 991,
+      "content": {
+        "expenses": [],
+        "updated_at": "2026-11-04T17:22:15.520Z"
+      },
+      "updated_at": "2026-11-04T10:39:45.294781+00:00"
+    },
+    {
+      "id": "block-suppliers-data",
+      "block_type": "custom",
+      "display_order": 992,
+      "content": {
+        "suppliers": [],
+        "updated_at": "2026-11-04T17:22:15.607Z"
+      },
+      "updated_at": "2026-11-04T10:39:45.385053+00:00"
+    }
+  ],
+  "staffUsers": [
+    {
+      "id": "usr-admin-1",
+      "username": "admin",
+      "password_hash": "210000$de114e3ded15edb546d1266d0d34918b44908858e011fd962a38f1a0b986af67a631bb2f6c4919d37eea531f6be7375af019da6253783e322b595c7a4d77caa2",
+      "salt": "8e4c1ce665ceb8419ff57a1aefb13252",
+      "role": "super_admin",
+      "phone_number": "+8801929582426",
+      "email": "savartourlover@gmail.com",
+      "first_name": "Savar",
+      "last_name": "Admin"
+    }
+  ],
+  "customers": [],
+  "bookings": [],
+  "payments": [],
+  "clearanceTickets": [],
+  "alerts": [],
+  "expenses": [],
+  "suppliers": [],
+  "contactInquiries": [],
+  "analyticsEvents": [
+    {
+      "event_name": "page_view",
+      "path": "/tours/america",
+      "title": "america Tour Package | Savar Tour Lover — আপনার স্বপ্ন উড়তে দিন",
+      "referrer": "https://savartourlover.com/tours/america",
+      "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/156.0.0.0 Safari/537.36",
+      "ip_hash": "99d9fd0adf00d352",
+      "session_id": "sid-mw13tcy8-w4f2i8",
+      "visitor_id": "vid-mw12wlz5-hny5db",
+      "metadata": {},
+      "id": "evt-1793814753566-1251f26b",
+      "created_at": "2026-11-04T17:52:33.566Z"
+    },
+    {
+      "event_name": "page_view",
+      "path": "/tours",
+      "title": "Tour Packages Across Bangladesh | Savar Tour Lover — আপনার স্বপ্ন উড়তে দিন",
+      "referrer": "https://savartourlover.com/tours",
+      "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/156.0.0.0 Safari/537.36",
+      "ip_hash": "99d9fd0adf00d352",
+      "session_id": "sid-mw13tcy8-w4f2i8",
+      "visitor_id": "vid-mw12wlz5-hny5db",
+      "metadata": {},
+      "id": "evt-1793814751678-7905b174",
+      "created_at": "2026-11-04T17:52:31.678Z"
+    },
+    {
+      "event_name": "page_view",
+      "path": "/",
+      "title": "Savar Tour Lover — আপনার স্বপ্ন উড়তে দিন | Best Bangladesh Tour Packages",
+      "referrer": "https://savartourlover.com/",
+      "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/156.0.0.0 Safari/537.36",
+      "ip_hash": "99d9fd0adf00d352",
+      "session_id": "sid-mw13tcy8-w4f2i8",
+      "visitor_id": "vid-mw12wlz5-hny5db",
+      "metadata": {},
+      "id": "evt-1793814748826-bdcd1423",
+      "created_at": "2026-11-04T17:52:28.826Z"
+    },
+    {
+      "event_name": "page_view",
+      "path": "/",
+      "title": "Savar Tour Lover — আপনার স্বপ্ন উড়তে দিন | Best Bangladesh Tour Packages",
+      "referrer": "https://savartourlover.com/",
+      "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/156.0.0.0 Safari/537.36",
+      "ip_hash": "99d9fd0adf00d352",
+      "session_id": "sid-mw13tcy8-w4f2i8",
+      "visitor_id": "vid-mw12wlz5-hny5db",
+      "metadata": {},
+      "id": "evt-1793814743752-3468c977",
+      "created_at": "2026-11-04T17:52:23.752Z"
+    },
+    {
+      "event_name": "page_view",
+      "path": "/",
+      "title": "Savar Tour Lover — আপনার স্বপ্ন উড়তে দিন | Best Bangladesh Tour Packages",
+      "referrer": "https://savartourlover.com/",
+      "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/156.0.0.0 Safari/537.36",
+      "ip_hash": "99d9fd0adf00d352",
+      "session_id": "sid-mw13tcy8-w4f2i8",
+      "visitor_id": "vid-mw12wlz5-hny5db",
+      "metadata": {},
+      "id": "evt-1793814732271-27ad8fc6",
+      "created_at": "2026-11-04T17:52:12.271Z"
+    },
+    {
+      "event_name": "page_view",
+      "path": "/tours",
+      "title": "Tour Packages Across Bangladesh | Savar Tour Lover — আপনার স্বপ্ন উড়তে দিন",
+      "referrer": "https://savartourlover.com/tours",
+      "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/156.0.0.0 Safari/537.36",
+      "ip_hash": "99d9fd0adf00d352",
+      "session_id": "sid-mw13tcy8-w4f2i8",
+      "visitor_id": "vid-mw12wlz5-hny5db",
+      "metadata": {},
+      "id": "evt-1793814729169-257ea7e9",
+      "created_at": "2026-11-04T17:52:09.169Z"
+    },
+    {
+      "event_name": "page_view",
+      "path": "/",
+      "title": "Savar Tour Lover — আপনার স্বপ্ন উড়তে দিন | Best Bangladesh Tour Packages",
+      "referrer": "https://savartourlover.com/",
+      "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/156.0.0.0 Safari/537.36",
+      "ip_hash": "99d9fd0adf00d352",
+      "session_id": "sid-mw13tcy8-w4f2i8",
+      "visitor_id": "vid-mw12wlz5-hny5db",
+      "metadata": {},
+      "id": "evt-1793814653833-80acf718",
+      "created_at": "2026-11-04T17:50:53.833Z"
+    }
+  ],
+  "deletedEntities": {
+    "destinations": [],
+    "tours": [
+      "tour-1793814716828",
+      "america"
+    ],
+    "offers": [],
+    "testimonials": [],
+    "blogPosts": [],
+    "homepageBlocks": [],
+    "tourCategories": [
+      "cat-adventure-tour",
+      "adventure_tour"
+    ],
+    "bookings": [],
+    "customers": [],
+    "staffUsers": [],
+    "contactInquiries": [],
+    "alerts": []
+  },
+  "rocketIncomingSms": [],
+  "bkashIncomingSms": []
+}
