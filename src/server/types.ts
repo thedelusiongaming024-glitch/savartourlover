@@ -667,6 +667,7 @@ export interface DatabaseSchema {
     tourCategories?: string[];
     bookings?: string[];
     customers?: string[];
+    staffUsers?: string[];
     contactInquiries?: string[];
   };
 }

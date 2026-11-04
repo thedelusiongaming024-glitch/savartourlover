@@ -210,32 +210,6 @@
       "status": "published"
     },
     {
-      "id": "dest-1793505603793-m3ekd",
-      "name": "Sylhet",
-      "slug": "sylhet",
-      "division": "Sylhet",
-      "tagline": "Land of Two Leaves & A Bud",
-      "description": "Ratargul freshwater swamp forest, transparent emerald waters of Jaflong and Lalakhal, and historic shrines.",
-      "best_time_to_visit": "October to April",
-      "weather_notes": "Pleasant subtropical green valleys",
-      "popular_attractions": [
-        "Ratargul Swamp Forest",
-        "Jaflong Zero Point",
-        "Lalakhal Blue Canal",
-        "Bisnakandi"
-      ],
-      "recommended_accommodation": "Heritage hotels and river eco-resorts",
-      "travel_tips": "Rent wooden country boats for authentic rides through Ratargul swamp canopy.",
-      "permits_required": "None",
-      "cover_image": null,
-      "cover_video_url": "",
-      "seo_title": "Sylhet Tour Packages & Guide - Savar Tour Lover",
-      "seo_description": "Ratargul freshwater swamp forest, transparent emerald waters of Jaflong and Lalakhal, and historic shrines.",
-      "gallery": [],
-      "is_featured": true,
-      "status": "published"
-    },
-    {
       "id": "dest-1791386928284",
       "name": "Tanguar Haor",
       "slug": "tanguar-haor",
@@ -774,16 +748,6 @@
       "display_order": 1
     },
     {
-      "id": "cat-private-tour",
-      "icon": "🚙",
-      "name": "Private Tour",
-      "slug": "private_tour",
-      "badge": "Flexible",
-      "is_active": true,
-      "description": "Customized private itineraries for personal dates and groups",
-      "display_order": 2
-    },
-    {
       "id": "cat-weekend-getaway",
       "icon": "⛺",
       "name": "Weekend Getaway",
@@ -792,16 +756,6 @@
       "is_active": true,
       "description": "Quick short escapes designed for Friday-Saturday weekends",
       "display_order": 3
-    },
-    {
-      "id": "cat-adventure-tour",
-      "icon": "🧗",
-      "name": "Adventure Tour",
-      "slug": "adventure_tour",
-      "badge": "Thrilling",
-      "is_active": true,
-      "description": "Trekking, hills, caves, and outdoor exploration",
-      "display_order": 4
     },
     {
       "id": "cat-honeymoon-package",
@@ -832,16 +786,6 @@
       "is_active": true,
       "description": "Single-day sightseeing and activities without overnight stay",
       "display_order": 7
-    },
-    {
-      "id": "cat-heritage-tour",
-      "icon": "🏛️",
-      "name": "Heritage Tour",
-      "slug": "heritage_tour",
-      "badge": "Cultural",
-      "is_active": true,
-      "description": "Historical monuments, cultural roots, and archaeological wonders",
-      "display_order": 8
     }
   ],
   "offers": [
@@ -1126,14 +1070,14 @@
           }
         ],
         "subheadline": "From the Sundarbans to Saint Martin's Island — explore with expert guides.",
-        "hero_video_url": "https://youtu.be/rkpzYNB6xks?si=CXwquSYWv_U4BY_M",
+        "hero_video_url": "",
         "hero_media_type": "video",
         "primary_cta_href": "/tours",
         "primary_cta_label": "Explore Tours",
         "secondary_cta_href": "/about",
         "secondary_cta_label": "Learn More"
       },
-      "updated_at": "2026-10-31T21:14:44.903+00:00"
+      "updated_at": "2026-11-03T22:31:33.734+00:00"
     },
     {
       "id": "block_002",
@@ -1256,7 +1200,7 @@
         "tours_eyebrow": "Tour Packages",
         "why_us_hidden": false,
         "hero_highlight": "--",
-        "hero_video_url": "https://youtu.be/rkpzYNB6xks?si=CXwquSYWv_U4BY_M",
+        "hero_video_url": "",
         "journal_hidden": false,
         "offers_eyebrow": "Special Offers",
         "reviews_hidden": false,
@@ -1332,7 +1276,7 @@
         "stats_destinations_count": "30+",
         "featured_section_subtitle": "Handpicked by our travel experts"
       },
-      "updated_at": "2026-10-31T21:14:44.538+00:00"
+      "updated_at": "2026-11-03T22:31:32.166+00:00"
     },
     {
       "id": "block-about-page",
@@ -1719,9 +1663,9 @@
         "meta_description_bn": "সাভার ট্যুর লাভার (Savar Tour Lover) — আপনার স্বপ্ন উড়তে দিন। সাজেক, কক্সবাজার, সেন্টমার্টিন, সিলেট, শ্রীমঙ্গল ও সুন্দরবন সহ বাংলাদেশের সেরা সব ভ্রমণ প্যাকেজ। বিশ্বস্ত হোস্ট, স্বচ্ছ মূল্য ও সহজ কিস্তি।",
         "yandex_verification": "",
         "bing_site_verification": "",
-        "google_site_verification": ""
+        "google_site_verification": "JQwJSF2P50EVVHz3dkxb3Nnnr6ZnrGDmwkn8xU_cLHk"
       },
-      "updated_at": "2026-10-27T15:52:24.43+00:00"
+      "updated_at": "2026-11-03T22:25:29.953+00:00"
     }
   ],
   "staffUsers": [
@@ -1739,199 +1683,13 @@
   ],
   "customers": [
     {
-      "id": "cust_001",
-      "phone_number": "+8801711000001",
-      "full_name": "Rakibul Hasan",
-      "email": "rakibul.hasan@example.com",
-      "created_at": "2026-09-28T07:43:01.533741+00:00",
-      "updated_at": "2026-09-28T07:43:01.533741+00:00",
-      "activities": []
-    },
-    {
-      "id": "cust-1790582222454-287",
-      "phone_number": "+8801410207483",
-      "full_name": "Md Rakib Mia",
-      "email": "thedelusiongaming024@gmail.com",
-      "created_at": "2026-09-28T07:57:02.454+00:00",
-      "updated_at": "2026-11-03T19:53:57.569+00:00",
-      "last_login_at": "2026-09-28T07:57:02.454+00:00",
-      "activities": [
-        {
-          "id": "act-1793735637569-902",
-          "customer_id": "cust-1790582222454-287",
-          "type": "booking_created",
-          "title": "Booked Sajek valley",
-          "description": "Booking reference STL-2026-00013 created for 2 traveler(s) · Seats: F3, F4 · Pick-up: Savar Thana Stand (09:00 PM). Total: ৳9,600.",
-          "metadata": {
-            "tour_id": "tour-1791220397577",
-            "reference": "STL-2026-00013",
-            "booking_id": "book-1793735637569-36f6e62d174b1242",
-            "pickup_point": "Savar Thana Stand (09:00 PM)",
-            "departure_date": "2026-11-06",
-            "payment_method": "Bkash payment",
-            "selected_seats": [
-              "F3",
-              "F4"
-            ],
-            "traveler_count": 2
-          },
-          "created_at": "2026-11-03T19:53:57.569+00:00"
-        },
-        {
-          "id": "act-1793735583805-39",
-          "customer_id": "cust-1790582222454-287",
-          "type": "booking_created",
-          "title": "Booked ৫ ই নভেম্বর কক্সবাজার রিলাক্স ট্যুর",
-          "description": "Booking reference STL-2026-00013 created for 2 traveler(s) · Seats: B3, B4 · Pick-up: Savar Thana Stand (09:00 PM). Total: ৳7,000.",
-          "metadata": {
-            "tour_id": "tour-1791295371679",
-            "reference": "STL-2026-00013",
-            "booking_id": "book-1793735583777-e0c80aaf3f0d05e8",
-            "pickup_point": "Savar Thana Stand (09:00 PM)",
-            "departure_date": "2026-10-23",
-            "payment_method": "Bkash payment",
-            "selected_seats": [
-              "B3",
-              "B4"
-            ],
-            "traveler_count": 2
-          },
-          "created_at": "2026-11-03T19:53:03.805+00:00"
-        },
-        {
-          "id": "act-1793735139373-511",
-          "customer_id": "cust-1790582222454-287",
-          "type": "booking_created",
-          "title": "Booked ৫ ই নভেম্বর কক্সবাজার রিলাক্স ট্যুর",
-          "description": "Booking reference STL-2026-00013 created for 4 traveler(s) · Seats: A3, A4, B3, B4 · Pick-up: Savar Pollibidut (09:15 PM). Total: ৳14,000.",
-          "metadata": {
-            "tour_id": "tour-1791295371679",
-            "reference": "STL-2026-00013",
-            "booking_id": "book-1793735139344-816d4a5b495e880f",
-            "pickup_point": "Savar Pollibidut (09:15 PM)",
-            "departure_date": "2026-10-30",
-            "payment_method": "Bkash payment",
-            "selected_seats": [
-              "A3",
-              "A4",
-              "B3",
-              "B4"
-            ],
-            "traveler_count": 4
-          },
-          "created_at": "2026-11-03T19:45:39.373+00:00"
-        },
-        {
-          "id": "act-1793479084157-772",
-          "customer_id": "cust-1790582222454-287",
-          "type": "booking_created",
-          "title": "Booked america",
-          "description": "Booking reference STL-2026-00012 created for 1 traveler(s) · Seats: D3 · Pick-up: Savar Thana Stand (09:00 PM). Total: ৳25,000.",
-          "metadata": {
-            "tour_id": "tour-1793433291420",
-            "reference": "STL-2026-00012",
-            "booking_id": "book-1793479084130-adcd4bd14f22d61a",
-            "pickup_point": "Savar Thana Stand (09:00 PM)",
-            "departure_date": "2026-11-06",
-            "payment_method": "Bkash payment",
-            "selected_seats": [
-              "D3"
-            ],
-            "traveler_count": 1
-          },
-          "created_at": "2026-10-31T20:38:04.157+00:00"
-        },
-        {
-          "id": "act-1792478085739-69",
-          "customer_id": "cust-1790582222454-287",
-          "type": "booking_created",
-          "title": "Booked 20 tharik কক্সবাজার রিলাক্স ট্যুর",
-          "description": "Booking reference STL-2026-00010 created for 1 traveler(s) · Seats: B2 · Pick-up: Savar Thana Stand (09:00 PM). Total: ৳3,500.",
-          "metadata": {
-            "tour_id": "tour-1791295371679",
-            "reference": "STL-2026-00010",
-            "booking_id": "book-1792478085735-4305eba594719a1d",
-            "pickup_point": "Savar Thana Stand (09:00 PM)",
-            "departure_date": "2026-10-23",
-            "payment_method": "Bkash payment",
-            "selected_seats": [
-              "B2"
-            ],
-            "traveler_count": 1
-          },
-          "created_at": "2026-10-20T06:34:45.739+00:00"
-        }
-      ]
-    },
-    {
-      "id": "cust-1790584275855-776",
-      "phone_number": "+8801956565404",
-      "full_name": "Minhazul Islam",
-      "created_at": "2026-09-28T08:31:15.855+00:00",
-      "updated_at": "2026-09-28T15:09:26.18+00:00",
-      "last_login_at": "2026-09-28T08:31:15.855+00:00",
-      "activities": []
-    },
-    {
-      "id": "cust-1790609947715-888",
-      "phone_number": "+8801725177505",
-      "full_name": "Arko hassan",
-      "created_at": "2026-09-28T15:39:07.715+00:00",
-      "updated_at": "2026-09-28T15:39:07.715+00:00",
-      "last_login_at": "2026-09-28T15:39:07.715+00:00",
-      "activities": []
-    },
-    {
       "id": "cust-1791544962712-959",
       "phone_number": "+8801613574834",
       "full_name": "rasel",
       "created_at": "2026-10-09T11:22:42.712+00:00",
       "updated_at": "2026-10-09T11:22:42.712+00:00",
       "last_login_at": "2026-10-09T11:22:42.712+00:00",
-      "activities": [
-        {
-          "id": "act-1791545002436-367",
-          "customer_id": "cust-1791544962712-959",
-          "type": "payment_completed",
-          "title": "Cash Payment Approved (Advance)",
-          "description": "Physical cash payment of ৳2,520 approved by admin (admin) for booking STL-2026-00009.",
-          "metadata": {
-            "amount": "2520.00",
-            "reference": "STL-2026-00009",
-            "booking_id": "book-1791544963481-c2011f7eb50d23a1",
-            "approved_by": "admin",
-            "payment_type": "advance",
-            "remaining_due": "5880.00",
-            "payment_method": "cash_on_hand"
-          },
-          "created_at": "2026-10-09T11:23:22.436+00:00"
-        },
-        {
-          "id": "act-1791544963491-762",
-          "customer_id": "cust-1791544962712-959",
-          "type": "booking_created",
-          "title": "Booked সীতাকুণ্ড ডে লং ট্যুর",
-          "description": "Booking reference STL-2026-00009 created for 6 traveler(s) · Seats: C1, C2, D1, D2, E1, E2 · Pick-up: bismil. Total: ৳8,400. [Pay Cash by Hand - Awaiting 10-Minute Admin Approval]",
-          "metadata": {
-            "tour_id": "tour-1791287705467",
-            "reference": "STL-2026-00009",
-            "booking_id": "book-1791544963481-c2011f7eb50d23a1",
-            "pickup_point": "bismil",
-            "departure_date": "2026-10-16",
-            "payment_method": "cash_on_hand",
-            "selected_seats": [
-              "C1",
-              "C2",
-              "D1",
-              "D2",
-              "E1",
-              "E2"
-            ],
-            "traveler_count": 6
-          },
-          "created_at": "2026-10-09T11:22:43.491+00:00"
-        }
-      ]
+      "activities": []
     },
     {
       "id": "cust-1792478208255-188",
@@ -1940,292 +1698,7 @@
       "created_at": "2026-10-20T06:36:48.255+00:00",
       "updated_at": "2026-10-20T06:36:48.255+00:00",
       "last_login_at": "2026-10-20T06:36:48.255+00:00",
-      "activities": [
-        {
-          "id": "act-1792478209123-738",
-          "customer_id": "cust-1792478208255-188",
-          "type": "booking_created",
-          "title": "Booked সীতাকুণ্ড ডে লং ট্যুর",
-          "description": "Booking reference STL-2026-00011 created for 1 traveler(s) · Seats: A1 · Pick-up: Nabinagar. Total: ৳1,400.",
-          "metadata": {
-            "tour_id": "tour-1791287705467",
-            "reference": "STL-2026-00011",
-            "booking_id": "book-1792478209119-0e0e2efb8683c26d",
-            "pickup_point": "Nabinagar",
-            "departure_date": "2026-10-16",
-            "payment_method": "Bkash payment",
-            "selected_seats": [
-              "A1"
-            ],
-            "traveler_count": 1
-          },
-          "created_at": "2026-10-20T06:36:49.123+00:00"
-        }
-      ]
-    },
-    {
-      "id": "cust-1792478301979-555",
-      "phone_number": "+8801826483915",
-      "full_name": "Savar tour lover",
-      "email": "savartourlover@gmail.com",
-      "created_at": "2026-10-20T06:38:21.979+00:00",
-      "updated_at": "2026-11-03T17:46:42.337+00:00",
-      "last_login_at": "2026-10-20T06:38:21.979+00:00",
-      "activities": [
-        {
-          "id": "act-1793728002344-302",
-          "customer_id": "cust-1792478301979-555",
-          "type": "booking_created",
-          "title": "Booked america",
-          "description": "Booking reference STL-2026-00013 created for 4 traveler(s) · Seats: A1, A2, B2, C2 · Pick-up: Savar Thana Stand (09:00 PM). Total: ৳100,000.",
-          "metadata": {
-            "tour_id": "tour-1793433291420",
-            "reference": "STL-2026-00013",
-            "booking_id": "book-1793728002338-94d6632c0598ef46",
-            "pickup_point": "Savar Thana Stand (09:00 PM)",
-            "departure_date": "2026-11-06",
-            "payment_method": "Bkash payment",
-            "selected_seats": [
-              "A1",
-              "A2",
-              "B2",
-              "C2"
-            ],
-            "traveler_count": 4
-          },
-          "created_at": "2026-11-03T17:46:42.344+00:00"
-        },
-        {
-          "id": "act-1793724813121-983",
-          "customer_id": "cust-1792478301979-555",
-          "type": "booking_created",
-          "title": "Booked america",
-          "description": "Booking reference STL-2026-00013 created for 2 traveler(s) · Seats: G3, G4 · Pick-up: Savar Thana Stand (09:00 PM). Total: ৳50,000.",
-          "metadata": {
-            "tour_id": "tour-1793433291420",
-            "reference": "STL-2026-00013",
-            "booking_id": "book-1793724813116-2f2268f644436562",
-            "pickup_point": "Savar Thana Stand (09:00 PM)",
-            "departure_date": "2026-11-06",
-            "payment_method": "Bkash payment",
-            "selected_seats": [
-              "G3",
-              "G4"
-            ],
-            "traveler_count": 2
-          },
-          "created_at": "2026-11-03T16:53:33.121+00:00"
-        },
-        {
-          "id": "act-1793724205411-130",
-          "customer_id": "cust-1792478301979-555",
-          "type": "booking_created",
-          "title": "Booked america",
-          "description": "Booking reference STL-2026-00013 created for 1 traveler(s) · Seats: J4 · Pick-up: Savar Thana Stand (09:00 PM). Total: ৳25,000.",
-          "metadata": {
-            "tour_id": "tour-1793433291420",
-            "reference": "STL-2026-00013",
-            "booking_id": "book-1793724205407-78e6918be8754e7d",
-            "pickup_point": "Savar Thana Stand (09:00 PM)",
-            "departure_date": "2026-11-06",
-            "payment_method": "Bkash payment",
-            "selected_seats": [
-              "J4"
-            ],
-            "traveler_count": 1
-          },
-          "created_at": "2026-11-03T16:43:25.411+00:00"
-        },
-        {
-          "id": "act-1793693500645-752",
-          "customer_id": "cust-1792478301979-555",
-          "type": "booking_created",
-          "title": "Booked রাঙ্গামাটি ডে লং ট্যুর",
-          "description": "Booking reference STL-2026-00014 created for 4 traveler(s) · Seats: A1, B2, D3, E4 · Pick-up: Savar Thana Stand (09:00 PM). Total: ৳7,200.",
-          "metadata": {
-            "tour_id": "tour-1791371063297",
-            "reference": "STL-2026-00014",
-            "booking_id": "book-1793693500639-d6054b253bf869c8",
-            "pickup_point": "Savar Thana Stand (09:00 PM)",
-            "departure_date": "2026-11-06",
-            "payment_method": "Bkash payment",
-            "selected_seats": [
-              "A1",
-              "B2",
-              "D3",
-              "E4"
-            ],
-            "traveler_count": 4
-          },
-          "created_at": "2026-11-03T08:11:40.645+00:00"
-        },
-        {
-          "id": "act-1793693262776-707",
-          "customer_id": "cust-1792478301979-555",
-          "type": "booking_created",
-          "title": "Booked america",
-          "description": "Booking reference STL-2026-00013 created for 3 traveler(s) · Seats: A2, B2, E2 · Pick-up: Savar Thana Stand (09:00 PM). Total: ৳75,000.",
-          "metadata": {
-            "tour_id": "tour-1793433291420",
-            "reference": "STL-2026-00013",
-            "booking_id": "book-1793693262773-feec8df724780839",
-            "pickup_point": "Savar Thana Stand (09:00 PM)",
-            "departure_date": "2026-11-06",
-            "payment_method": "Bkash payment",
-            "selected_seats": [
-              "A2",
-              "B2",
-              "E2"
-            ],
-            "traveler_count": 3
-          },
-          "created_at": "2026-11-03T08:07:42.776+00:00"
-        },
-        {
-          "id": "act-1793692831134-926",
-          "customer_id": "cust-1792478301979-555",
-          "type": "booking_created",
-          "title": "Booked america",
-          "description": "Booking reference STL-2026-00013 created for 6 traveler(s) · Seats: C1, C2, C3, C4, D1, D2 · Pick-up: Savar Thana Stand (09:00 PM). Total: ৳150,000.",
-          "metadata": {
-            "tour_id": "tour-1793433291420",
-            "reference": "STL-2026-00013",
-            "booking_id": "book-1793692831130-19b6fc1f241f6f65",
-            "pickup_point": "Savar Thana Stand (09:00 PM)",
-            "departure_date": "2026-11-06",
-            "payment_method": "Bkash payment",
-            "selected_seats": [
-              "C1",
-              "C2",
-              "C3",
-              "C4",
-              "D1",
-              "D2"
-            ],
-            "traveler_count": 6
-          },
-          "created_at": "2026-11-03T08:00:31.134+00:00"
-        },
-        {
-          "id": "act-1793692630965-475",
-          "customer_id": "cust-1792478301979-555",
-          "type": "payment_completed",
-          "title": "Full Payment Confirmed",
-          "description": "Payment of ৳3,500 received via Bkash payment for booking STL-2026-00012 (Seats: B2).",
-          "metadata": {
-            "amount": "3500",
-            "tran_id": "TRAN-MW0E8IWF7B16574CC5",
-            "reference": "STL-2026-00012",
-            "booking_id": "book-1793692290655-c5e2f49311358855",
-            "remaining_due": "0.00",
-            "selected_seats": [
-              "B2"
-            ]
-          },
-          "created_at": "2026-11-03T07:57:10.965+00:00"
-        },
-        {
-          "id": "act-1793691158397-504",
-          "customer_id": "cust-1792478301979-555",
-          "type": "booking_created",
-          "title": "Booked america",
-          "description": "Booking reference STL-2026-00012 created for 1 traveler(s) · Seats: A1 · Pick-up: Savar Thana Stand (09:00 PM). Total: ৳25,000.",
-          "metadata": {
-            "tour_id": "tour-1793433291420",
-            "reference": "STL-2026-00012",
-            "booking_id": "book-1793691158394-668c95d89af608ea",
-            "pickup_point": "Savar Thana Stand (09:00 PM)",
-            "departure_date": "2026-11-06",
-            "payment_method": "Bkash payment",
-            "selected_seats": [
-              "A1"
-            ],
-            "traveler_count": 1
-          },
-          "created_at": "2026-11-03T07:32:38.397+00:00"
-        },
-        {
-          "id": "act-1793690448521-674",
-          "customer_id": "cust-1792478301979-555",
-          "type": "booking_created",
-          "title": "Booked america",
-          "description": "Booking reference STL-2026-00012 created for 1 traveler(s) · Seats: E1 · Pick-up: Savar Thana Stand (09:00 PM). Total: ৳25,000.",
-          "metadata": {
-            "tour_id": "tour-1793433291420",
-            "reference": "STL-2026-00012",
-            "booking_id": "book-1793690448515-85d6cff85b66fc38",
-            "pickup_point": "Savar Thana Stand (09:00 PM)",
-            "departure_date": "2026-11-06",
-            "payment_method": "Bkash payment",
-            "selected_seats": [
-              "E1"
-            ],
-            "traveler_count": 1
-          },
-          "created_at": "2026-11-03T07:20:48.521+00:00"
-        },
-        {
-          "id": "act-1792491372785-587",
-          "customer_id": "cust-1792478301979-555",
-          "type": "payment_completed",
-          "title": "Advance Payment Received",
-          "description": "Payment of ৳2,030 received via Rocket payment for booking STL-2026-00011 (Seats: D3, D4).",
-          "metadata": {
-            "amount": "2030",
-            "tran_id": "TRAN-MVGJ2N3RD02C7BAA58",
-            "reference": "STL-2026-00011",
-            "booking_id": "book-1792491356820-9df69440550a3436",
-            "remaining_due": "4970.00",
-            "selected_seats": [
-              "D3",
-              "D4"
-            ]
-          },
-          "created_at": "2026-10-20T10:16:12.785+00:00"
-        },
-        {
-          "id": "act-1792491356821-230",
-          "customer_id": "cust-1792478301979-555",
-          "type": "booking_created",
-          "title": "Booked 20 tharik কক্সবাজার রিলাক্স ট্যুর",
-          "description": "Booking reference STL-2026-00011 created for 2 traveler(s) · Seats: D3, D4 · Pick-up: Savar Thana Stand (09:00 PM). Total: ৳7,000.",
-          "metadata": {
-            "tour_id": "tour-1791295371679",
-            "reference": "STL-2026-00011",
-            "booking_id": "book-1792491356820-9df69440550a3436",
-            "pickup_point": "Savar Thana Stand (09:00 PM)",
-            "departure_date": "2026-10-23",
-            "payment_method": "Bkash payment",
-            "selected_seats": [
-              "D3",
-              "D4"
-            ],
-            "traveler_count": 2
-          },
-          "created_at": "2026-10-20T10:15:56.821+00:00"
-        },
-        {
-          "id": "act-1792478302365-502",
-          "customer_id": "cust-1792478301979-555",
-          "type": "booking_created",
-          "title": "Booked 20 tharik কক্সবাজার রিলাক্স ট্যুর",
-          "description": "Booking reference STL-2026-00011 created for 2 traveler(s) · Seats: C2, C3 · Pick-up: Savar Thana Stand (09:00 PM). Total: ৳7,000.",
-          "metadata": {
-            "tour_id": "tour-1791295371679",
-            "reference": "STL-2026-00011",
-            "booking_id": "book-1792478302363-b478bf744dee9b5a",
-            "pickup_point": "Savar Thana Stand (09:00 PM)",
-            "departure_date": "2026-10-23",
-            "payment_method": "Bkash payment",
-            "selected_seats": [
-              "C2",
-              "C3"
-            ],
-            "traveler_count": 2
-          },
-          "created_at": "2026-10-20T06:38:22.365+00:00"
-        }
-      ]
+      "activities": []
     },
     {
       "id": "cust-1792489578542-568",
@@ -2235,48 +1708,7 @@
       "created_at": "2026-10-20T09:46:18.542+00:00",
       "updated_at": "2026-10-20T09:46:18.542+00:00",
       "last_login_at": "2026-10-20T09:46:18.542+00:00",
-      "activities": [
-        {
-          "id": "act-1792489579897-340",
-          "customer_id": "cust-1792489578542-568",
-          "type": "payment_completed",
-          "title": "Advance Payment Received",
-          "description": "Payment of ৳2,030 received via Rocket payment for booking STL-2026-00010 (Seats: A1, A2).",
-          "metadata": {
-            "amount": "2030.00",
-            "tran_id": "TRAN-MVGI0JI925331C5701",
-            "reference": "STL-2026-00010",
-            "booking_id": "book-1792489579315-ecd449c68c2c4480",
-            "remaining_due": "4970.00",
-            "selected_seats": [
-              "A1",
-              "A2"
-            ]
-          },
-          "created_at": "2026-10-20T09:46:19.897+00:00"
-        },
-        {
-          "id": "act-1792489579319-658",
-          "customer_id": "cust-1792489578542-568",
-          "type": "booking_created",
-          "title": "Booked 20 tharik কক্সবাজার রিলাক্স ট্যুর",
-          "description": "Booking reference STL-2026-00010 created for 2 traveler(s) · Seats: A1, A2 · Pick-up: Dhaka Sayedabad / Fakirapool. Total: ৳7,000.",
-          "metadata": {
-            "tour_id": "tour-1791295371679",
-            "reference": "STL-2026-00010",
-            "booking_id": "book-1792489579315-ecd449c68c2c4480",
-            "pickup_point": "Dhaka Sayedabad / Fakirapool",
-            "departure_date": "2026-10-23",
-            "payment_method": "Bkash payment",
-            "selected_seats": [
-              "A1",
-              "A2"
-            ],
-            "traveler_count": 2
-          },
-          "created_at": "2026-10-20T09:46:19.319+00:00"
-        }
-      ]
+      "activities": []
     },
     {
       "id": "cust-1792819513158-717",
@@ -2285,32 +1717,7 @@
       "created_at": "2026-10-24T05:25:13.158+00:00",
       "updated_at": "2026-10-24T05:25:13.158+00:00",
       "last_login_at": "2026-10-24T05:25:13.158+00:00",
-      "activities": [
-        {
-          "id": "act-1792819513460-66",
-          "customer_id": "cust-1792819513158-717",
-          "type": "booking_created",
-          "title": "Booked 20 tharik কক্সবাজার রিলাক্স ট্যুর",
-          "description": "Booking reference STL-2026-00012 created for 5 traveler(s) · Seats: A1, A2, E1, F1, G2 · Pick-up: Savar Pollibidut (09:15 PM). Total: ৳17,500.",
-          "metadata": {
-            "tour_id": "tour-1791295371679",
-            "reference": "STL-2026-00012",
-            "booking_id": "book-1792819513441-65265188ea7535dc",
-            "pickup_point": "Savar Pollibidut (09:15 PM)",
-            "departure_date": "2026-11-06",
-            "payment_method": "Bkash payment",
-            "selected_seats": [
-              "A1",
-              "A2",
-              "E1",
-              "F1",
-              "G2"
-            ],
-            "traveler_count": 5
-          },
-          "created_at": "2026-10-24T05:25:13.46+00:00"
-        }
-      ]
+      "activities": []
     },
     {
       "id": "cust-1793116090815-378",
@@ -2320,84 +1727,7 @@
       "created_at": "2026-10-27T15:48:10.815+00:00",
       "updated_at": "2026-10-27T15:52:17.194+00:00",
       "last_login_at": "2026-10-27T15:48:10.815+00:00",
-      "activities": [
-        {
-          "id": "act-1793116337967-200",
-          "customer_id": "cust-1793116090815-378",
-          "type": "payment_completed",
-          "title": "Cash Payment Approved (Advance)",
-          "description": "Physical cash payment of ৳3,840 approved by admin (superadmin_sim) for booking STL-2026-00013.",
-          "metadata": {
-            "amount": "3840.00",
-            "reference": "STL-2026-00013",
-            "booking_id": "book-1793116337195-64a8dbe19b1e7b60",
-            "approved_by": "superadmin_sim",
-            "payment_type": "advance",
-            "remaining_due": "5760.00",
-            "payment_method": "cash_on_hand"
-          },
-          "created_at": "2026-10-27T15:52:17.967+00:00"
-        },
-        {
-          "id": "act-1793116337283-866",
-          "customer_id": "cust-1793116090815-378",
-          "type": "booking_created",
-          "title": "Booked Ratargul Swamp Simulation Tour (Updated)",
-          "description": "Booking reference STL-2026-00013 created for 2 traveler(s) · Seats: A1, A2 · Pick-up: Sayedabad Bus Terminal. Total: ৳9,600. [Pay Cash by Hand - Awaiting 10-Minute Admin Approval]",
-          "metadata": {
-            "tour_id": "tour-sim-1793116331521",
-            "reference": "STL-2026-00013",
-            "booking_id": "book-1793116337195-64a8dbe19b1e7b60",
-            "pickup_point": "Sayedabad Bus Terminal",
-            "departure_date": "2026-11-20",
-            "payment_method": "cash_on_hand",
-            "selected_seats": [
-              "A1",
-              "A2"
-            ],
-            "traveler_count": 2
-          },
-          "created_at": "2026-10-27T15:52:17.283+00:00"
-        },
-        {
-          "id": "act-1793116091922-220",
-          "customer_id": "cust-1793116090815-378",
-          "type": "payment_completed",
-          "title": "Cash Payment Approved (Advance)",
-          "description": "Physical cash payment of ৳3,840 approved by admin (superadmin_sim) for booking STL-2026-00012.",
-          "metadata": {
-            "amount": "3840.00",
-            "reference": "STL-2026-00012",
-            "booking_id": "book-1793116090980-d82f9a6331871e02",
-            "approved_by": "superadmin_sim",
-            "payment_type": "advance",
-            "remaining_due": "5760.00",
-            "payment_method": "cash_on_hand"
-          },
-          "created_at": "2026-10-27T15:48:11.922+00:00"
-        },
-        {
-          "id": "act-1793116091100-915",
-          "customer_id": "cust-1793116090815-378",
-          "type": "booking_created",
-          "title": "Booked Ratargul Swamp Simulation Tour (Updated)",
-          "description": "Booking reference STL-2026-00012 created for 2 traveler(s) · Seats: A1, A2 · Pick-up: Sayedabad Bus Terminal. Total: ৳9,600. [Pay Cash by Hand - Awaiting 10-Minute Admin Approval]",
-          "metadata": {
-            "tour_id": "tour-sim-1793116084733",
-            "reference": "STL-2026-00012",
-            "booking_id": "book-1793116090980-d82f9a6331871e02",
-            "pickup_point": "Sayedabad Bus Terminal",
-            "departure_date": "2026-11-20",
-            "payment_method": "cash_on_hand",
-            "selected_seats": [
-              "A1",
-              "A2"
-            ],
-            "traveler_count": 2
-          },
-          "created_at": "2026-10-27T15:48:11.101+00:00"
-        }
-      ]
+      "activities": []
     },
     {
       "id": "cust-1793732299269-427",
@@ -2407,67 +1737,32 @@
       "created_at": "2026-11-03T18:58:19.269+00:00",
       "updated_at": "2026-11-03T18:58:19.269+00:00",
       "last_login_at": "2026-11-03T18:58:19.269+00:00",
-      "activities": [
-        {
-          "id": "act-1793732300427-769",
-          "customer_id": "cust-1793732299269-427",
-          "type": "booking_created",
-          "title": "Booked SwizerLand",
-          "description": "Booking reference STL-2026-00013 created for 4 traveler(s) · Seats: A1, B2, D3, E4 · Pick-up: Savar Thana Stand (09:00 PM). Total: ৳2,000.",
-          "metadata": {
-            "tour_id": "tour-1793732163260",
-            "reference": "STL-2026-00013",
-            "booking_id": "book-1793732300399-ac30caa1e8251a59",
-            "pickup_point": "Savar Thana Stand (09:00 PM)",
-            "departure_date": "2026-11-11",
-            "payment_method": "Bkash payment",
-            "selected_seats": [
-              "A1",
-              "B2",
-              "D3",
-              "E4"
-            ],
-            "traveler_count": 4
-          },
-          "created_at": "2026-11-03T18:58:20.427+00:00"
-        }
-      ]
-    },
-    {
-      "id": "cust-1793735600100-994",
-      "phone_number": "+8801410207485",
-      "full_name": "Md Anik Islam",
-      "email": "thedelusiongaming024@gmail.com",
-      "created_at": "2026-11-03T19:53:20.1+00:00",
-      "updated_at": "2026-11-03T19:53:20.1+00:00",
-      "last_login_at": "2026-11-03T19:53:20.1+00:00",
-      "activities": [
-        {
-          "id": "act-1793735600692-566",
-          "customer_id": "cust-1793735600100-994",
-          "type": "booking_created",
-          "title": "Booked ৫ ই নভেম্বর কক্সবাজার রিলাক্স ট্যুর",
-          "description": "Booking reference STL-2026-00013 created for 2 traveler(s) · Seats: B3, B4 · Pick-up: Savar Thana Stand (09:00 PM). Total: ৳7,000.",
-          "metadata": {
-            "tour_id": "tour-1791295371679",
-            "reference": "STL-2026-00013",
-            "booking_id": "book-1793735600691-70e23fb984326883",
-            "pickup_point": "Savar Thana Stand (09:00 PM)",
-            "departure_date": "2026-10-23",
-            "payment_method": "Bkash payment",
-            "selected_seats": [
-              "B3",
-              "B4"
-            ],
-            "traveler_count": 2
-          },
-          "created_at": "2026-11-03T19:53:20.692+00:00"
-        }
-      ]
+      "activities": []
     }
   ],
   "bookings": [],
   "payments": [
+    {
+      "id": "pay-1793692302718-a2dd113c",
+      "booking_id": "book-1793692290655-c5e2f49311358855",
+      "amount": "1015",
+      "payment_type": "advance",
+      "payment_method": "Bkash payment",
+      "status": "pending",
+      "tran_id": "TRAN-MW0E32IL235083E726",
+      "created_at": "2026-11-03T22:45:23.573278+00:00"
+    },
+    {
+      "id": "pay-1791544963482-b1e7d12e",
+      "booking_id": "book-1791544963481-c2011f7eb50d23a1",
+      "amount": "2520",
+      "payment_type": "advance",
+      "payment_method": "cash_on_hand",
+      "status": "success",
+      "tran_id": "CASH-MV0VM4YI16ABBE5ED0",
+      "val_id": "CASH-APPRV-1791545002421",
+      "created_at": "2026-11-03T22:45:23.562697+00:00"
+    },
     {
       "id": "pay-1793692557231-a55505a5",
       "booking_id": "book-1793692290655-c5e2f49311358855",
@@ -2477,17 +1772,18 @@
       "status": "success",
       "tran_id": "TRAN-MW0E8IWF7B16574CC5",
       "val_id": "BKA-MANUAL-1793692630832",
-      "created_at": "2026-11-03T21:01:43.696785+00:00"
+      "created_at": "2026-11-03T22:45:23.556709+00:00"
     },
     {
-      "id": "pay-1793692302718-a2dd113c",
-      "booking_id": "book-1793692290655-c5e2f49311358855",
-      "amount": "1015",
+      "id": "pay-1792489579713-25e04edc",
+      "booking_id": "book-1792489579315-ecd449c68c2c4480",
+      "amount": "2030",
       "payment_type": "advance",
-      "payment_method": "Bkash payment",
-      "status": "pending",
-      "tran_id": "TRAN-MW0E32IL235083E726",
-      "created_at": "2026-11-03T21:00:43.759463+00:00"
+      "payment_method": "Rocket payment",
+      "status": "success",
+      "tran_id": "TRAN-MVGI0JI925331C5701",
+      "val_id": "RKT579798593",
+      "created_at": "2026-11-03T22:21:14.830246+00:00"
     },
     {
       "id": "pay-1792491357303-533d72e1",
@@ -2499,28 +1795,6 @@
       "tran_id": "TRAN-MVGJ2N3RD02C7BAA58",
       "val_id": "786556KL",
       "created_at": "2026-11-03T20:59:42.884644+00:00"
-    },
-    {
-      "id": "pay-1791544963482-b1e7d12e",
-      "booking_id": "book-1791544963481-c2011f7eb50d23a1",
-      "amount": "2520",
-      "payment_type": "advance",
-      "payment_method": "cash_on_hand",
-      "status": "success",
-      "tran_id": "CASH-MV0VM4YI16ABBE5ED0",
-      "val_id": "CASH-APPRV-1791545002421",
-      "created_at": "2026-11-03T19:21:04.676537+00:00"
-    },
-    {
-      "id": "pay-1792489579713-25e04edc",
-      "booking_id": "book-1792489579315-ecd449c68c2c4480",
-      "amount": "2030",
-      "payment_type": "advance",
-      "payment_method": "Rocket payment",
-      "status": "success",
-      "tran_id": "TRAN-MVGI0JI925331C5701",
-      "val_id": "RKT579798593",
-      "created_at": "2026-11-03T20:59:42.910935+00:00"
     },
     {
       "id": "pay-1793693506387-5dfb2728",
@@ -2694,16 +1968,24 @@
       "id": "ticket-book-1793692290655-c5e2f49311358855",
       "booking_id": "book-1793692290655-c5e2f49311358855",
       "token": "eyJib29raW5nX2lkIjoiYm9vay0xNzkzNjkyMjkwNjU1LWM1ZTJmNDkzMTEzNTg4NTUiLCJjcmVhdGVkX2F0IjoxNzkzNjkyNjMwfQ.uxxuUnQIjN4zk1ehkIGuwJPVCt3y2htURH99Rqyg57Y",
-      "token_expires_at": "2026-12-03T22:13:17.740Z",
+      "token_expires_at": "2026-12-04T05:58:11.597Z",
       "is_cleared": true,
       "clearance_method": "host_verification",
       "created_at": "2026-11-03T07:57:10.961+00:00"
     },
     {
+      "id": "ticket-book-1791544963481-c2011f7eb50d23a1",
+      "booking_id": "book-1791544963481-c2011f7eb50d23a1",
+      "token": "eyJib29raW5nX2lkIjoiYm9vay0xNzkxNTQ0OTYzNDgxLWMyMDExZjdlYjUwZDIzYTEiLCJjcmVhdGVkX2F0IjoxNzkxNTQ1MDAyfQ.K-00F8PuJXdd3_c-tRTVIXLTtsgcnJ_bnUq51yGuofY",
+      "token_expires_at": "2026-12-04T05:58:11.597Z",
+      "is_cleared": false,
+      "created_at": "2026-10-09T11:23:22.423+00:00"
+    },
+    {
       "id": "ticket-book-1792491356820-9df69440550a3436",
       "booking_id": "book-1792491356820-9df69440550a3436",
       "token": "eyJib29raW5nX2lkIjoiYm9vay0xNzkyNDkxMzU2ODIwLTlkZjY5NDQwNTUwYTM0MzYiLCJjcmVhdGVkX2F0IjoxNzkyNDkxMzcyfQ.fO4CuPeW9B_zPTHIYQq_OYL2L6fnbd8rK9E-ZppGwhM",
-      "token_expires_at": "2026-12-03T22:13:17.741Z",
+      "token_expires_at": "2026-12-03T22:21:22.409Z",
       "is_cleared": false,
       "created_at": "2026-10-20T10:16:12.783+00:00"
     },
@@ -2711,17 +1993,9 @@
       "id": "ticket-book-1792489579315-ecd449c68c2c4480",
       "booking_id": "book-1792489579315-ecd449c68c2c4480",
       "token": "eyJib29raW5nX2lkIjoiYm9vay0xNzkyNDg5NTc5MzE1LWVjZDQ0OWM2OGMyYzQ0ODAiLCJjcmVhdGVkX2F0IjoxNzkyNDg5NTc5fQ.Ef1zKZiWVzdMmJ38HR5nnYxkKiq0ND8lJRJNgLRTzOo",
-      "token_expires_at": "2026-12-03T22:13:17.741Z",
+      "token_expires_at": "2026-12-03T22:21:22.409Z",
       "is_cleared": false,
       "created_at": "2026-10-20T09:46:19.895+00:00"
-    },
-    {
-      "id": "ticket-book-1791544963481-c2011f7eb50d23a1",
-      "booking_id": "book-1791544963481-c2011f7eb50d23a1",
-      "token": "eyJib29raW5nX2lkIjoiYm9vay0xNzkxNTQ0OTYzNDgxLWMyMDExZjdlYjUwZDIzYTEiLCJjcmVhdGVkX2F0IjoxNzkxNTQ1MDAyfQ.K-00F8PuJXdd3_c-tRTVIXLTtsgcnJ_bnUq51yGuofY",
-      "token_expires_at": "2026-12-03T22:13:17.741Z",
-      "is_cleared": false,
-      "created_at": "2026-10-09T11:23:22.423+00:00"
     },
     {
       "id": "ticket-book-1790876301188-2ccfac4adfc5a44c",
@@ -2810,6 +2084,22 @@
     }
   ],
   "alerts": [
+    {
+      "id": "alt-del-cancel-1793745596048-8855",
+      "alert_type": "booking_cancelled",
+      "severity": "info",
+      "message": "Booking book-1793692290655-c5e2f49311358855 cancelled and automatically deleted from database (Manually set to cancelled by admin). Seats released: None.",
+      "is_acknowledged": false,
+      "created_at": "2026-11-03T22:39:56.048+00:00"
+    },
+    {
+      "id": "alt-del-cancel-1793744442374-8855",
+      "alert_type": "booking_cancelled",
+      "severity": "info",
+      "message": "Booking STL-2026-00012 cancelled and automatically deleted from database (Manually set to cancelled by admin). Seats released: B2.",
+      "is_acknowledged": false,
+      "created_at": "2026-11-03T22:20:42.374+00:00"
+    },
     {
       "id": "alt-exp-del-1793736259745-1242",
       "alert_type": "booking_cancelled",
@@ -3939,6 +3229,30 @@
       "created_at": "2026-09-24T10:44:55.095+00:00"
     },
     {
+      "id": "alt-del-cancel-1793744482486-23a1",
+      "alert_type": "booking_cancelled",
+      "severity": "info",
+      "message": "Booking STL-2026-00009 cancelled and automatically deleted from database (Manually set to cancelled by admin). Seats released: C1, C2, D1, D2, E1, E2.",
+      "is_acknowledged": false,
+      "created_at": "2026-11-03T22:21:22.486Z"
+    },
+    {
+      "id": "alt-del-cancel-1793744412283-4480",
+      "alert_type": "booking_cancelled",
+      "severity": "info",
+      "message": "Booking book-1792489579315-ecd449c68c2c4480 cancelled and automatically deleted from database (Manually set to cancelled by admin). Seats released: None.",
+      "is_acknowledged": false,
+      "created_at": "2026-11-03T22:20:12.283Z"
+    },
+    {
+      "id": "alt-del-cancel-1793744366529-8855",
+      "alert_type": "booking_cancelled",
+      "severity": "info",
+      "message": "Booking STL-2026-00012 cancelled and automatically deleted from database (Manually set to cancelled by admin). Seats released: B2.",
+      "is_acknowledged": false,
+      "created_at": "2026-11-03T22:19:26.529Z"
+    },
+    {
       "id": "alt-del-cancel-1793739633781-8855",
       "alert_type": "booking_cancelled",
       "severity": "info",
@@ -4151,6 +3465,19 @@
     }
   ],
   "analyticsEvents": [
+    {
+      "event_name": "page_view",
+      "path": "/staff/login",
+      "title": "Savar Tour Lover — আপনার স্বপ্ন উড়তে দিন — Let Your Dreams Fly",
+      "referrer": "http://143.110.243.37/staff/login",
+      "user_agent": "Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/156.0.0.0 Mobile Safari/537.36",
+      "ip_hash": "19357979d24d811a",
+      "session_id": "sid-mw1llz89-jbh0ji",
+      "visitor_id": "vid-musj2epg-0lcumo",
+      "metadata": {},
+      "id": "evt-1793765408871-0dbaff1e",
+      "created_at": "2026-11-04T04:10:08.872Z"
+    },
     {
       "event_name": "page_view",
       "path": "/profile",
@@ -6936,17 +6263,60 @@
     }
   ],
   "deletedEntities": {
-    "destinations": [],
+    "destinations": [
+      "dest-1790575207489",
+      "sajek-valley-live",
+      "dest_001",
+      "sajek-valley",
+      "dest_003",
+      "sundarbans",
+      "dest_005",
+      "sylhet",
+      "dest_002",
+      "coxs-bazar",
+      "dest_004"
+    ],
     "tours": [
-      "tour-1793433291420",
-      "america"
+      "tour_004",
+      "bandarban-nilgiri-trek",
+      "tour-1791041927335",
+      "pollibidut",
+      "tour-1791185665010",
+      "20-2000-",
+      "tour_001",
+      "sajek-valley-cloud-chase",
+      "tour_002",
+      "coxs-bazar-beach-escape",
+      "tour_005",
+      "sylhet-tea-trail",
+      "tour_003",
+      "sundarbans-wildlife-cruise",
+      "tour-1791279528772",
+      "কক্সবাজার রিলাক্স ট্যুর",
+      "tour-1791287495268",
+      "tour-1791288732238",
+      "america",
+      "tour-1791288502569",
+      "rangamati"
     ],
     "offers": [],
     "testimonials": [],
     "blogPosts": [],
     "homepageBlocks": [],
-    "tourCategories": [],
+    "tourCategories": [
+      "cat-heritage-tour",
+      "heritage_tour",
+      "cat-private-tour",
+      "private_tour",
+      "cat-adventure-tour",
+      "adventure_tour"
+    ],
     "bookings": [
+      "book-1790582415070-b484992811ab250c",
+      "book-1790582720343-f8d087323715169f",
+      "book-1790583483243-45c4d2e5cf89e031",
+      "book-1790584276348-de889b26b85612cd",
+      "book-1791042235044-24f31f5530b8a346",
       "book-1793728002338-94d6632c0598ef46",
       "STL-2026-00013",
       "book-1791544963481-c2011f7eb50d23a1",
@@ -6957,7 +6327,39 @@
       "STL-2026-00010",
       "book-1792491356820-9df69440550a3436",
       "STL-2026-00011"
-    ]
+    ],
+    "customers": [
+      "cust_001",
+      "+8801711000001",
+      "cust-1790582222454-287",
+      "+8801410207483",
+      "cust-1791178311380-241",
+      "+8801826483915",
+      "cust-1790584275855-776",
+      "+8801956565404",
+      "cust-1790609947715-888",
+      "+8801725177505",
+      "cust-1790871540321-929",
+      "+8801410207485",
+      "cust-1790875913079-483",
+      "+8801818634538",
+      "cust-1791040291935-184",
+      "+8801629983045",
+      "cust-1791042233676-795",
+      "+8801929582426",
+      "cust-1791201118018-168",
+      "+8801835290483",
+      "cust-1791202191481-933",
+      "+8801646325350",
+      "test-cust-1793771863435",
+      "+8801999993435"
+    ],
+    "staffUsers": [
+      "staff_admin_01",
+      "test-staff-1793771863730",
+      "testop_3730"
+    ],
+    "contactInquiries": []
   },
   "rocketIncomingSms": [],
   "bkashIncomingSms": []

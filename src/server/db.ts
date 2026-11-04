@@ -119,6 +119,31 @@ export function autoCancelExpiredCashBookings(db: DatabaseSchema): boolean {
   return autoCancelExpiredUnpaidBookings(db);
 }
 
+export function ensureDeletedEntities(db: any): void {
+  if (!db || typeof db !== "object") return;
+  if (!db.deletedEntities || typeof db.deletedEntities !== "object") {
+    db.deletedEntities = {};
+  }
+  const keys = [
+    "destinations",
+    "tours",
+    "offers",
+    "testimonials",
+    "blogPosts",
+    "homepageBlocks",
+    "tourCategories",
+    "bookings",
+    "customers",
+    "staffUsers",
+    "contactInquiries",
+  ];
+  for (const k of keys) {
+    if (!Array.isArray(db.deletedEntities[k])) {
+      db.deletedEntities[k] = [];
+    }
+  }
+}
+
 export function autoCancelExpiredUnpaidBookings(db: DatabaseSchema): boolean {
   let changed = false;
   const now = Date.now();
@@ -172,19 +197,7 @@ export function autoCancelExpiredUnpaidBookings(db: DatabaseSchema): boolean {
       // Remove from bookings list
       db.bookings = db.bookings.filter((b) => b.id !== bookingId && b.reference !== ref);
 
-      if (!db.deletedEntities) {
-        db.deletedEntities = {
-          destinations: [],
-          tours: [],
-          offers: [],
-          testimonials: [],
-          blogPosts: [],
-          homepageBlocks: [],
-          tourCategories: [],
-          bookings: [],
-        };
-      }
-      if (!db.deletedEntities.bookings) db.deletedEntities.bookings = [];
+      ensureDeletedEntities(db);
       if (bookingId && !db.deletedEntities.bookings.includes(bookingId)) {
         db.deletedEntities.bookings.push(bookingId);
       }
@@ -247,19 +260,7 @@ export async function deleteIncompleteBooking(
     db.bookings = db.bookings.filter((b) => b.id !== bookingId && b.reference !== bookingId);
   }
 
-  if (!db.deletedEntities) {
-    db.deletedEntities = {
-      destinations: [],
-      tours: [],
-      offers: [],
-      testimonials: [],
-      blogPosts: [],
-      homepageBlocks: [],
-      tourCategories: [],
-      bookings: [],
-    };
-  }
-  if (!db.deletedEntities.bookings) db.deletedEntities.bookings = [];
+  ensureDeletedEntities(db);
   if (actualId && !db.deletedEntities.bookings.includes(actualId)) {
     db.deletedEntities.bookings.push(actualId);
   }
@@ -288,10 +289,7 @@ export async function deleteIncompleteBooking(
     created_at: new Date().toISOString(),
   });
 
-  // 5. Persist the updated database without the cancelled booking
-  await saveDb(db, true);
-
-  // 6. Delete from Supabase PostgreSQL
+  // 5. Delete from Supabase PostgreSQL first
   await deleteBookingFromSupabase(actualId);
   if (reference && reference !== actualId) {
     await deleteBookingFromSupabase(reference);
@@ -299,6 +297,9 @@ export async function deleteIncompleteBooking(
   if (bookingId && bookingId !== actualId && bookingId !== reference) {
     await deleteBookingFromSupabase(bookingId);
   }
+
+  // 6. Persist the updated database and sync snapshot mirror to Supabase Storage
+  await saveDb(db, true);
 
   return { success: true, seatsReleased, reference };
 }
@@ -487,9 +488,27 @@ function mergeCloudWithLocal(cloudDb: DatabaseSchema, localDb: DatabaseSchema): 
     ...(localDb.deletedEntities?.bookings || []),
     ...(cloudDb.deletedEntities?.bookings || [])
   ]);
+  const deletedStaff = new Set([
+    ...(localDb.deletedEntities?.staffUsers || []),
+    ...(cloudDb.deletedEntities?.staffUsers || [])
+  ]);
+  const deletedCustomers = new Set([
+    ...(localDb.deletedEntities?.customers || []),
+    ...(cloudDb.deletedEntities?.customers || [])
+  ]);
 
   const filteredCloudBookings = (cloudDb.bookings || []).filter(
     (b) => !deletedBookings.has(b.id) && !deletedBookings.has(b.reference) && b.status !== "cancelled"
+  );
+
+  const rawStaff = (cloudDb.staffUsers && cloudDb.staffUsers.length > 0) ? cloudDb.staffUsers : (localDb.staffUsers || []);
+  const filteredStaff = rawStaff.filter(
+    (u) => !deletedStaff.has(u.id) && !deletedStaff.has(u.username)
+  );
+
+  const rawCustomers = (cloudDb.customers && cloudDb.customers.length > 0) ? cloudDb.customers : (localDb.customers || []);
+  const filteredCustomers = rawCustomers.filter(
+    (c) => !deletedCustomers.has(c.id) && !deletedCustomers.has(c.phone_number)
   );
 
   const result: DatabaseSchema = {
@@ -503,8 +522,8 @@ function mergeCloudWithLocal(cloudDb: DatabaseSchema, localDb: DatabaseSchema): 
     testimonials: cloudDb.testimonials || [],
     blogPosts: cloudDb.blogPosts || [],
     homepageBlocks: (cloudDb.homepageBlocks && cloudDb.homepageBlocks.length > 0) ? cloudDb.homepageBlocks : (localDb.homepageBlocks || []),
-    staffUsers: (cloudDb.staffUsers && cloudDb.staffUsers.length > 0) ? cloudDb.staffUsers : (localDb.staffUsers || []),
-    customers: cloudDb.customers || [],
+    staffUsers: filteredStaff,
+    customers: filteredCustomers,
     bookings: filteredCloudBookings,
     payments: cloudDb.payments || [],
     clearanceTickets: cloudDb.clearanceTickets || [],
@@ -518,6 +537,8 @@ function mergeCloudWithLocal(cloudDb: DatabaseSchema, localDb: DatabaseSchema): 
       ...localDb.deletedEntities,
       ...cloudDb.deletedEntities,
       bookings: Array.from(deletedBookings),
+      staffUsers: Array.from(deletedStaff),
+      customers: Array.from(deletedCustomers),
     },
   };
 
@@ -640,18 +661,7 @@ export async function ensureDbHydrated(): Promise<DatabaseSchema> {
 
 export function normalizeDatabaseSchema(db: any): DatabaseSchema {
   if (!db || typeof db !== "object") db = {};
-  if (!db.deletedEntities || typeof db.deletedEntities !== "object") {
-    db.deletedEntities = {
-      destinations: [],
-      tours: [],
-      offers: [],
-      testimonials: [],
-      blogPosts: [],
-      homepageBlocks: [],
-      tourCategories: [],
-      bookings: [],
-    };
-  }
+  ensureDeletedEntities(db);
 
   const deletedDests = new Set(db.deletedEntities.destinations || []);
   if (!Array.isArray(db.destinations)) {
@@ -765,9 +775,23 @@ export function normalizeDatabaseSchema(db: any): DatabaseSchema {
     );
   }
 
-  const deletedBookings = new Set(db.deletedEntities?.bookings || []);
+  const deletedStaff = new Set(db.deletedEntities?.staffUsers || []);
   if (!Array.isArray(db.staffUsers)) db.staffUsers = [];
+  else {
+    db.staffUsers = db.staffUsers.filter(
+      (u: any) => !deletedStaff.has(u.id) && !deletedStaff.has(u.username)
+    );
+  }
+
+  const deletedCusts = new Set(db.deletedEntities?.customers || []);
   if (!Array.isArray(db.customers)) db.customers = [];
+  else {
+    db.customers = db.customers.filter(
+      (c: any) => !deletedCusts.has(c.id) && !deletedCusts.has(c.phone_number)
+    );
+  }
+
+  const deletedBookings = new Set(db.deletedEntities?.bookings || []);
   if (!Array.isArray(db.bookings)) db.bookings = [];
   else {
     db.bookings = db.bookings.filter(
@@ -870,6 +894,25 @@ export function loadDb(): DatabaseSchema {
         const raw = fs.readFileSync(/*turbopackIgnore: true*/ candidatePath, "utf-8");
         const parsed = JSON.parse(raw);
         if (parsed && (Array.isArray(parsed.destinations) || Array.isArray(parsed.tours))) {
+          // Extra guard: always purge cancelled or deleted entities from bundled snapshot
+          const deleted = new Set(parsed.deletedEntities?.bookings || []);
+          if (Array.isArray(parsed.bookings)) {
+            parsed.bookings = parsed.bookings.filter(
+              (b: any) => !deleted.has(b.id) && !deleted.has(b.reference) && b.status !== "cancelled"
+            );
+          }
+          const deletedStaff = new Set(parsed.deletedEntities?.staffUsers || []);
+          if (Array.isArray(parsed.staffUsers)) {
+            parsed.staffUsers = parsed.staffUsers.filter(
+              (u: any) => !deletedStaff.has(u.id) && !deletedStaff.has(u.username)
+            );
+          }
+          const deletedCusts = new Set(parsed.deletedEntities?.customers || []);
+          if (Array.isArray(parsed.customers)) {
+            parsed.customers = parsed.customers.filter(
+              (c: any) => !deletedCusts.has(c.id) && !deletedCusts.has(c.phone_number)
+            );
+          }
           memoryDb = normalizeDatabaseSchema(parsed);
           void saveDb(memoryDb, false);
           return memoryDb;
@@ -1678,7 +1721,7 @@ export async function saveStaffUser(data: {
 
 export async function deleteStaffUser(id: string, currentAdminUsername: string): Promise<boolean> {
   const db = loadDb();
-  const target = db.staffUsers.find((u) => u.id === id);
+  const target = db.staffUsers.find((u) => u.id === id || u.username.toLowerCase() === id.toLowerCase());
   if (!target) return false;
 
   if (target.username.toLowerCase() === currentAdminUsername.toLowerCase()) {
@@ -1686,15 +1729,33 @@ export async function deleteStaffUser(id: string, currentAdminUsername: string):
   }
 
   const remainingSuperAdmins = db.staffUsers.filter(
-    (u) => u.id !== id && u.role === "super_admin"
+    (u) => u.id !== target.id && u.role === "super_admin"
   );
   if (target.role === "super_admin" && remainingSuperAdmins.length === 0) {
     throw new Error("Cannot delete the last super admin account.");
   }
 
-  db.staffUsers = db.staffUsers.filter((u) => u.id !== id);
+  db.staffUsers = db.staffUsers.filter(
+    (u) => u.id !== target.id && u.username.toLowerCase() !== target.username.toLowerCase()
+  );
+
+  ensureDeletedEntities(db);
+  if (target.id && !db.deletedEntities.staffUsers.includes(target.id)) {
+    db.deletedEntities.staffUsers.push(target.id);
+  }
+  if (target.username && !db.deletedEntities.staffUsers.includes(target.username)) {
+    db.deletedEntities.staffUsers.push(target.username);
+  }
+  if (id && !db.deletedEntities.staffUsers.includes(id)) {
+    db.deletedEntities.staffUsers.push(id);
+  }
+
+  // 1. Delete from Supabase PostgreSQL first
+  await deleteStaffUserFromSupabase(target.id, target.username);
+
+  // 2. Persist to disk and sync cloud storage mirror
   await saveDb(db, true);
-  await deleteStaffUserFromSupabase(id);
+
   return true;
 }
 
@@ -1821,30 +1882,27 @@ export async function deleteCustomer(id: string): Promise<boolean> {
   if (index === -1) return false;
   const [removed] = db.customers.splice(index, 1);
 
-  if (!db.deletedEntities) {
-    db.deletedEntities = {
-      destinations: [],
-      tours: [],
-      offers: [],
-      testimonials: [],
-      blogPosts: [],
-      homepageBlocks: [],
-      tourCategories: [],
-      bookings: [],
-      customers: [],
-      contactInquiries: [],
-    };
-  }
-  if (!db.deletedEntities.customers) db.deletedEntities.customers = [];
+  ensureDeletedEntities(db);
   if (removed.id && !db.deletedEntities.customers.includes(removed.id)) {
     db.deletedEntities.customers.push(removed.id);
   }
   if (removed.phone_number && !db.deletedEntities.customers.includes(removed.phone_number)) {
     db.deletedEntities.customers.push(removed.phone_number);
   }
+  const norm = normalizePhoneNumber(removed.phone_number);
+  if (norm && !db.deletedEntities.customers.includes(norm)) {
+    db.deletedEntities.customers.push(norm);
+  }
+  if (id && !db.deletedEntities.customers.includes(id)) {
+    db.deletedEntities.customers.push(id);
+  }
 
+  // 1. Delete from Supabase PostgreSQL first
+  await deleteCustomerFromSupabase(removed.id, removed.phone_number);
+
+  // 2. Persist to disk and sync cloud storage mirror
   await saveDb(db, true);
-  await deleteCustomerFromSupabase(removed.id);
+
   return true;
 }
 
@@ -3528,17 +3586,7 @@ export async function deleteTour(id: string): Promise<boolean> {
   if (index === -1) return false;
   const [removed] = db.tours.splice(index, 1);
 
-  if (!db.deletedEntities) {
-    db.deletedEntities = {
-      destinations: [],
-      tours: [],
-      offers: [],
-      testimonials: [],
-      blogPosts: [],
-      homepageBlocks: [],
-      tourCategories: [],
-    };
-  }
+  ensureDeletedEntities(db);
   if (!db.deletedEntities.tours) db.deletedEntities.tours = [];
   if (removed.id && !db.deletedEntities.tours.includes(removed.id)) {
     db.deletedEntities.tours.push(removed.id);
@@ -3645,17 +3693,7 @@ export async function deleteTourCategory(id: string): Promise<boolean> {
     throw new Error(`Cannot delete category "${cat.name}" because it is currently assigned to one or more tours. Please reassign the tours first.`);
   }
 
-  if (!db.deletedEntities) {
-    db.deletedEntities = {
-      destinations: [],
-      tours: [],
-      offers: [],
-      testimonials: [],
-      blogPosts: [],
-      homepageBlocks: [],
-      tourCategories: [],
-    };
-  }
+  ensureDeletedEntities(db);
   if (!db.deletedEntities.tourCategories) db.deletedEntities.tourCategories = [];
   if (cat.id && !db.deletedEntities.tourCategories.includes(cat.id)) db.deletedEntities.tourCategories.push(cat.id);
   if (cat.slug && !db.deletedEntities.tourCategories.includes(cat.slug)) db.deletedEntities.tourCategories.push(cat.slug);
@@ -3760,17 +3798,7 @@ export async function deleteDestination(id: string): Promise<boolean> {
   if (index === -1) return false;
   const [removed] = db.destinations.splice(index, 1);
 
-  if (!db.deletedEntities) {
-    db.deletedEntities = {
-      destinations: [],
-      tours: [],
-      offers: [],
-      testimonials: [],
-      blogPosts: [],
-      homepageBlocks: [],
-      tourCategories: [],
-    };
-  }
+  ensureDeletedEntities(db);
   if (!db.deletedEntities.destinations) db.deletedEntities.destinations = [];
   if (removed.id && !db.deletedEntities.destinations.includes(removed.id)) {
     db.deletedEntities.destinations.push(removed.id);
@@ -3854,17 +3882,7 @@ export async function deleteBlogPost(id: string): Promise<boolean> {
   if (index === -1) return false;
   const [removed] = db.blogPosts.splice(index, 1);
 
-  if (!db.deletedEntities) {
-    db.deletedEntities = {
-      destinations: [],
-      tours: [],
-      offers: [],
-      testimonials: [],
-      blogPosts: [],
-      homepageBlocks: [],
-      tourCategories: [],
-    };
-  }
+  ensureDeletedEntities(db);
   if (!db.deletedEntities.blogPosts) db.deletedEntities.blogPosts = [];
   if (removed.id && !db.deletedEntities.blogPosts.includes(removed.id)) {
     db.deletedEntities.blogPosts.push(removed.id);
@@ -3937,17 +3955,7 @@ export async function deleteOffer(id: string): Promise<boolean> {
   if (index === -1) return false;
   const [removed] = db.offers.splice(index, 1);
 
-  if (!db.deletedEntities) {
-    db.deletedEntities = {
-      destinations: [],
-      tours: [],
-      offers: [],
-      testimonials: [],
-      blogPosts: [],
-      homepageBlocks: [],
-      tourCategories: [],
-    };
-  }
+  ensureDeletedEntities(db);
   if (!db.deletedEntities.offers) db.deletedEntities.offers = [];
   if (removed.id && !db.deletedEntities.offers.includes(removed.id)) {
     db.deletedEntities.offers.push(removed.id);
@@ -4015,17 +4023,7 @@ export async function deleteTestimonial(id: string): Promise<boolean> {
   if (index === -1) return false;
   const [removed] = db.testimonials.splice(index, 1);
 
-  if (!db.deletedEntities) {
-    db.deletedEntities = {
-      destinations: [],
-      tours: [],
-      offers: [],
-      testimonials: [],
-      blogPosts: [],
-      homepageBlocks: [],
-      tourCategories: [],
-    };
-  }
+  ensureDeletedEntities(db);
   if (!db.deletedEntities.testimonials) db.deletedEntities.testimonials = [];
   if (removed.id && !db.deletedEntities.testimonials.includes(removed.id)) {
     db.deletedEntities.testimonials.push(removed.id);
@@ -4192,20 +4190,7 @@ export async function deleteInquiry(id: string): Promise<boolean> {
   if (index === -1) return false;
   const [removed] = db.contactInquiries.splice(index, 1);
 
-  if (!db.deletedEntities) {
-    db.deletedEntities = {
-      destinations: [],
-      tours: [],
-      offers: [],
-      testimonials: [],
-      blogPosts: [],
-      homepageBlocks: [],
-      tourCategories: [],
-      bookings: [],
-      customers: [],
-      contactInquiries: [],
-    };
-  }
+  ensureDeletedEntities(db);
   if (!db.deletedEntities.contactInquiries) db.deletedEntities.contactInquiries = [];
   if (removed.id && !db.deletedEntities.contactInquiries.includes(removed.id)) {
     db.deletedEntities.contactInquiries.push(removed.id);
@@ -4222,17 +4207,7 @@ export async function deleteHomepageBlock(id: string): Promise<boolean> {
   if (index === -1) return false;
   const [removed] = db.homepageBlocks.splice(index, 1);
 
-  if (!db.deletedEntities) {
-    db.deletedEntities = {
-      destinations: [],
-      tours: [],
-      offers: [],
-      testimonials: [],
-      blogPosts: [],
-      homepageBlocks: [],
-      tourCategories: [],
-    };
-  }
+  ensureDeletedEntities(db);
   if (!db.deletedEntities.homepageBlocks) db.deletedEntities.homepageBlocks = [];
   if (removed.id && !db.deletedEntities.homepageBlocks.includes(removed.id)) {
     db.deletedEntities.homepageBlocks.push(removed.id);

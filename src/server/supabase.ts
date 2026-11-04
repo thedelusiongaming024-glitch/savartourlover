@@ -468,15 +468,17 @@ export async function syncCustomerActivityToSupabase(activity: DbCustomerActivit
   }
 }
 
-export async function deleteCustomerFromSupabase(id: string): Promise<boolean> {
+export async function deleteCustomerFromSupabase(id: string, phone?: string): Promise<boolean> {
   const supabase = getSupabaseAdminClient();
   try {
-    await supabase.from("bookings").update({ customer_id: null }).eq("customer_id", id);
-    await supabase.from("customer_activities").delete().eq("customer_id", id);
-    const { error } = await supabase.from("customers").delete().or(`id.eq.${id},phone_number.eq.${id}`);
-    if (error) {
-      console.warn("[Supabase Postgres] Customer delete warning:", error.message);
-      return false;
+    const keys = new Set<string>([id]);
+    if (phone) keys.add(phone);
+    for (const key of keys) {
+      try {
+        await supabase.from("bookings").update({ customer_id: null }).eq("customer_id", key);
+        await supabase.from("customer_activities").delete().eq("customer_id", key);
+        await supabase.from("customers").delete().or(`id.eq.${key},phone_number.eq.${key}`);
+      } catch {}
     }
     return true;
   } catch (err: any) {
@@ -577,11 +579,32 @@ export async function deleteBookingFromSupabase(bookingIdentifier: string): Prom
       });
     }
 
+    // 1. Mark status as cancelled in PostgreSQL first (failsafe against foreign key delays / RLS)
     for (const bId of idsToDelete) {
-      await supabase.from("payments").delete().eq("booking_id", bId);
-      await supabase.from("clearance_tickets").delete().eq("booking_id", bId);
-      await supabase.from("bookings").delete().eq("id", bId);
-      await supabase.from("bookings").delete().eq("reference", bId);
+      try {
+        await supabase.from("bookings").update({ status: "cancelled" }).eq("id", bId);
+        await supabase.from("bookings").update({ status: "cancelled" }).eq("reference", bId);
+      } catch {}
+    }
+
+    // 2. Delete related payments and clearance tickets
+    for (const bId of idsToDelete) {
+      try {
+        await supabase.from("payments").delete().eq("booking_id", bId);
+      } catch {}
+      try {
+        await supabase.from("clearance_tickets").delete().eq("booking_id", bId);
+      } catch {}
+    }
+
+    // 3. Delete the booking rows from PostgreSQL
+    for (const bId of idsToDelete) {
+      try {
+        await supabase.from("bookings").delete().eq("id", bId);
+      } catch {}
+      try {
+        await supabase.from("bookings").delete().eq("reference", bId);
+      } catch {}
     }
     return true;
   } catch (err: any) {
@@ -739,13 +762,15 @@ export async function syncStaffUserToSupabase(user: DbStaffUser): Promise<boolea
   }
 }
 
-export async function deleteStaffUserFromSupabase(id: string): Promise<boolean> {
+export async function deleteStaffUserFromSupabase(id: string, username?: string): Promise<boolean> {
   const supabase = getSupabaseAdminClient();
   try {
-    const { error } = await supabase.from("staff_users").delete().eq("id", id);
-    if (error) {
-      console.warn("[Supabase Postgres] Staff user delete warning:", error.message);
-      return false;
+    const keys = new Set<string>([id]);
+    if (username) keys.add(username);
+    for (const key of keys) {
+      try {
+        await supabase.from("staff_users").delete().or(`id.eq.${key},username.eq.${key}`);
+      } catch {}
     }
     return true;
   } catch (err: unknown) {
@@ -802,6 +827,7 @@ export async function fetchDatabaseFromSupabase(): Promise<DatabaseSchema | null
       inqsRes,
       ticketsRes,
       alertsRes,
+      storageRes,
     ] = await Promise.all([
       selectAllRows(supabase, "destinations", "name"),
       selectAllRows(supabase, "tours", "title"),
@@ -817,7 +843,16 @@ export async function fetchDatabaseFromSupabase(): Promise<DatabaseSchema | null
       selectAllRows(supabase, "contact_inquiries", "created_at", false),
       selectAllRows(supabase, "clearance_tickets", "created_at", false),
       selectAllRows(supabase, "operational_alerts", "created_at", false),
+      supabase.storage.from(BUCKET_NAME).download(DB_OBJECT_PATH).catch(() => ({ data: null, error: true })),
     ]);
+
+    let snapshotData: Partial<DatabaseSchema> = {};
+    try {
+      if (storageRes && (storageRes as any).data) {
+        const text = await (storageRes as any).data.text();
+        snapshotData = JSON.parse(text) as Partial<DatabaseSchema>;
+      }
+    } catch {}
 
     let destsData = destsRes.data;
     let toursData = toursRes.data;
@@ -845,10 +880,33 @@ export async function fetchDatabaseFromSupabase(): Promise<DatabaseSchema | null
 
     if (!destsData?.length && !toursData?.length) {
       // Fallback to storage bucket snapshot if tables are inaccessible
-      const { data, error } = await supabase.storage.from(BUCKET_NAME).download(DB_OBJECT_PATH);
-      if (error || !data) return null;
-      const text = await data.text();
-      return JSON.parse(text) as DatabaseSchema;
+      let resolved: any = snapshotData && Object.keys(snapshotData).length > 0 ? snapshotData : null;
+      if (!resolved) {
+        const { data, error } = await supabase.storage.from(BUCKET_NAME).download(DB_OBJECT_PATH);
+        if (error || !data) return null;
+        const text = await data.text();
+        resolved = JSON.parse(text);
+      }
+      if (!resolved) return null;
+      const deleted = new Set(resolved.deletedEntities?.bookings || []);
+      if (Array.isArray(resolved.bookings)) {
+        resolved.bookings = resolved.bookings.filter(
+          (b: any) => !deleted.has(b.id) && !deleted.has(b.reference) && b.status !== "cancelled"
+        );
+      }
+      const deletedStaff = new Set(resolved.deletedEntities?.staffUsers || []);
+      if (Array.isArray(resolved.staffUsers)) {
+        resolved.staffUsers = resolved.staffUsers.filter(
+          (u: any) => !deletedStaff.has(u.id) && !deletedStaff.has(u.username)
+        );
+      }
+      const deletedCusts = new Set(resolved.deletedEntities?.customers || []);
+      if (Array.isArray(resolved.customers)) {
+        resolved.customers = resolved.customers.filter(
+          (c: any) => !deletedCusts.has(c.id) && !deletedCusts.has(c.phone_number)
+        );
+      }
+      return resolved as DatabaseSchema;
     }
 
     const mappedDestinations: DbDestination[] = (destsData || []).map((d: any) => ({
@@ -1015,8 +1073,12 @@ export async function fetchDatabaseFromSupabase(): Promise<DatabaseSchema | null
     // Ensure super_admin password hash is valid
     const adminSalt = "8e4c1ce665ceb8419ff57a1aefb13252";
     const adminHash = "8e5067117177fb5bc6056d3d76ea336f31779c1d21e6aa416cc7b1b0a8e0b4eb7a67a80908c62751951736809a3d2f81f7762e9e6fc203d7715fe126786193d2";
-    const mappedStaff = (staffRes.data && staffRes.data.length > 0)
-      ? staffRes.data.map((s: any) => ({
+    const snapshotDeletedStaff = new Set(snapshotData.deletedEntities?.staffUsers || []);
+    const validStaffRows = (staffRes.data && staffRes.data.length > 0)
+      ? staffRes.data.filter((s: any) => !snapshotDeletedStaff.has(s.id) && !snapshotDeletedStaff.has(s.username))
+      : [];
+    const mappedStaff = validStaffRows.length > 0
+      ? validStaffRows.map((s: any) => ({
           id: s.id,
           username: s.username,
           password_hash: s.password_hash === "REPLACE_WITH_REAL_HASH" ? adminHash : s.password_hash,
@@ -1029,7 +1091,7 @@ export async function fetchDatabaseFromSupabase(): Promise<DatabaseSchema | null
         }))
       : [
           {
-            id: "staff_admin_01",
+            id: "usr-admin-1",
             username: "admin",
             password_hash: adminHash,
             salt: adminSalt,
@@ -1057,7 +1119,10 @@ export async function fetchDatabaseFromSupabase(): Promise<DatabaseSchema | null
       activitiesByCustomer.set(act.customer_id, list);
     }
 
-    const mappedCustomers: DbCustomerUser[] = (custsRes.data || []).map((c: any) => ({
+    const snapshotDeletedCustomers = new Set(snapshotData.deletedEntities?.customers || []);
+    const mappedCustomers: DbCustomerUser[] = (custsRes.data || [])
+      .filter((c: any) => !snapshotDeletedCustomers.has(c.id) && !snapshotDeletedCustomers.has(c.phone_number))
+      .map((c: any) => ({
       id: c.id,
       phone_number: c.phone_number,
       full_name: c.full_name,
@@ -1083,8 +1148,9 @@ export async function fetchDatabaseFromSupabase(): Promise<DatabaseSchema | null
       paid_at: p.paid_at || undefined,
     }));
 
+    const snapshotDeletedBookings = new Set(snapshotData.deletedEntities?.bookings || []);
     const mappedBookings: DbBooking[] = (bookingsRes.data || [])
-      .filter((b: any) => b.status !== "cancelled")
+      .filter((b: any) => b.status !== "cancelled" && !snapshotDeletedBookings.has(b.id) && !snapshotDeletedBookings.has(b.reference))
       .map((b: any) => {
       let selected_seats: string[] = [];
       if (Array.isArray(b.selected_seats) && b.selected_seats.length > 0) {
@@ -1229,16 +1295,6 @@ export async function fetchDatabaseFromSupabase(): Promise<DatabaseSchema | null
       created_at: a.created_at || new Date().toISOString(),
     }));
 
-    // Hydrate collections from the storage snapshot mirror
-    let snapshotData: Partial<DatabaseSchema> = {};
-    try {
-      const { data: storageData, error: storageErr } = await supabase.storage.from(BUCKET_NAME).download(DB_OBJECT_PATH);
-      if (!storageErr && storageData) {
-        const text = await storageData.text();
-        snapshotData = JSON.parse(text) as Partial<DatabaseSchema>;
-      }
-    } catch {}
-
     const tableBlocks: DbHomepageBlock[] = blocksData || [];
     const tableBlockIds = new Set(tableBlocks.map((b) => b.id));
     const mergedHomepageBlocks = [...tableBlocks];
@@ -1313,6 +1369,19 @@ export async function fetchDatabaseFromSupabase(): Promise<DatabaseSchema | null
       suppliers: Array.isArray(snapshotData.suppliers) ? snapshotData.suppliers : [],
       contactInquiries: mergedInquiries,
       analyticsEvents: Array.isArray(snapshotData.analyticsEvents) ? snapshotData.analyticsEvents : [],
+      deletedEntities: {
+        destinations: snapshotData.deletedEntities?.destinations || [],
+        tours: snapshotData.deletedEntities?.tours || [],
+        offers: snapshotData.deletedEntities?.offers || [],
+        testimonials: snapshotData.deletedEntities?.testimonials || [],
+        blogPosts: snapshotData.deletedEntities?.blogPosts || [],
+        homepageBlocks: snapshotData.deletedEntities?.homepageBlocks || [],
+        tourCategories: snapshotData.deletedEntities?.tourCategories || [],
+        bookings: snapshotData.deletedEntities?.bookings || [],
+        staffUsers: snapshotData.deletedEntities?.staffUsers || [],
+        customers: snapshotData.deletedEntities?.customers || [],
+        contactInquiries: snapshotData.deletedEntities?.contactInquiries || [],
+      },
     };
 
     lastSyncTimestamp = new Date().toISOString();
