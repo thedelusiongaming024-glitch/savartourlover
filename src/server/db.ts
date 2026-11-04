@@ -31,6 +31,8 @@ import {
   syncStaffUserToSupabase,
   deleteStaffUserFromSupabase,
   syncTourCategoriesToSupabase,
+  syncExpensesToSupabase,
+  syncSuppliersToSupabase,
   DEFAULT_TOUR_CATEGORIES,
   fetchDatabaseFromSupabase,
   fetchDatabaseFromStorageBucket,
@@ -629,6 +631,8 @@ export async function refreshFromSupabase(): Promise<DatabaseSchema> {
       if (fs.existsSync(altDir)) {
         fs.writeFileSync(path.join(altDir, "db.json"), serialized, "utf-8");
       }
+      // Ensure Tier 4 Storage Bucket Mirror reflects Tier 3 master in background
+      void syncDatabaseToSupabase(merged);
     } catch {}
     return merged;
   }
@@ -3318,6 +3322,7 @@ export async function saveExpense(expenseData: Partial<DbExpense>): Promise<DbEx
   }
 
   await saveDb(db, true);
+  await syncExpensesToSupabase(db.expenses);
   return expense;
 }
 
@@ -3327,6 +3332,7 @@ export async function deleteExpense(id: string): Promise<boolean> {
   if (index === -1) return false;
   db.expenses.splice(index, 1);
   await saveDb(db, true);
+  await syncExpensesToSupabase(db.expenses);
   return true;
 }
 
@@ -3371,6 +3377,7 @@ export async function saveSupplier(supplierData: Partial<DbSupplier>): Promise<D
   }
 
   await saveDb(db, true);
+  await syncSuppliersToSupabase(db.suppliers);
   return supplier;
 }
 
@@ -3380,6 +3387,7 @@ export async function deleteSupplier(id: string): Promise<boolean> {
   if (index === -1) return false;
   db.suppliers.splice(index, 1);
   await saveDb(db, true);
+  await syncSuppliersToSupabase(db.suppliers);
   return true;
 }
 

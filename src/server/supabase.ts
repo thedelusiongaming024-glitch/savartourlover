@@ -16,6 +16,8 @@ import type {
   DbTourCategory,
   DbContactInquiry,
   DbStaffUser,
+  DbExpense,
+  DbSupplier,
 } from "./types";
 
 const BUCKET_NAME = process.env.SUPABASE_STORAGE_BUCKET || "tourlover-data";
@@ -70,6 +72,48 @@ export async function syncTourCategoriesToSupabase(categories: DbTourCategory[])
     return true;
   } catch (err: any) {
     console.warn("[Supabase Postgres] Exception syncing tour categories:", err?.message || err);
+    return false;
+  }
+}
+
+export async function syncExpensesToSupabase(expenses: DbExpense[]): Promise<boolean> {
+  const supabase = getSupabaseAdminClient();
+  try {
+    const payload = {
+      id: "block-expenses-data",
+      block_type: "custom",
+      display_order: 991,
+      content: { expenses, updated_at: new Date().toISOString() },
+    };
+    const { error } = await supabase.from("homepage_blocks").upsert(payload);
+    if (error) {
+      console.warn("[Supabase Postgres] Expenses block upsert warning:", error.message);
+      return false;
+    }
+    return true;
+  } catch (err: any) {
+    console.warn("[Supabase Postgres] Exception syncing expenses:", err?.message || err);
+    return false;
+  }
+}
+
+export async function syncSuppliersToSupabase(suppliers: DbSupplier[]): Promise<boolean> {
+  const supabase = getSupabaseAdminClient();
+  try {
+    const payload = {
+      id: "block-suppliers-data",
+      block_type: "custom",
+      display_order: 992,
+      content: { suppliers, updated_at: new Date().toISOString() },
+    };
+    const { error } = await supabase.from("homepage_blocks").upsert(payload);
+    if (error) {
+      console.warn("[Supabase Postgres] Suppliers block upsert warning:", error.message);
+      return false;
+    }
+    return true;
+  } catch (err: any) {
+    console.warn("[Supabase Postgres] Exception syncing suppliers:", err?.message || err);
     return false;
   }
 }
@@ -1343,52 +1387,22 @@ export async function fetchDatabaseFromSupabase(): Promise<DatabaseSchema | null
       created_at: a.created_at || new Date().toISOString(),
     }));
 
-    const tableBlocks: DbHomepageBlock[] = blocksData || [];
-    const tableBlockIds = new Set(tableBlocks.map((b) => b.id));
-    const mergedHomepageBlocks = [...tableBlocks];
-    for (const sb of snapshotData.homepageBlocks || []) {
-      if (!tableBlockIds.has(sb.id)) {
-        mergedHomepageBlocks.push(sb);
-      }
-    }
+    const tableBlocks: DbHomepageBlock[] = blocksData && blocksData.length > 0 ? blocksData : (snapshotData.homepageBlocks || []);
+    const mergedHomepageBlocks = tableBlocks;
 
-    // Merge payments: table rows take precedence, supplemented by snapshot payments
-    const paymentIds = new Set(mappedPayments.map((p) => p.id));
-    const mergedPayments = [...mappedPayments];
-    for (const sp of snapshotData.payments || []) {
-      if (!paymentIds.has(sp.id)) {
-        mergedPayments.push(sp);
-      }
-    }
+    // Payments: PostgreSQL table rows are authoritative (Tier 3 master), fallback to snapshot only if table query failed
+    const mergedPayments = paymentsRes.data !== null ? mappedPayments : (snapshotData.payments || []);
 
-    // Merge clearance tickets: table rows take precedence, supplemented by snapshot tickets
-    const ticketIds = new Set(mappedClearanceTickets.map((t) => t.id));
-    const mergedTickets = [...mappedClearanceTickets];
-    for (const st of snapshotData.clearanceTickets || []) {
-      if (!ticketIds.has(st.id)) {
-        mergedTickets.push(st);
-      }
-    }
+    // Clearance tickets: PostgreSQL table rows are authoritative (Tier 3 master), fallback to snapshot only if table query failed
+    const mergedTickets = ticketsRes.data !== null ? mappedClearanceTickets : (snapshotData.clearanceTickets || []);
 
-    // Merge alerts: table rows take precedence, supplemented by snapshot alerts
-    const alertIds = new Set(mappedAlerts.map((a) => a.id));
-    const mergedAlerts = [...mappedAlerts];
-    for (const sa of snapshotData.alerts || []) {
-      if (!alertIds.has(sa.id)) {
-        mergedAlerts.push(sa);
-      }
-    }
+    // Operational alerts: PostgreSQL table rows are authoritative (Tier 3 master), fallback to snapshot only if table query failed
+    const mergedAlerts = alertsRes.data !== null ? mappedAlerts : (snapshotData.alerts || []);
 
-    // Inquiries: table rows if available, otherwise snapshot
-    const inquiryIds = new Set(mappedInquiries.map((i) => i.id));
-    const mergedInquiries = [...mappedInquiries];
-    for (const si of snapshotData.contactInquiries || []) {
-      if (!inquiryIds.has(si.id)) {
-        mergedInquiries.push(si);
-      }
-    }
+    // Contact Inquiries: PostgreSQL table rows are authoritative (Tier 3 master), fallback to snapshot only if table query failed
+    const mergedInquiries = inqsRes.data !== null ? mappedInquiries : (snapshotData.contactInquiries || []);
 
-    // Tour categories: extract from homepage_blocks block-tour-categories or snapshotData
+    // Tour categories: extract from homepage_blocks block-tour-categories (Tier 3) or snapshotData fallback
     const categoriesBlock = (blocksData || []).find((b: any) => b.id === "block-tour-categories");
     let mappedTourCategories: DbTourCategory[] = [];
     if (categoriesBlock && categoriesBlock.content && Array.isArray((categoriesBlock.content as any).categories)) {
@@ -1398,6 +1412,13 @@ export async function fetchDatabaseFromSupabase(): Promise<DatabaseSchema | null
     } else {
       mappedTourCategories = DEFAULT_TOUR_CATEGORIES;
     }
+
+    // Expenses & Suppliers: extract directly from Tier 3 PostgreSQL (homepage_blocks)
+    const expensesBlock = (blocksData || []).find((b: any) => b.id === "block-expenses-data");
+    const mappedExpenses: DbExpense[] = (expensesBlock?.content as any)?.expenses || (Array.isArray(snapshotData.expenses) ? snapshotData.expenses : []);
+
+    const suppliersBlock = (blocksData || []).find((b: any) => b.id === "block-suppliers-data");
+    const mappedSuppliers: DbSupplier[] = (suppliersBlock?.content as any)?.suppliers || (Array.isArray(snapshotData.suppliers) ? snapshotData.suppliers : []);
 
     const result: DatabaseSchema = {
       destinations: mappedDestinations,
@@ -1413,8 +1434,8 @@ export async function fetchDatabaseFromSupabase(): Promise<DatabaseSchema | null
       payments: mergedPayments,
       clearanceTickets: mergedTickets,
       alerts: mergedAlerts,
-      expenses: Array.isArray(snapshotData.expenses) ? snapshotData.expenses : [],
-      suppliers: Array.isArray(snapshotData.suppliers) ? snapshotData.suppliers : [],
+      expenses: mappedExpenses,
+      suppliers: mappedSuppliers,
       contactInquiries: mergedInquiries,
       analyticsEvents: Array.isArray(snapshotData.analyticsEvents) ? snapshotData.analyticsEvents : [],
       deletedEntities: {

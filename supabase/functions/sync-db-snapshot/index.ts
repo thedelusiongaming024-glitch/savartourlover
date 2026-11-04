@@ -1,6 +1,6 @@
 import { createClient } from "@supabase/supabase-js";
 
-const BUCKET_NAME = "atithi-data";
+const BUCKET_NAME = Deno.env.get("SUPABASE_STORAGE_BUCKET") || "tourlover-data";
 const DB_OBJECT_PATH = "db.json";
 
 const corsHeaders = {

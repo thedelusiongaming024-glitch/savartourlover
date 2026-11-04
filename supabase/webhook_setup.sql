@@ -6,12 +6,12 @@
 
 -- -----------------------------------------------------------------------------
 -- 1. STORAGE BUCKET CONFIGURATION
--- Ensure the 'atithi-data' bucket exists with public read enabled for CDN serving
+-- Ensure the 'tourlover-data' bucket exists with public read enabled for CDN serving
 -- -----------------------------------------------------------------------------
 INSERT INTO storage.buckets (id, name, public, file_size_limit, allowed_mime_types)
 VALUES (
-  'atithi-data',
-  'atithi-data',
+  'tourlover-data',
+  'tourlover-data',
   true,
   52428800, -- 50 MB
   ARRAY['application/json']
@@ -21,14 +21,14 @@ SET public = false,
     file_size_limit = 52428800;
 
 -- (Public read access was removed on purpose: the snapshot holds private customer data.)
-DROP POLICY IF EXISTS "Public Read Access on atithi-data" ON storage.objects;
+DROP POLICY IF EXISTS "Public Read Access on tourlover-data" ON storage.objects;
 
--- Allow service_role to manage all files in atithi-data
-CREATE POLICY "Service Role Full Access on atithi-data"
+-- Allow service_role to manage all files in tourlover-data
+CREATE POLICY "Service Role Full Access on tourlover-data"
 ON storage.objects FOR ALL
 TO service_role
-USING (bucket_id = 'atithi-data')
-WITH CHECK (bucket_id = 'atithi-data');
+USING (bucket_id = 'tourlover-data')
+WITH CHECK (bucket_id = 'tourlover-data');
 
 
 -- -----------------------------------------------------------------------------
