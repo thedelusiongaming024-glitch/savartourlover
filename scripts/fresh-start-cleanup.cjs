@@ -212,6 +212,11 @@ async function cleanAll() {
   // 3. TIER 4 (Supabase Storage Bucket Mirror tourlover-data/db.json)
   console.log("\n--- 3. PURGING TIER 4 (Supabase Storage Bucket Mirror) ---");
   try {
+    // Delete existing old snapshot completely so no ghost versions exist
+    const { error: rmErr } = await supabase.storage.from(BUCKET_NAME).remove(["db.json"]);
+    if (rmErr) console.warn("  ⚠️ Storage remove warning:", rmErr.message);
+    else console.log("  ✓ Deleted old snapshot from Supabase Storage bucket");
+
     const { error: upErr } = await supabase.storage.from(BUCKET_NAME).upload("db.json", serialized, {
       contentType: "application/json",
       upsert: true,
@@ -221,6 +226,15 @@ async function cleanAll() {
     else console.log(`  ✓ Successfully uploaded empty clean snapshot to ${BUCKET_NAME}/db.json`);
   } catch (err) {
     console.warn("  ⚠️ Storage exception:", err.message);
+  }
+
+  // 4. Clear Next.js cache
+  const nextCacheDir = path.resolve(__dirname, "..", ".next", "cache");
+  if (fs.existsSync(nextCacheDir)) {
+    try {
+      fs.rmSync(nextCacheDir, { recursive: true, force: true });
+      console.log("  ✓ Cleared Next.js fetch & Turbopack cache (.next/cache)");
+    } catch {}
   }
 
   console.log("\n======================================================================");

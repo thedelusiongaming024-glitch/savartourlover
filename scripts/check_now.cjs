@@ -18,12 +18,22 @@ const key = env.SUPABASE_SERVICE_ROLE_KEY;
 const sb = createClient(url, key);
 
 async function checkNow() {
-  const { data: bData } = await sb.from('bookings').select('id, reference, status, created_at');
-  console.log('Postgres bookings count:', bData?.length);
-  console.log('Postgres bookings right now:', bData);
+  for (const t of ['destinations', 'tours', 'bookings', 'payments', 'customers', 'operational_alerts']) {
+    const { data } = await sb.from(t).select('id');
+    console.log(`Postgres table '${t}' count:`, data?.length);
+  }
 
-  const { data: cData } = await sb.from('customers').select('id, phone_number, full_name, created_at');
-  console.log('Postgres customers count:', cData?.length);
-  console.log('Postgres customers right now:', cData);
+  const { data: storageData, error: sErr } = await sb.storage.from('tourlover-data').download('db.json');
+  if (sErr) {
+    console.log('Storage download error:', sErr.message);
+  } else {
+    const text = await storageData.text();
+    const parsed = JSON.parse(text);
+    console.log('Storage bucket tours:', parsed.tours?.length, 'bookings:', parsed.bookings?.length, 'destinations:', parsed.destinations?.length, 'payments:', parsed.payments?.length);
+  }
+
+  // Also check local files
+  const localDb = JSON.parse(fs.readFileSync('.data/db.json', 'utf8'));
+  console.log('Local .data/db.json tours:', localDb.tours?.length, 'bookings:', localDb.bookings?.length, 'destinations:', localDb.destinations?.length);
 }
 checkNow();

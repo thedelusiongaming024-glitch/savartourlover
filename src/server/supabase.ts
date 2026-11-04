@@ -1008,43 +1008,43 @@ export async function fetchDatabaseFromSupabase(): Promise<DatabaseSchema | null
           blocksData = fBlocks.data ?? blocksData;
         }
       } catch {}
-    }
 
-    if (!destsData?.length && !toursData?.length) {
-      // Fallback to storage bucket snapshot if tables are inaccessible
-      let resolved: any = snapshotData && Object.keys(snapshotData).length > 0 ? snapshotData : null;
-      if (!resolved) {
-        const { data, error } = await supabase.storage.from(BUCKET_NAME).download(DB_OBJECT_PATH);
-        if (error || !data) return null;
-        const text = await data.text();
-        resolved = JSON.parse(text);
+      // ONLY fall back to storage snapshot if direct tables completely failed (e.g. database offline or tables dropped)
+      if (destsRes.error && toursRes.error && !destsData && !toursData) {
+        let resolved: any = snapshotData && Object.keys(snapshotData).length > 0 ? snapshotData : null;
+        if (!resolved) {
+          const { data, error } = await supabase.storage.from(BUCKET_NAME).download(DB_OBJECT_PATH);
+          if (error || !data) return null;
+          const text = await data.text();
+          resolved = JSON.parse(text);
+        }
+        if (!resolved) return null;
+        const deleted = new Set(resolved.deletedEntities?.bookings || []);
+        if (Array.isArray(resolved.bookings)) {
+          resolved.bookings = resolved.bookings.filter(
+            (b: any) => !deleted.has(b.id) && !deleted.has(b.reference) && b.status !== "cancelled"
+          );
+        }
+        const deletedStaff = new Set(resolved.deletedEntities?.staffUsers || []);
+        if (Array.isArray(resolved.staffUsers)) {
+          resolved.staffUsers = resolved.staffUsers.filter(
+            (u: any) => !deletedStaff.has(u.id) && !deletedStaff.has(u.username)
+          );
+        }
+        const deletedCusts = new Set(resolved.deletedEntities?.customers || []);
+        if (Array.isArray(resolved.customers)) {
+          resolved.customers = resolved.customers.filter(
+            (c: any) => !deletedCusts.has(c.id) && !deletedCusts.has(c.phone_number)
+          );
+        }
+        const deletedAlerts = new Set(resolved.deletedEntities?.alerts || []);
+        if (Array.isArray(resolved.alerts)) {
+          resolved.alerts = resolved.alerts.filter(
+            (a: any) => !deletedAlerts.has(a.id) && !knownDeletedEntities.alerts.has(a.id)
+          );
+        }
+        return resolved as DatabaseSchema;
       }
-      if (!resolved) return null;
-      const deleted = new Set(resolved.deletedEntities?.bookings || []);
-      if (Array.isArray(resolved.bookings)) {
-        resolved.bookings = resolved.bookings.filter(
-          (b: any) => !deleted.has(b.id) && !deleted.has(b.reference) && b.status !== "cancelled"
-        );
-      }
-      const deletedStaff = new Set(resolved.deletedEntities?.staffUsers || []);
-      if (Array.isArray(resolved.staffUsers)) {
-        resolved.staffUsers = resolved.staffUsers.filter(
-          (u: any) => !deletedStaff.has(u.id) && !deletedStaff.has(u.username)
-        );
-      }
-      const deletedCusts = new Set(resolved.deletedEntities?.customers || []);
-      if (Array.isArray(resolved.customers)) {
-        resolved.customers = resolved.customers.filter(
-          (c: any) => !deletedCusts.has(c.id) && !deletedCusts.has(c.phone_number)
-        );
-      }
-      const deletedAlerts = new Set(resolved.deletedEntities?.alerts || []);
-      if (Array.isArray(resolved.alerts)) {
-        resolved.alerts = resolved.alerts.filter(
-          (a: any) => !deletedAlerts.has(a.id) && !knownDeletedEntities.alerts.has(a.id)
-        );
-      }
-      return resolved as DatabaseSchema;
     }
 
     const mappedDestinations: DbDestination[] = (destsData || []).map((d: any) => ({
