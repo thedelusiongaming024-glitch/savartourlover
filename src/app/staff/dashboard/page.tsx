@@ -31,6 +31,9 @@ import type {
   WhyUsItem,
   ServiceItem,
   DbTourCategory,
+  DbExpense,
+  DbSupplier,
+  DbPayment,
 } from "@/server/types";
 
 export interface CustomerWithDetails extends DbCustomerUser {
@@ -64,6 +67,11 @@ interface Alert {
 
 import { TourReportManager } from "@/components/TourReportManager";
 import { AdminSeoManager } from "@/components/AdminSeoManager";
+import {
+  PnLStatementModal,
+  generatePnLStatementHtml,
+  printPnLStatementHtml,
+} from "@/components/PnLStatementModal";
 
 type ActiveTab =
   | "overview"
@@ -76,6 +84,8 @@ type ActiveTab =
   | "offers"
   | "reviews"
   | "bookings"
+  | "payments"
+  | "expenses"
   | "reports"
   | "inquiries"
   | "seo";
@@ -553,6 +563,57 @@ function StaffDashboardContent() {
   const [inquiries, setInquiries] = useState<DbContactInquiry[]>([]);
   const [customers, setCustomers] = useState<CustomerWithDetails[]>([]);
 
+  // Payments & Ledger states
+  const [payments, setPayments] = useState<DbPayment[]>([]);
+  const [paymentSearch, setPaymentSearch] = useState("");
+  const [paymentMethodFilter, setPaymentMethodFilter] = useState("all");
+  const [paymentStatusFilter, setPaymentStatusFilter] = useState("all");
+
+  // Expenses & Suppliers states
+  const [expenses, setExpenses] = useState<DbExpense[]>([]);
+  const [suppliers, setSuppliers] = useState<DbSupplier[]>([]);
+  const [expenseSearch, setExpenseSearch] = useState("");
+  const [expenseCategoryFilter, setExpenseCategoryFilter] = useState("all");
+  const [expensesSubTab, setExpensesSubTab] = useState<"expenses" | "suppliers">("expenses");
+  const [isExpenseModalOpen, setIsExpenseModalOpen] = useState(false);
+  const [expenseForm, setExpenseForm] = useState<{
+    id?: string;
+    category: string;
+    amount: string;
+    description: string;
+    date: string;
+  }>({
+    category: "hotel",
+    amount: "",
+    description: "",
+    date: new Date().toISOString().slice(0, 10),
+  });
+  const [isSavingExpense, setIsSavingExpense] = useState(false);
+
+  const [isSupplierModalOpen, setIsSupplierModalOpen] = useState(false);
+  const [supplierForm, setSupplierForm] = useState<{
+    id?: string;
+    name: string;
+    category: string;
+    contact_person: string;
+    phone: string;
+    email: string;
+    outstanding_balance: string;
+    notes: string;
+  }>({
+    name: "",
+    category: "hotel",
+    contact_person: "",
+    phone: "",
+    email: "",
+    outstanding_balance: "0",
+    notes: "",
+  });
+  const [isSavingSupplier, setIsSavingSupplier] = useState(false);
+
+  // Reports subtab state (P&L vs Tour Manifest)
+  const [reportsSubTab, setReportsSubTab] = useState<"pnl" | "manifest">("pnl");
+
   // Filters & Search
   const [tourSearch, setTourSearch] = useState("");
   const [tourCategoryFilter, setTourCategoryFilter] = useState("all");
@@ -569,6 +630,7 @@ function StaffDashboardContent() {
   const [selectedCustomer, setSelectedCustomer] = useState<CustomerWithDetails | null>(null);
 
   // Modals
+  const [showPnlModal, setShowPnlModal] = useState(false);
   const [tourModal, setTourModal] = useState<{ isOpen: boolean; tour: Partial<DbTour> | null; isSaving?: boolean }>({ isOpen: false, tour: null, isSaving: false });
   const [categoryModal, setCategoryModal] = useState<{ isOpen: boolean; category: Partial<DbTourCategory> | null }>({ isOpen: false, category: null });
   const [manageCategoriesModalOpen, setManageCategoriesModalOpen] = useState(false);
@@ -657,7 +719,21 @@ function StaffDashboardContent() {
         setAlerts(d.results ?? d);
       }
 
-      const [toursRes, categoriesRes, destsRes, blogRes, offersRes, reviewsRes, cmsRes, bookingsRes, inquiriesRes, customersRes] = await Promise.all([
+      const [
+        toursRes,
+        categoriesRes,
+        destsRes,
+        blogRes,
+        offersRes,
+        reviewsRes,
+        cmsRes,
+        bookingsRes,
+        inquiriesRes,
+        customersRes,
+        expensesRes,
+        suppliersRes,
+        paymentsRes,
+      ] = await Promise.all([
         staffFetch("/admin/tours"),
         staffFetch("/admin/tour-categories"),
         staffFetch("/admin/destinations"),
@@ -668,6 +744,9 @@ function StaffDashboardContent() {
         staffFetch("/admin/bookings"),
         staffFetch("/admin/inquiries"),
         staffFetch("/admin/customers"),
+        staffFetch("/admin/expenses"),
+        staffFetch("/admin/suppliers"),
+        staffFetch("/admin/payments"),
       ]);
 
       if (toursRes.ok) setTours((await toursRes.json()).results || []);
@@ -679,6 +758,9 @@ function StaffDashboardContent() {
       if (bookingsRes.ok) setBookings((await bookingsRes.json()).results || []);
       if (inquiriesRes.ok) setInquiries((await inquiriesRes.json()).results || []);
       if (customersRes.ok) setCustomers((await customersRes.json()).results || []);
+      if (expensesRes.ok) setExpenses((await expensesRes.json()).results || []);
+      if (suppliersRes.ok) setSuppliers((await suppliersRes.json()).results || []);
+      if (paymentsRes.ok) setPayments((await paymentsRes.json()).results || []);
 
       fetch("/api/v1/track")
         .then((r) => r.json())
@@ -823,6 +905,147 @@ function StaffDashboardContent() {
     } catch {
       setAlerts(previous);
       showNotification("error", isBn ? "সতর্কতা মুছে ফেলা ব্যর্থ হয়েছে।" : "Failed to clear alerts.");
+    }
+  }
+
+  // Expense Handlers
+  async function handleSaveExpense(e: React.FormEvent) {
+    e.preventDefault();
+    if (!expenseForm.amount || isNaN(Number(expenseForm.amount)) || Number(expenseForm.amount) <= 0) {
+      showNotification("error", isBn ? "সঠিক টাকার পরিমাণ লিখুন।" : "Please enter a valid positive amount.");
+      return;
+    }
+    if (!expenseForm.description.trim()) {
+      showNotification("error", isBn ? "খরচের বিবরণ লিখুন।" : "Please enter a description for the expense.");
+      return;
+    }
+    setIsSavingExpense(true);
+    try {
+      const url = expenseForm.id ? `/admin/expenses/${expenseForm.id}` : "/admin/expenses";
+      const method = expenseForm.id ? "PUT" : "POST";
+      const res = await staffFetch(url, {
+        method,
+        body: JSON.stringify(expenseForm),
+      });
+      if (!res.ok) {
+        const err = await res.json().catch(() => ({}));
+        throw new Error(err.detail || "Failed to save expense.");
+      }
+      const saved = await res.json();
+      setExpenses((prev) => {
+        const idx = prev.findIndex((item) => item.id === saved.id);
+        if (idx !== -1) {
+          const updated = [...prev];
+          updated[idx] = saved;
+          return updated;
+        }
+        return [saved, ...prev];
+      });
+      setIsExpenseModalOpen(false);
+      setExpenseForm({
+        category: "hotel",
+        amount: "",
+        description: "",
+        date: new Date().toISOString().slice(0, 10),
+      });
+      showNotification("success", isBn ? "খরচ সফলভাবে সংরক্ষিত হয়েছে!" : "Expense recorded successfully!");
+      staffFetch("/finance/overview").then(async (r) => {
+        if (r.ok) setOverview(await r.json());
+      }).catch(() => {});
+    } catch (err: any) {
+      showNotification("error", err.message || "Failed to save expense.");
+    } finally {
+      setIsSavingExpense(false);
+    }
+  }
+
+  async function handleDeleteExpense(id: string, description: string) {
+    if (!confirm(isBn ? `আপনি কি নিশ্চিত যে এই খরচটি মুছে ফেলতে চান?\n"${description}"` : `Are you sure you want to delete this expense?\n"${description}"`)) {
+      return;
+    }
+    try {
+      const res = await staffFetch(`/admin/expenses/${id}`, { method: "DELETE" });
+      if (!res.ok) {
+        const err = await res.json().catch(() => ({}));
+        throw new Error(err.detail || "Failed to delete expense.");
+      }
+      setExpenses((prev) => prev.filter((item) => item.id !== id));
+      showNotification("success", isBn ? "খরচ সফলভাবে মুছে ফেলা হয়েছে।" : "Expense deleted successfully.");
+      staffFetch("/finance/overview").then(async (r) => {
+        if (r.ok) setOverview(await r.json());
+      }).catch(() => {});
+    } catch (err: any) {
+      showNotification("error", err.message || "Failed to delete expense.");
+    }
+  }
+
+  // Supplier Handlers
+  async function handleSaveSupplier(e: React.FormEvent) {
+    e.preventDefault();
+    if (!supplierForm.name.trim()) {
+      showNotification("error", isBn ? "সাপ্লায়ারের নাম লিখুন।" : "Please enter supplier name.");
+      return;
+    }
+    setIsSavingSupplier(true);
+    try {
+      const url = supplierForm.id ? `/admin/suppliers/${supplierForm.id}` : "/admin/suppliers";
+      const method = supplierForm.id ? "PUT" : "POST";
+      const res = await staffFetch(url, {
+        method,
+        body: JSON.stringify(supplierForm),
+      });
+      if (!res.ok) {
+        const err = await res.json().catch(() => ({}));
+        throw new Error(err.detail || "Failed to save supplier.");
+      }
+      const saved = await res.json();
+      setSuppliers((prev) => {
+        const idx = prev.findIndex((item) => item.id === saved.id);
+        if (idx !== -1) {
+          const updated = [...prev];
+          updated[idx] = saved;
+          return updated;
+        }
+        return [saved, ...prev];
+      });
+      setIsSupplierModalOpen(false);
+      setSupplierForm({
+        name: "",
+        category: "hotel",
+        contact_person: "",
+        phone: "",
+        email: "",
+        outstanding_balance: "0",
+        notes: "",
+      });
+      showNotification("success", isBn ? "সাপ্লায়ার সংরক্ষিত হয়েছে!" : "Supplier saved successfully!");
+      staffFetch("/finance/overview").then(async (r) => {
+        if (r.ok) setOverview(await r.json());
+      }).catch(() => {});
+    } catch (err: any) {
+      showNotification("error", err.message || "Failed to save supplier.");
+    } finally {
+      setIsSavingSupplier(false);
+    }
+  }
+
+  async function handleDeleteSupplier(id: string, name: string) {
+    if (!confirm(isBn ? `আপনি কি "${name}" সাপ্লায়ার মুছে ফেলতে চান?` : `Are you sure you want to delete supplier "${name}"?`)) {
+      return;
+    }
+    try {
+      const res = await staffFetch(`/admin/suppliers/${id}`, { method: "DELETE" });
+      if (!res.ok) {
+        const err = await res.json().catch(() => ({}));
+        throw new Error(err.detail || "Failed to delete supplier.");
+      }
+      setSuppliers((prev) => prev.filter((item) => item.id !== id));
+      showNotification("success", isBn ? "সাপ্লায়ার মুছে ফেলা হয়েছে।" : "Supplier deleted successfully.");
+      staffFetch("/finance/overview").then(async (r) => {
+        if (r.ok) setOverview(await r.json());
+      }).catch(() => {});
+    } catch (err: any) {
+      showNotification("error", err.message || "Failed to delete supplier.");
     }
   }
 
@@ -1976,6 +2199,8 @@ function StaffDashboardContent() {
                     { id: "destinations", label: dict.tabs.destinations, count: destinations.length },
                     { id: "users", label: dict.tabs.users, count: customers.length },
                     { id: "bookings", label: dict.tabs.bookings, count: bookings.length },
+                    { id: "payments", label: dict.tabs.payments, count: payments.length },
+                    { id: "expenses", label: dict.tabs.expenses, count: expenses.length },
                     { id: "reports", label: dict.tabs.reports, count: bookings.length },
                     { id: "cms", label: dict.tabs.cms, count: null },
                     { id: "about_cms", label: dict.tabs.about_cms, count: null },
@@ -2156,7 +2381,11 @@ function StaffDashboardContent() {
                 </div>
                 <div
                   className="rounded-xl border border-slate-200 bg-white p-3.5 sm:p-5 shadow-xs cursor-pointer hover:border-slate-300 hover:shadow-sm transition group"
-                  onClick={() => setActiveTab("expenses")}
+                  onClick={() => {
+                    setExpenseCategoryFilter("direct");
+                    setExpensesSubTab("expenses");
+                    setActiveTab("expenses");
+                  }}
                   title="Click to manage tour direct costs (hotel, transport, guide)"
                 >
                   <div className="flex items-center justify-between">
@@ -2167,7 +2396,10 @@ function StaffDashboardContent() {
                 </div>
                 <div
                   className="rounded-xl border border-slate-200 bg-white p-3.5 sm:p-5 shadow-xs cursor-pointer hover:border-slate-300 hover:shadow-sm transition group"
-                  onClick={() => setActiveTab("reports")}
+                  onClick={() => {
+                    setReportsSubTab("pnl");
+                    setActiveTab("reports");
+                  }}
                   title="Click to view full Profit & Loss report"
                 >
                   <div className="flex items-center justify-between">
@@ -2180,7 +2412,11 @@ function StaffDashboardContent() {
                 </div>
                 <div
                   className="rounded-xl border border-slate-200 bg-white p-3.5 sm:p-5 shadow-xs cursor-pointer hover:border-slate-300 hover:shadow-sm transition group"
-                  onClick={() => setActiveTab("expenses")}
+                  onClick={() => {
+                    setExpenseCategoryFilter("operating");
+                    setExpensesSubTab("expenses");
+                    setActiveTab("expenses");
+                  }}
                   title="Click to manage operating overheads & expenses"
                 >
                   <div className="flex items-center justify-between">
@@ -2191,7 +2427,10 @@ function StaffDashboardContent() {
                 </div>
                 <div
                   className="col-span-2 sm:col-span-1 rounded-xl border border-slate-200 bg-white p-3.5 sm:p-5 shadow-xs cursor-pointer hover:border-slate-300 hover:shadow-sm transition group"
-                  onClick={() => setActiveTab("reports")}
+                  onClick={() => {
+                    setReportsSubTab("pnl");
+                    setActiveTab("reports");
+                  }}
                   title="Click to view Net Profit reports"
                 >
                   <div className="flex items-center justify-between">
@@ -5038,15 +5277,897 @@ function StaffDashboardContent() {
           </div>
         )}
 
+        {/* ================= PAYMENTS & REVENUE LEDGER TAB ================= */}
+        {activeTab === "payments" && (
+          <div className="space-y-6">
+            <div className="flex flex-wrap items-center justify-between gap-4">
+              <div>
+                <h2 className="text-lg font-semibold text-slate-900">
+                  {isBn ? "পেমেন্ট ও রেভিনিউ লেজার" : "Payments & Revenue Ledger"}
+                </h2>
+                <p className="text-sm text-slate-500">
+                  {isBn
+                    ? "অনলাইন গেটওয়ে (bKash, Rocket, SSLCommerz) ও হ্যান্ড ক্যাশ সমস্ত ট্রানজেকশনের অডিট লেজার"
+                    : "Complete audit ledger of all verified online gateway payments and cash receipts"}
+                </p>
+              </div>
+              <div className="flex items-center gap-2">
+                <button
+                  type="button"
+                  onClick={() => loadData()}
+                  className="rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-xs font-semibold text-slate-700 hover:bg-slate-50 transition cursor-pointer flex items-center gap-1.5 shadow-2xs"
+                >
+                  <span>🔄</span>
+                  {isBn ? "রিফ্রেশ" : "Refresh"}
+                </button>
+                <button
+                  type="button"
+                  onClick={() => window.print()}
+                  className="rounded-lg border border-emerald-300 bg-emerald-50 px-3 py-1.5 text-xs font-semibold text-emerald-800 hover:bg-emerald-100 transition cursor-pointer flex items-center gap-1.5 shadow-2xs"
+                >
+                  <span>🖨️</span>
+                  {isBn ? "লেজার প্রিন্ট করুন" : "Print Ledger"}
+                </button>
+              </div>
+            </div>
+
+            {/* Payments KPI Cards */}
+            <div className="grid grid-cols-2 gap-3 sm:gap-4 sm:grid-cols-2 lg:grid-cols-5">
+              <div className="rounded-xl border border-slate-200 bg-white p-4 shadow-xs">
+                <p className="text-xs uppercase font-medium text-slate-500">
+                  {isBn ? "মোট আদায়কৃত রেভিনিউ" : "Verified Revenue"}
+                </p>
+                <p className="mt-1 text-xl font-bold text-emerald-700">
+                  {bdt(overview?.total_revenue ?? 0)}
+                </p>
+              </div>
+              <div className="rounded-xl border border-slate-200 bg-white p-4 shadow-xs">
+                <p className="text-xs uppercase font-medium text-slate-500">
+                  {isBn ? "অ্যাডভান্স কালেকশন" : "Advance Collected"}
+                </p>
+                <p className="mt-1 text-xl font-bold text-slate-900">
+                  {bdt(
+                    payments
+                      .filter((p) => p.status === "success" && p.payment_type === "advance")
+                      .reduce((sum, p) => sum + parseFloat(p.amount || "0"), 0)
+                  )}
+                </p>
+              </div>
+              <div className="rounded-xl border border-slate-200 bg-white p-4 shadow-xs">
+                <p className="text-xs uppercase font-medium text-slate-500">
+                  {isBn ? "বকেয়া / ফুল পেমেন্ট" : "Settled Balance / Full"}
+                </p>
+                <p className="mt-1 text-xl font-bold text-slate-900">
+                  {bdt(
+                    payments
+                      .filter((p) => p.status === "success" && p.payment_type !== "advance")
+                      .reduce((sum, p) => sum + parseFloat(p.amount || "0"), 0)
+                  )}
+                </p>
+              </div>
+              <div className="rounded-xl border border-amber-200 bg-amber-50/40 p-4 shadow-xs">
+                <p className="text-xs uppercase font-medium text-amber-800">
+                  {isBn ? "পেন্ডিং অ্যাডভান্স" : "Pending Advances"}
+                </p>
+                <p className="mt-1 text-xl font-bold text-amber-900">
+                  {bdt(overview?.pending_advances ?? 0)}
+                </p>
+              </div>
+              <div className="col-span-2 sm:col-span-1 rounded-xl border border-amber-200 bg-amber-50/40 p-4 shadow-xs">
+                <p className="text-xs uppercase font-medium text-amber-800">
+                  {isBn ? "ট্যুরের দিন পাওনা" : "Due on Tour Day"}
+                </p>
+                <p className="mt-1 text-xl font-bold text-amber-900">
+                  {bdt(overview?.due_on_tour_day ?? 0)}
+                </p>
+              </div>
+            </div>
+
+            {/* Filter and Search Bar */}
+            <div className="rounded-xl border border-slate-200 bg-white p-4 shadow-xs space-y-3">
+              <div className="grid grid-cols-1 sm:grid-cols-4 gap-3">
+                <div className="sm:col-span-2">
+                  <input
+                    type="text"
+                    value={paymentSearch}
+                    onChange={(e) => setPaymentSearch(e.target.value)}
+                    placeholder={
+                      isBn
+                        ? "বুকিং রেফারেন্স, TrxID, নাম বা ফোন নম্বর দিয়ে খুঁজুন..."
+                        : "Search by booking ref, TrxID, customer name, phone..."
+                    }
+                    className="w-full rounded-lg border border-slate-200 px-3 py-2 text-xs text-slate-900 focus:border-emerald-500 focus:outline-none"
+                  />
+                </div>
+                <div>
+                  <select
+                    value={paymentMethodFilter}
+                    onChange={(e) => setPaymentMethodFilter(e.target.value)}
+                    className="w-full rounded-lg border border-slate-200 px-3 py-2 text-xs text-slate-700 bg-white focus:border-emerald-500 focus:outline-none"
+                  >
+                    <option value="all">{isBn ? "সকল মাধ্যম (All Methods)" : "All Methods"}</option>
+                    <option value="bkash">bKash</option>
+                    <option value="rocket">Rocket</option>
+                    <option value="sslcommerz">SSLCommerz / Card</option>
+                    <option value="cash">{isBn ? "হ্যান্ড ক্যাশ (Cash)" : "Cash on Hand"}</option>
+                  </select>
+                </div>
+                <div>
+                  <select
+                    value={paymentStatusFilter}
+                    onChange={(e) => setPaymentStatusFilter(e.target.value)}
+                    className="w-full rounded-lg border border-slate-200 px-3 py-2 text-xs text-slate-700 bg-white focus:border-emerald-500 focus:outline-none"
+                  >
+                    <option value="all">{isBn ? "সকল স্ট্যাটাস (All Status)" : "All Status"}</option>
+                    <option value="success">{isBn ? "সফল পেমেন্ট (Verified Success)" : "Verified Success"}</option>
+                    <option value="pending">{isBn ? "পেন্ডিং (Pending)" : "Pending"}</option>
+                    <option value="failed">{isBn ? "ব্যর্থ / বাতিল (Failed)" : "Failed"}</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+
+            {/* Payments Table */}
+            <div className="overflow-x-auto rounded-xl border border-slate-200 bg-white shadow-xs">
+              <table className="w-full text-left text-xs">
+                <thead className="border-b border-slate-200 bg-slate-50 text-slate-600 font-semibold uppercase tracking-wider">
+                  <tr>
+                    <th className="px-4 py-3">{isBn ? "তারিখ ও সময়" : "Date & Time"}</th>
+                    <th className="px-4 py-3">{isBn ? "বুকিং রেফারেন্স" : "Booking Ref"}</th>
+                    <th className="px-4 py-3">{isBn ? "কাস্টমার" : "Customer"}</th>
+                    <th className="px-4 py-3">{isBn ? "ট্যুর প্যাকেজ" : "Tour Package"}</th>
+                    <th className="px-4 py-3">{isBn ? "পরিমাণ" : "Amount"}</th>
+                    <th className="px-4 py-3">{isBn ? "টাইপ" : "Type"}</th>
+                    <th className="px-4 py-3">{isBn ? "পেমেন্ট মেথড" : "Method"}</th>
+                    <th className="px-4 py-3">{isBn ? "ট্রানজেকশন আইডি" : "Transaction ID"}</th>
+                    <th className="px-4 py-3">{isBn ? "স্ট্যাটাস" : "Status"}</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-slate-100">
+                  {(() => {
+                    const filtered = payments.filter((p) => {
+                      if (paymentMethodFilter !== "all") {
+                        const pm = (p.payment_method || "").toLowerCase();
+                        if (paymentMethodFilter === "bkash" && !pm.includes("bkash")) return false;
+                        if (paymentMethodFilter === "rocket" && !pm.includes("rocket")) return false;
+                        if (paymentMethodFilter === "sslcommerz" && !pm.includes("sslcommerz")) return false;
+                        if (paymentMethodFilter === "cash" && !pm.includes("cash")) return false;
+                      }
+                      if (paymentStatusFilter !== "all") {
+                        if (paymentStatusFilter === "pending") {
+                          if (p.status !== "pending" && p.status !== "pending_cash_approval") return false;
+                        } else if (p.status !== paymentStatusFilter) {
+                          return false;
+                        }
+                      }
+                      if (paymentSearch.trim()) {
+                        const q = paymentSearch.toLowerCase().trim();
+                        const b = bookings.find((bk) => bk.id === p.booking_id);
+                        const refMatch = b?.reference?.toLowerCase().includes(q);
+                        const nameMatch = b?.customer_full_name?.toLowerCase().includes(q);
+                        const phoneMatch = b?.customer_phone_number?.toLowerCase().includes(q);
+                        const tranMatch = p.tran_id?.toLowerCase().includes(q);
+                        const trxMatch = p.trx_id?.toLowerCase().includes(q);
+                        const valMatch = p.val_id?.toLowerCase().includes(q);
+                        const amtMatch = String(p.amount).includes(q);
+                        if (!refMatch && !nameMatch && !phoneMatch && !tranMatch && !trxMatch && !valMatch && !amtMatch) {
+                          return false;
+                        }
+                      }
+                      return true;
+                    });
+
+                    if (filtered.length === 0) {
+                      return (
+                        <tr>
+                          <td colSpan={9} className="px-4 py-8 text-center text-slate-500 italic">
+                            {isBn
+                              ? "কোনো পেমেন্ট রেকর্ড খুঁজে পাওয়া যায়নি।"
+                              : "No payment transactions found matching the selected filters."}
+                          </td>
+                        </tr>
+                      );
+                    }
+
+                    return filtered.map((p) => {
+                      const b = bookings.find((bk) => bk.id === p.booking_id);
+                      const trxCode = p.trx_id || p.val_id || p.tran_id || "—";
+                      const pmLower = (p.payment_method || "").toLowerCase();
+
+                      return (
+                        <tr key={p.id} className="hover:bg-slate-50/70 transition">
+                          <td className="px-4 py-3 whitespace-nowrap text-slate-600 font-mono text-[11px]">
+                            {p.created_at ? new Date(p.created_at).toLocaleString("en-GB") : "—"}
+                          </td>
+                          <td className="px-4 py-3 whitespace-nowrap">
+                            {b ? (
+                              <button
+                                type="button"
+                                onClick={() => {
+                                  setBookingSearch(b.reference);
+                                  setActiveTab("bookings");
+                                }}
+                                className="font-mono font-bold text-emerald-700 hover:text-emerald-900 hover:underline cursor-pointer"
+                                title="Click to view full booking details"
+                              >
+                                {b.reference} ↗
+                              </button>
+                            ) : (
+                              <span className="font-mono text-slate-500">{p.booking_id.slice(0, 14)}…</span>
+                            )}
+                          </td>
+                          <td className="px-4 py-3">
+                            <div className="font-medium text-slate-900">
+                              {b?.customer_full_name || "Guest Customer"}
+                            </div>
+                            <div className="text-[11px] text-slate-500 font-mono">
+                              {b?.customer_phone_number || "—"}
+                            </div>
+                          </td>
+                          <td className="px-4 py-3 max-w-[180px] truncate" title={b?.tour_title || "—"}>
+                            <span className="text-slate-800">{b?.tour_title || "—"}</span>
+                          </td>
+                          <td className="px-4 py-3 whitespace-nowrap font-bold text-slate-900">
+                            {bdt(p.amount)}
+                          </td>
+                          <td className="px-4 py-3 whitespace-nowrap">
+                            <span
+                              className={`inline-flex items-center rounded-full px-2 py-0.5 text-[10px] font-semibold uppercase ${
+                                p.payment_type === "advance"
+                                  ? "bg-blue-50 text-blue-700 border border-blue-200"
+                                  : p.payment_type === "full"
+                                  ? "bg-purple-50 text-purple-700 border border-purple-200"
+                                  : "bg-emerald-50 text-emerald-700 border border-emerald-200"
+                              }`}
+                            >
+                              {p.payment_type}
+                            </span>
+                          </td>
+                          <td className="px-4 py-3 whitespace-nowrap">
+                            <span
+                              className={`inline-flex items-center gap-1 rounded-md px-2 py-0.5 text-[11px] font-medium ${
+                                pmLower.includes("bkash")
+                                  ? "bg-pink-50 text-pink-700 border border-pink-200"
+                                  : pmLower.includes("rocket")
+                                  ? "bg-purple-50 text-purple-700 border border-purple-200"
+                                  : pmLower.includes("sslcommerz")
+                                  ? "bg-sky-50 text-sky-700 border border-sky-200"
+                                  : "bg-amber-50 text-amber-700 border border-amber-200"
+                              }`}
+                            >
+                              {pmLower.includes("bkash")
+                                ? "bKash"
+                                : pmLower.includes("rocket")
+                                ? "Rocket"
+                                : pmLower.includes("sslcommerz")
+                                ? "SSLCommerz"
+                                : isBn
+                                ? "হ্যান্ড ক্যাশ"
+                                : "Hand Cash"}
+                            </span>
+                          </td>
+                          <td className="px-4 py-3 whitespace-nowrap">
+                            <div className="flex items-center gap-1.5 font-mono text-[11px] text-slate-700">
+                              <span className="truncate max-w-[140px]" title={trxCode}>
+                                {trxCode}
+                              </span>
+                              {trxCode !== "—" && (
+                                <button
+                                  type="button"
+                                  onClick={() => {
+                                    navigator.clipboard.writeText(trxCode);
+                                    showNotification("success", isBn ? "TrxID কপি করা হয়েছে!" : "Transaction ID copied!");
+                                  }}
+                                  className="text-slate-400 hover:text-emerald-700 cursor-pointer"
+                                  title="Copy Transaction ID"
+                                >
+                                  📋
+                                </button>
+                              )}
+                            </div>
+                          </td>
+                          <td className="px-4 py-3 whitespace-nowrap">
+                            <span
+                              className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-[10px] font-bold ${
+                                p.status === "success"
+                                  ? "bg-emerald-50 text-emerald-700 border border-emerald-200"
+                                  : p.status === "pending" || p.status === "pending_cash_approval"
+                                  ? "bg-amber-50 text-amber-700 border border-amber-200"
+                                  : "bg-rose-50 text-rose-700 border border-rose-200"
+                              }`}
+                            >
+                              {p.status === "success"
+                                ? isBn ? "সফল" : "Verified"
+                                : p.status === "pending" || p.status === "pending_cash_approval"
+                                ? isBn ? "পেন্ডিং" : "Pending"
+                                : isBn ? "ব্যর্থ" : "Failed"}
+                            </span>
+                          </td>
+                        </tr>
+                      );
+                    });
+                  })()}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        )}
+
+        {/* ================= EXPENSES & TOUR COSTS TAB ================= */}
+        {activeTab === "expenses" && (
+          <div className="space-y-6">
+            <div className="flex flex-wrap items-center justify-between gap-4">
+              <div>
+                <h2 className="text-lg font-semibold text-slate-900">
+                  {isBn ? "ট্যুর ও পরিচালন ব্যয় ব্যবস্থাপনা" : "Tour Costs & Operating Expenses"}
+                </h2>
+                <p className="text-sm text-slate-500">
+                  {isBn
+                    ? "হোটেল, বাস ও গাইড বিলসহ সমস্ত ডিরেক্ট খরচ এবং সাধারণ পরিচালন ব্যয়ের বিস্তারিত হিসাব"
+                    : "Direct tour operations costs (hotel, transport, guide) and overhead business expenses"}
+                </p>
+              </div>
+              <div className="flex flex-wrap items-center gap-2">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setExpenseForm({
+                      category: expenseCategoryFilter === "direct" ? "hotel" : expenseCategoryFilter === "operating" ? "office" : "hotel",
+                      amount: "",
+                      description: "",
+                      date: new Date().toISOString().slice(0, 10),
+                    });
+                    setIsExpenseModalOpen(true);
+                  }}
+                  className="rounded-lg bg-emerald-700 px-3.5 py-2 text-xs font-semibold text-white hover:bg-emerald-800 transition shadow-xs cursor-pointer flex items-center gap-1.5"
+                >
+                  <span>+</span>
+                  {isBn ? "নতুন খরচ যোগ করুন" : "Record Expense"}
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setSupplierForm({
+                      name: "",
+                      category: "hotel",
+                      contact_person: "",
+                      phone: "",
+                      email: "",
+                      outstanding_balance: "0",
+                      notes: "",
+                    });
+                    setIsSupplierModalOpen(true);
+                  }}
+                  className="rounded-lg border border-slate-200 bg-white px-3.5 py-2 text-xs font-semibold text-slate-700 hover:bg-slate-50 transition cursor-pointer flex items-center gap-1.5 shadow-xs"
+                >
+                  <span>+</span>
+                  {isBn ? "সাপ্লায়ার যোগ করুন" : "Add Supplier / Vendor"}
+                </button>
+              </div>
+            </div>
+
+            {/* Expenses KPI Cards */}
+            <div className="grid grid-cols-2 gap-3 sm:gap-4 sm:grid-cols-2 lg:grid-cols-4">
+              <div className="rounded-xl border border-slate-200 bg-white p-4 shadow-xs">
+                <p className="text-xs uppercase font-medium text-slate-500">
+                  {isBn ? "ট্যুর সরাসরি খরচ (Direct)" : "Direct Tour Costs"}
+                </p>
+                <p className="mt-1 text-xl font-bold text-slate-900">
+                  {bdt(overview?.total_direct_cost ?? 0)}
+                </p>
+                <p className="text-[11px] text-slate-400 mt-0.5">Hotel, Transport, Guide, Food</p>
+              </div>
+              <div className="rounded-xl border border-slate-200 bg-white p-4 shadow-xs">
+                <p className="text-xs uppercase font-medium text-slate-500">
+                  {isBn ? "পরিচালন ব্যয় (Operating)" : "Operating Overheads"}
+                </p>
+                <p className="mt-1 text-xl font-bold text-slate-900">
+                  {bdt(overview?.total_operational_expense ?? 0)}
+                </p>
+                <p className="text-[11px] text-slate-400 mt-0.5">Office, Utilities, Ads, Tech</p>
+              </div>
+              <div className="rounded-xl border border-slate-200 bg-white p-4 shadow-xs">
+                <p className="text-xs uppercase font-medium text-slate-500">
+                  {isBn ? "মোট ব্যয় (Total Costs)" : "Total Expenditures"}
+                </p>
+                <p className="mt-1 text-xl font-bold text-slate-900">
+                  {bdt(
+                    Number(overview?.total_direct_cost || 0) +
+                      Number(overview?.total_operational_expense || 0)
+                  )}
+                </p>
+                <p className="text-[11px] text-slate-400 mt-0.5">Direct + Overheads combined</p>
+              </div>
+              <div className="rounded-xl border border-amber-200 bg-amber-50/40 p-4 shadow-xs">
+                <p className="text-xs uppercase font-medium text-amber-800">
+                  {isBn ? "সাপ্লায়ার দেনা (Payables)" : "Vendor Payables"}
+                </p>
+                <p className="mt-1 text-xl font-bold text-amber-900">
+                  {bdt(overview?.supplier_payables ?? 0)}
+                </p>
+                <p className="text-[11px] text-amber-700/80 mt-0.5">{num(suppliers.length)} suppliers active</p>
+              </div>
+            </div>
+
+            {/* Subtab Navigation (Expenses vs Suppliers) */}
+            <div className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-200 pb-2">
+              <div className="flex items-center gap-1.5">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setExpensesSubTab("expenses");
+                    setExpenseCategoryFilter("all");
+                  }}
+                  className={`px-3 py-1.5 text-xs font-semibold rounded-lg transition ${
+                    expensesSubTab === "expenses" && expenseCategoryFilter === "all"
+                      ? "bg-slate-900 text-white shadow-xs"
+                      : "text-slate-600 hover:bg-slate-100"
+                  }`}
+                >
+                  {isBn ? "সকল খরচ" : "All Expenses"} ({num(expenses.length)})
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setExpensesSubTab("expenses");
+                    setExpenseCategoryFilter("direct");
+                  }}
+                  className={`px-3 py-1.5 text-xs font-semibold rounded-lg transition ${
+                    expensesSubTab === "expenses" && expenseCategoryFilter === "direct"
+                      ? "bg-emerald-700 text-white shadow-xs"
+                      : "text-slate-600 hover:bg-slate-100"
+                  }`}
+                >
+                  {isBn ? "ট্যুর ডিরেক্ট খরচ" : "Direct Tour Costs"}
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setExpensesSubTab("expenses");
+                    setExpenseCategoryFilter("operating");
+                  }}
+                  className={`px-3 py-1.5 text-xs font-semibold rounded-lg transition ${
+                    expensesSubTab === "expenses" && expenseCategoryFilter === "operating"
+                      ? "bg-blue-700 text-white shadow-xs"
+                      : "text-slate-600 hover:bg-slate-100"
+                  }`}
+                >
+                  {isBn ? "পরিচালন ওভারহেড" : "Operating Overheads"}
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setExpensesSubTab("suppliers")}
+                  className={`px-3 py-1.5 text-xs font-semibold rounded-lg transition ${
+                    expensesSubTab === "suppliers"
+                      ? "bg-slate-900 text-white shadow-xs"
+                      : "text-slate-600 hover:bg-slate-100"
+                  }`}
+                >
+                  {isBn ? "সাপ্লায়ার লেজার" : "Suppliers & Vendors"} ({num(suppliers.length)})
+                </button>
+              </div>
+
+              {expensesSubTab === "expenses" && (
+                <div className="w-full sm:w-64">
+                  <input
+                    type="text"
+                    value={expenseSearch}
+                    onChange={(e) => setExpenseSearch(e.target.value)}
+                    placeholder={isBn ? "খরচের বিবরণ বা ক্যাটাগরি খুঁজুন..." : "Filter expenses by note..."}
+                    className="w-full rounded-lg border border-slate-200 px-3 py-1.5 text-xs text-slate-900 focus:border-emerald-500 focus:outline-none"
+                  />
+                </div>
+              )}
+            </div>
+
+            {/* Expenses List View */}
+            {expensesSubTab === "expenses" && (
+              <div className="overflow-x-auto rounded-xl border border-slate-200 bg-white shadow-xs">
+                <table className="w-full text-left text-xs">
+                  <thead className="border-b border-slate-200 bg-slate-50 text-slate-600 font-semibold uppercase tracking-wider">
+                    <tr>
+                      <th className="px-4 py-3">{isBn ? "তারিখ" : "Date"}</th>
+                      <th className="px-4 py-3">{isBn ? "ক্যাটাগরি" : "Category"}</th>
+                      <th className="px-4 py-3">{isBn ? "বিবরণ" : "Description"}</th>
+                      <th className="px-4 py-3">{isBn ? "টাইপ" : "Cost Type"}</th>
+                      <th className="px-4 py-3 text-right">{isBn ? "পরিমাণ" : "Amount"}</th>
+                      <th className="px-4 py-3 text-center">{isBn ? "অ্যাকশন" : "Actions"}</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-slate-100">
+                    {(() => {
+                      const isDirectCat = (cat: string) =>
+                        cat === "hotel" || cat === "transport" || cat === "guide" || cat === "food" || cat === "boat";
+
+                      const list = expenses.filter((e) => {
+                        if (expenseCategoryFilter === "direct" && !isDirectCat(e.category)) return false;
+                        if (expenseCategoryFilter === "operating" && isDirectCat(e.category)) return false;
+                        if (expenseSearch.trim()) {
+                          const q = expenseSearch.toLowerCase().trim();
+                          const descMatch = e.description?.toLowerCase().includes(q);
+                          const catMatch = e.category?.toLowerCase().includes(q);
+                          const amtMatch = String(e.amount).includes(q);
+                          if (!descMatch && !catMatch && !amtMatch) return false;
+                        }
+                        return true;
+                      });
+
+                      if (list.length === 0) {
+                        return (
+                          <tr>
+                            <td colSpan={6} className="px-4 py-8 text-center text-slate-500 italic">
+                              {isBn
+                                ? "কোনো খরচের রেকর্ড পাওয়া যায়নি।"
+                                : "No expenses recorded in this category yet. Click '+ Record Expense' to add one."}
+                            </td>
+                          </tr>
+                        );
+                      }
+
+                      return list.map((e) => {
+                        const direct = isDirectCat(e.category);
+                        return (
+                          <tr key={e.id} className="hover:bg-slate-50/70 transition">
+                            <td className="px-4 py-3 whitespace-nowrap text-slate-600 font-mono text-[11px]">
+                              {e.date || "—"}
+                            </td>
+                            <td className="px-4 py-3 whitespace-nowrap">
+                              <span
+                                className={`inline-flex items-center rounded-md px-2 py-0.5 text-[11px] font-semibold uppercase tracking-wide ${
+                                  direct
+                                    ? "bg-emerald-50 text-emerald-800 border border-emerald-200"
+                                    : "bg-blue-50 text-blue-800 border border-blue-200"
+                                }`}
+                              >
+                                {e.category}
+                              </span>
+                            </td>
+                            <td className="px-4 py-3 font-medium text-slate-900 max-w-md">
+                              {e.description}
+                            </td>
+                            <td className="px-4 py-3 whitespace-nowrap">
+                              <span className="text-[11px] text-slate-500 font-medium">
+                                {direct ? (isBn ? "ট্যুর ডিরেক্ট" : "Direct Cost") : (isBn ? "পরিচালন ব্যয়" : "Operating Exp")}
+                              </span>
+                            </td>
+                            <td className="px-4 py-3 whitespace-nowrap font-bold text-slate-900 text-right">
+                              {bdt(e.amount)}
+                            </td>
+                            <td className="px-4 py-3 whitespace-nowrap text-center">
+                              <button
+                                type="button"
+                                onClick={() => handleDeleteExpense(e.id, e.description)}
+                                className="rounded px-2 py-1 text-xs text-rose-600 hover:bg-rose-50 transition cursor-pointer font-medium"
+                                title="Delete expense"
+                              >
+                                {isBn ? "মুছুন" : "Delete"}
+                              </button>
+                            </td>
+                          </tr>
+                        );
+                      });
+                    })()}
+                  </tbody>
+                </table>
+              </div>
+            )}
+
+            {/* Suppliers View */}
+            {expensesSubTab === "suppliers" && (
+              <div className="overflow-x-auto rounded-xl border border-slate-200 bg-white shadow-xs">
+                <table className="w-full text-left text-xs">
+                  <thead className="border-b border-slate-200 bg-slate-50 text-slate-600 font-semibold uppercase tracking-wider">
+                    <tr>
+                      <th className="px-4 py-3">{isBn ? "সাপ্লায়ার / ভেন্ডর" : "Supplier / Vendor"}</th>
+                      <th className="px-4 py-3">{isBn ? "ক্যাটাগরি" : "Category"}</th>
+                      <th className="px-4 py-3">{isBn ? "যোগাযোগ ব্যক্তি" : "Contact Person"}</th>
+                      <th className="px-4 py-3">{isBn ? "ফোন / ইমেইল" : "Phone & Email"}</th>
+                      <th className="px-4 py-3 text-right">{isBn ? "বকেয়া দেনা" : "Outstanding Payable"}</th>
+                      <th className="px-4 py-3 text-center">{isBn ? "স্ট্যাটাস" : "Status"}</th>
+                      <th className="px-4 py-3 text-center">{isBn ? "অ্যাকশন" : "Actions"}</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-slate-100">
+                    {suppliers.length === 0 ? (
+                      <tr>
+                        <td colSpan={7} className="px-4 py-8 text-center text-slate-500 italic">
+                          {isBn
+                            ? "কোনো সাপ্লায়ার রেকর্ড পাওয়া যায়নি।"
+                            : "No suppliers registered yet. Click '+ Add Supplier' above."}
+                        </td>
+                      </tr>
+                    ) : (
+                      suppliers.map((s) => (
+                        <tr key={s.id} className="hover:bg-slate-50/70 transition">
+                          <td className="px-4 py-3 font-semibold text-slate-900">
+                            {s.name}
+                            {s.notes && <div className="text-[11px] text-slate-400 font-normal">{s.notes}</div>}
+                          </td>
+                          <td className="px-4 py-3 whitespace-nowrap">
+                            <span className="inline-flex rounded bg-slate-100 px-2 py-0.5 text-[11px] font-medium text-slate-700 capitalize">
+                              {s.category || "General"}
+                            </span>
+                          </td>
+                          <td className="px-4 py-3 text-slate-700">{s.contact_person || "—"}</td>
+                          <td className="px-4 py-3 text-slate-700 font-mono text-[11px]">
+                            {s.phone && <div>📞 {s.phone}</div>}
+                            {s.email && <div className="text-slate-400">{s.email}</div>}
+                          </td>
+                          <td className="px-4 py-3 whitespace-nowrap font-bold text-slate-900 text-right">
+                            {bdt(s.outstanding_balance)}
+                          </td>
+                          <td className="px-4 py-3 whitespace-nowrap text-center">
+                            <span
+                              className={`inline-flex rounded-full px-2 py-0.5 text-[10px] font-semibold ${
+                                s.is_active ? "bg-emerald-50 text-emerald-700" : "bg-slate-100 text-slate-500"
+                              }`}
+                            >
+                              {s.is_active ? "Active" : "Inactive"}
+                            </span>
+                          </td>
+                          <td className="px-4 py-3 whitespace-nowrap text-center">
+                            <button
+                              type="button"
+                              onClick={() => handleDeleteSupplier(s.id, s.name)}
+                              className="rounded px-2 py-1 text-xs text-rose-600 hover:bg-rose-50 transition cursor-pointer font-medium"
+                            >
+                              {isBn ? "মুছুন" : "Delete"}
+                            </button>
+                          </td>
+                        </tr>
+                      ))
+                    )}
+                  </tbody>
+                </table>
+              </div>
+            )}
+          </div>
+        )}
+
         {/* ================= REPORTS & MANIFEST TAB ================= */}
         {activeTab === "reports" && (
-          <TourReportManager
-            bookings={bookings}
-            tours={tours}
-            destinations={destinations}
-            customers={customers}
-            currentUser={user}
-          />
+          <div className="space-y-6">
+            {/* Reports Tab Header with Subtab Navigation */}
+            <div className="flex flex-wrap items-center justify-between gap-4">
+              <div>
+                <h2 className="text-lg font-semibold text-slate-900">
+                  {isBn ? "ফাইন্যান্সিয়াল পারফরম্যান্স ও ট্যুর রিপোর্ট" : "Financial Performance & Tour Operations Report"}
+                </h2>
+                <p className="text-sm text-slate-500">
+                  {isBn
+                    ? "লাভ ও ক্ষতির (P&L) বিশ্লেষণ, গ্রস মার্জিন এবং প্রতিটি ট্যুরের ট্রাভেলার্স ম্যানিফেস্ট তালিকা"
+                    : "Executive Profit & Loss statement, gross margin analysis, and official tour departure manifests"}
+                </p>
+              </div>
+              <div className="flex items-center gap-1.5 bg-slate-100 p-1 rounded-xl border border-slate-200">
+                <button
+                  type="button"
+                  onClick={() => setReportsSubTab("pnl")}
+                  className={`px-3.5 py-1.5 text-xs font-semibold rounded-lg transition cursor-pointer ${
+                    reportsSubTab === "pnl"
+                      ? "bg-white text-emerald-800 shadow-xs border border-emerald-200"
+                      : "text-slate-600 hover:text-slate-900"
+                  }`}
+                >
+                  📊 {isBn ? "প্রফিট ও লস স্টেটমেন্ট" : "Profit & Loss (P&L)"}
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setReportsSubTab("manifest")}
+                  className={`px-3.5 py-1.5 text-xs font-semibold rounded-lg transition cursor-pointer ${
+                    reportsSubTab === "manifest"
+                      ? "bg-white text-emerald-800 shadow-xs border border-emerald-200"
+                      : "text-slate-600 hover:text-slate-900"
+                  }`}
+                >
+                  🚌 {isBn ? "ট্যুর ম্যানিফেস্ট ও ট্রাভেলার্স" : "Tour Manifest & Roster"}
+                </button>
+              </div>
+            </div>
+
+            {/* P&L Executive Statement View */}
+            {reportsSubTab === "pnl" && (
+              <div className="space-y-6">
+                {/* P&L Executive Summary Cards */}
+                <div className="grid grid-cols-2 gap-3 sm:gap-4 sm:grid-cols-2 lg:grid-cols-5">
+                  <div className="rounded-xl border border-slate-200 bg-white p-4 shadow-xs">
+                    <p className="text-xs uppercase font-medium text-slate-500">{dict.overview.revenue}</p>
+                    <p className="mt-1 text-xl font-bold text-slate-900">{bdt(overview?.total_revenue ?? 0)}</p>
+                    <p className="text-[11px] text-emerald-600 mt-0.5">100% Gross Intake</p>
+                  </div>
+                  <div className="rounded-xl border border-slate-200 bg-white p-4 shadow-xs">
+                    <p className="text-xs uppercase font-medium text-slate-500">{dict.overview.directCosts}</p>
+                    <p className="mt-1 text-xl font-bold text-slate-900">{bdt(overview?.total_direct_cost ?? 0)}</p>
+                    <p className="text-[11px] text-slate-400 mt-0.5">Tour COGS Outflows</p>
+                  </div>
+                  <div className="rounded-xl border border-slate-200 bg-white p-4 shadow-xs">
+                    <p className="text-xs uppercase font-medium text-slate-500">{dict.overview.grossMargin}</p>
+                    <p className={`mt-1 text-xl font-bold ${Number(overview?.gross_profit) >= 0 ? "text-emerald-700" : "text-rose-600"}`}>
+                      {bdt(overview?.gross_profit ?? 0)}
+                    </p>
+                    <p className="text-[11px] text-slate-500 mt-0.5">
+                      {Number(overview?.total_revenue || 0) > 0
+                        ? `${((Number(overview?.gross_profit || 0) / Number(overview?.total_revenue || 1)) * 100).toFixed(1)}% Gross Margin`
+                        : "0.0% Margin"}
+                    </p>
+                  </div>
+                  <div className="rounded-xl border border-slate-200 bg-white p-4 shadow-xs">
+                    <p className="text-xs uppercase font-medium text-slate-500">{dict.overview.operatingExp}</p>
+                    <p className="mt-1 text-xl font-bold text-slate-900">{bdt(overview?.total_operational_expense ?? 0)}</p>
+                    <p className="text-[11px] text-slate-400 mt-0.5">Overheads & Admin</p>
+                  </div>
+                  <div className="col-span-2 sm:col-span-1 rounded-xl border border-slate-200 bg-white p-4 shadow-xs">
+                    <p className="text-xs uppercase font-medium text-slate-500">{dict.overview.netProfit}</p>
+                    <p className={`mt-1 text-xl font-bold ${Number(overview?.net_profit) >= 0 ? "text-emerald-700" : "text-rose-600"}`}>
+                      {bdt(overview?.net_profit ?? 0)}
+                    </p>
+                    <p className="text-[11px] text-slate-500 mt-0.5">
+                      {Number(overview?.total_revenue || 0) > 0
+                        ? `${((Number(overview?.net_profit || 0) / Number(overview?.total_revenue || 1)) * 100).toFixed(1)}% Net Margin`
+                        : "0.0% Net Margin"}
+                    </p>
+                  </div>
+                </div>
+
+                {/* Detailed Profit & Loss Statement Table */}
+                <div className="rounded-2xl border border-slate-200 bg-white p-5 sm:p-6 shadow-xs space-y-6">
+                  <div className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-100 pb-4">
+                    <div>
+                      <h3 className="text-base font-bold text-slate-900">
+                        {isBn ? "অফিসিয়াল প্রফিট ও লস (P&L) বিবরণী" : "Official Profit & Loss Statement"}
+                      </h3>
+                      <p className="text-xs text-slate-500">
+                        {isBn
+                          ? "সাভার ট্যুর লাভার · রিয়েল-টাইম ফাইন্যান্সিয়াল অডিট ও হিসাব"
+                          : "Savar Tour Lover · Real-time financial ledger & operations breakdown"}
+                      </p>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <button
+                        type="button"
+                        onClick={() => setShowPnlModal(true)}
+                        className="rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-xs font-semibold text-slate-700 hover:bg-slate-50 transition cursor-pointer flex items-center gap-1.5 shadow-2xs"
+                        title={isBn ? "প্রিন্ট করার পূর্বে প্রিভিউ দেখুন" : "Preview Statement before printing"}
+                      >
+                        <span>👁️</span>
+                        {isBn ? "প্রিভিউ দেখুন" : "Preview"}
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          const html = generatePnLStatementHtml({
+                            overview,
+                            expenses,
+                            suppliers,
+                            currentUser: user,
+                            isBn,
+                          });
+                          printPnLStatementHtml(html);
+                        }}
+                        className="rounded-lg bg-emerald-700 hover:bg-emerald-800 text-white px-3.5 py-1.5 text-xs font-bold transition cursor-pointer flex items-center gap-1.5 shadow-2xs"
+                        title={isBn ? "স্টেটমেন্ট সরাসরি প্রিন্ট করুন বা PDF হিসেবে সংরক্ষণ করুন" : "Print Statement or Save as PDF"}
+                      >
+                        <span>🖨️</span>
+                        {isBn ? "স্টেটমেন্ট প্রিন্ট করুন" : "Print Statement"}
+                      </button>
+                    </div>
+                  </div>
+
+                  <div className="space-y-4 text-xs sm:text-sm">
+                    {/* Revenue Section */}
+                    <div>
+                      <div className="flex items-center justify-between font-bold text-slate-900 border-b border-slate-200 pb-1.5 uppercase tracking-wide text-xs">
+                        <span>1. {isBn ? "গ্রস রেভিনিউ ও বুকিং আয়" : "Gross Operational Revenue"}</span>
+                        <span>{bdt(overview?.total_revenue ?? 0)}</span>
+                      </div>
+                      <div className="mt-2 space-y-1 pl-4 text-slate-600">
+                        <div className="flex items-center justify-between text-xs py-0.5">
+                          <span>{isBn ? "ভ্রমণ প্যাকেজ বুকিং থেকে সংগৃহীত অর্থ" : "Verified Customer Package Payments"}</span>
+                          <span className="font-mono">{bdt(overview?.total_revenue ?? 0)}</span>
+                        </div>
+                        <div className="flex items-center justify-between text-xs py-0.5 text-amber-700">
+                          <span>{isBn ? "ট্যুরের দিনে আদায়যোগ্য বকেয়া (Unrealized Due)" : "Due on Tour Day (Unrealized)"}</span>
+                          <span className="font-mono">{bdt(overview?.due_on_tour_day ?? 0)}</span>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Direct Costs Section */}
+                    <div>
+                      <div className="flex items-center justify-between font-bold text-slate-900 border-b border-slate-200 pb-1.5 uppercase tracking-wide text-xs">
+                        <span>2. {isBn ? "ট্যুর সরাসরি পরিচালন ব্যয় (COGS / Direct Costs)" : "Tour Operating Direct Costs (COGS)"}</span>
+                        <span className="text-rose-700">({bdt(overview?.total_direct_cost ?? 0)})</span>
+                      </div>
+                      <div className="mt-2 space-y-1 pl-4 text-slate-600">
+                        {["hotel", "transport", "guide", "food", "boat"].map((cat) => {
+                          const catTotal = expenses
+                            .filter((e) => e.category === cat)
+                            .reduce((sum, e) => sum + parseFloat(e.amount || "0"), 0);
+                          const labelMap: Record<string, string> = {
+                            hotel: isBn ? "হোটেল ও রিসোর্ট আবাসন" : "Hotel & Resort Accommodations",
+                            transport: isBn ? "পরিবহন ও বাস চার্টার" : "Transport & Bus Charters",
+                            guide: isBn ? "ট্যুর গাইড ও লিড ফি" : "Tour Guide & Team Lead Fees",
+                            food: isBn ? "খাবার ও ক্যাটারিং" : "Food, Catering & Refreshments",
+                            boat: isBn ? "নৌকা ও ট্রলার ভাড়া" : "Boat & Ferry Transfers",
+                          };
+                          return (
+                            <div key={cat} className="flex items-center justify-between text-xs py-0.5">
+                              <span>{labelMap[cat]}</span>
+                              <span className="font-mono">{bdt(catTotal)}</span>
+                            </div>
+                          );
+                        })}
+                      </div>
+                    </div>
+
+                    {/* Gross Profit Subtotal */}
+                    <div className="rounded-xl bg-slate-50 p-3.5 border border-slate-200 flex items-center justify-between font-bold">
+                      <span className="text-slate-900">
+                        {isBn ? "গ্রস প্রফিট (মোট পরিচালন লাভ)" : "GROSS PROFIT (Operating Margin)"}
+                      </span>
+                      <span className={`text-base ${Number(overview?.gross_profit) >= 0 ? "text-emerald-700" : "text-rose-600"}`}>
+                        {bdt(overview?.gross_profit ?? 0)}
+                      </span>
+                    </div>
+
+                    {/* Operating Expenses Section */}
+                    <div>
+                      <div className="flex items-center justify-between font-bold text-slate-900 border-b border-slate-200 pb-1.5 uppercase tracking-wide text-xs">
+                        <span>3. {isBn ? "সাধারণ পরিচালন ও প্রশাসনিক ওভারহেড (Overheads)" : "General Operating Overheads & Admin"}</span>
+                        <span className="text-rose-700">({bdt(overview?.total_operational_expense ?? 0)})</span>
+                      </div>
+                      <div className="mt-2 space-y-1 pl-4 text-slate-600">
+                        {["office", "utilities", "marketing", "software", "other"].map((cat) => {
+                          const catTotal = expenses
+                            .filter((e) => e.category === cat)
+                            .reduce((sum, e) => sum + parseFloat(e.amount || "0"), 0);
+                          const labelMap: Record<string, string> = {
+                            office: isBn ? "অফিস ভাড়া ও স্পেস" : "Office Space & Rent",
+                            utilities: isBn ? "বিদ্যুৎ, ইন্টারনেট ও বিল" : "Utilities & Internet Overheads",
+                            marketing: isBn ? "ফেসবুক বিজ্ঞাপন ও মার্কেটিং" : "Marketing & Facebook Ad Campaigns",
+                            software: isBn ? "ডোমেইন, হোস্টিং ও সফটওয়্যার" : "Hosting, Domains & Software Tools",
+                            other: isBn ? "অন্যান্য প্রশাসনিক খরচ" : "Miscellaneous Overheads",
+                          };
+                          return (
+                            <div key={cat} className="flex items-center justify-between text-xs py-0.5">
+                              <span>{labelMap[cat]}</span>
+                              <span className="font-mono">{bdt(catTotal)}</span>
+                            </div>
+                          );
+                        })}
+                      </div>
+                    </div>
+
+                    {/* Net Profit Final Total */}
+                    <div className="rounded-xl bg-emerald-50/70 p-4 border border-emerald-200 flex items-center justify-between font-bold">
+                      <div>
+                        <div className="text-slate-900 text-sm sm:text-base">
+                          {isBn ? "নিট মুনাফা / নিট প্রফিট (Net Profit)" : "NET PROFIT / (NET LOSS)"}
+                        </div>
+                        <div className="text-[11px] text-slate-500 font-normal">
+                          {isBn ? "গ্রস প্রফিট থেকে সমস্ত পরিচালন ওভারহেড বাদ দিয়ে" : "After all direct tour costs and operating overheads"}
+                        </div>
+                      </div>
+                      <span className={`text-xl sm:text-2xl ${Number(overview?.net_profit) >= 0 ? "text-emerald-700" : "text-rose-600"}`}>
+                        {bdt(overview?.net_profit ?? 0)}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* Tour Manifest & Operations View */}
+            {reportsSubTab === "manifest" && (
+              <TourReportManager
+                bookings={bookings}
+                tours={tours}
+                destinations={destinations}
+                customers={customers}
+                currentUser={user}
+              />
+            )}
+          </div>
         )}
 
         {/* ================= USERS / TRAVELERS TAB ================= */}
@@ -7448,6 +8569,267 @@ function StaffDashboardContent() {
         </div>
       )}
 
+      {/* Expense Entry / Edit Modal */}
+      {isExpenseModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/50 backdrop-blur-xs p-4 overflow-y-auto">
+          <div className="w-full max-w-lg rounded-2xl bg-white p-6 shadow-2xl border border-slate-200 my-8">
+            <div className="flex items-center justify-between pb-3 border-b border-slate-100 mb-4">
+              <div>
+                <h3 className="text-base font-bold text-slate-900">
+                  {expenseForm.id
+                    ? (isBn ? "খরচ এডিট করুন" : "Edit Expense")
+                    : (isBn ? "নতুন খরচ রেকর্ড করুন" : "Record New Expense")}
+                </h3>
+                <p className="text-xs text-slate-500">
+                  {isBn
+                    ? "ট্যুর ডিরেক্ট খরচ বা ব্যবসায়িক পরিচালন ব্যয় যুক্ত করুন"
+                    : "Add direct tour cost (COGS) or operational overhead to ledger"}
+                </p>
+              </div>
+              <button
+                type="button"
+                onClick={() => setIsExpenseModalOpen(false)}
+                className="rounded-lg p-1 text-slate-400 hover:bg-slate-100 hover:text-slate-600 transition cursor-pointer"
+              >
+                ✕
+              </button>
+            </div>
+
+            <form onSubmit={handleSaveExpense} className="space-y-4">
+              <div>
+                <label className="block text-xs font-semibold text-slate-700 mb-1">
+                  {isBn ? "খরচের ক্যাটাগরি" : "Expense Category"} *
+                </label>
+                <select
+                  value={expenseForm.category}
+                  onChange={(e) => setExpenseForm((prev) => ({ ...prev, category: e.target.value }))}
+                  className="w-full rounded-lg border border-slate-300 px-3 py-2 text-xs text-slate-900 focus:border-emerald-600 focus:outline-none"
+                  required
+                >
+                  <optgroup label={isBn ? "ট্যুর সরাসরি পরিচালন খরচ (Direct)" : "Tour Direct Costs (COGS)"}>
+                    <option value="hotel">{isBn ? "হোটেল ও রিসোর্ট বুকিং (Hotel)" : "Hotel & Resort Accommodation"}</option>
+                    <option value="transport">{isBn ? "পরিবহন ও বাস চার্টার (Transport)" : "Transport / Bus Charter"}</option>
+                    <option value="guide">{isBn ? "ট্যুর গাইড ও লিড ফি (Guide)" : "Tour Guide & Team Lead"}</option>
+                    <option value="food">{isBn ? "খাবার ও ক্যাটারিং (Food)" : "Food & Catering"}</option>
+                    <option value="boat">{isBn ? "নৌকা ও ট্রলার ভাড়া (Boat)" : "Boat / Ferry Transfer"}</option>
+                  </optgroup>
+                  <optgroup label={isBn ? "সাধারণ পরিচালন ওভারহেড (Overheads)" : "Operating Overheads"}>
+                    <option value="office">{isBn ? "অফিস ভাড়া ও স্পেস (Office)" : "Office Space & Rent"}</option>
+                    <option value="utilities">{isBn ? "বিদ্যুৎ, ইন্টারনেট ও বিল (Utilities)" : "Utilities & Internet"}</option>
+                    <option value="marketing">{isBn ? "মার্কেটিং ও বিজ্ঞাপন (Marketing)" : "Marketing & Facebook Ads"}</option>
+                    <option value="software">{isBn ? "সফটওয়্যার, ডোমেইন ও হোস্টিং (Software)" : "Software, Domain & Tech"}</option>
+                    <option value="other">{isBn ? "অন্যান্য খরচ (Other)" : "Other Operational Expense"}</option>
+                  </optgroup>
+                </select>
+              </div>
+
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="block text-xs font-semibold text-slate-700 mb-1">
+                    {isBn ? "টাকার পরিমাণ (BDT ৳)" : "Amount (BDT ৳)"} *
+                  </label>
+                  <input
+                    type="number"
+                    step="any"
+                    min="1"
+                    value={expenseForm.amount}
+                    onChange={(e) => setExpenseForm((prev) => ({ ...prev, amount: e.target.value }))}
+                    placeholder="e.g. 12000"
+                    className="w-full rounded-lg border border-slate-300 px-3 py-2 text-xs text-slate-900 focus:border-emerald-600 focus:outline-none font-bold"
+                    required
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs font-semibold text-slate-700 mb-1">
+                    {isBn ? "তারিখ" : "Date"} *
+                  </label>
+                  <input
+                    type="date"
+                    value={expenseForm.date}
+                    onChange={(e) => setExpenseForm((prev) => ({ ...prev, date: e.target.value }))}
+                    className="w-full rounded-lg border border-slate-300 px-3 py-2 text-xs text-slate-900 focus:border-emerald-600 focus:outline-none"
+                    required
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-xs font-semibold text-slate-700 mb-1">
+                  {isBn ? "খরচের বিবরণ ও নোট" : "Description / Purpose"} *
+                </label>
+                <input
+                  type="text"
+                  value={expenseForm.description}
+                  onChange={(e) => setExpenseForm((prev) => ({ ...prev, description: e.target.value }))}
+                  placeholder={
+                    isBn
+                      ? "যেমন: সাজেক রিসোর্ট কটেজ ভাড়া ১৫ জন অথবা ফেসবুক বুস্টিং পেমেন্ট"
+                      : "e.g. Sajek Eco Resort 8 rooms advance booking"
+                  }
+                  className="w-full rounded-lg border border-slate-300 px-3 py-2 text-xs text-slate-900 focus:border-emerald-600 focus:outline-none"
+                  required
+                />
+              </div>
+
+              <div className="flex items-center justify-end gap-2.5 pt-3 border-t border-slate-100">
+                <button
+                  type="button"
+                  onClick={() => setIsExpenseModalOpen(false)}
+                  className="rounded-lg border border-slate-300 bg-white px-4 py-2 text-xs font-medium text-slate-700 hover:bg-slate-50 cursor-pointer"
+                >
+                  {isBn ? "বাতিল" : "Cancel"}
+                </button>
+                <button
+                  type="submit"
+                  disabled={isSavingExpense}
+                  className="rounded-lg bg-emerald-700 px-5 py-2 text-xs font-semibold text-white hover:bg-emerald-800 transition shadow-xs cursor-pointer disabled:opacity-50"
+                >
+                  {isSavingExpense
+                    ? (isBn ? "সংরক্ষণ হচ্ছে..." : "Saving...")
+                    : (isBn ? "খরচ সংরক্ষণ করুন" : "Save Expense")}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* Supplier Entry / Edit Modal */}
+      {isSupplierModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/50 backdrop-blur-xs p-4 overflow-y-auto">
+          <div className="w-full max-w-lg rounded-2xl bg-white p-6 shadow-2xl border border-slate-200 my-8">
+            <div className="flex items-center justify-between pb-3 border-b border-slate-100 mb-4">
+              <div>
+                <h3 className="text-base font-bold text-slate-900">
+                  {supplierForm.id
+                    ? (isBn ? "সাপ্লায়ার এডিট" : "Edit Supplier")
+                    : (isBn ? "নতুন সাপ্লায়ার বা ভেন্ডর যোগ" : "Add Supplier / Vendor")}
+                </h3>
+                <p className="text-xs text-slate-500">
+                  {isBn
+                    ? "হোটেল, বাস বা সার্ভিস ভেন্ডরের হিসাব ও বকেয়া রেজিস্ট্রি"
+                    : "Register hotel, bus transport, or travel service vendor"}
+                </p>
+              </div>
+              <button
+                type="button"
+                onClick={() => setIsSupplierModalOpen(false)}
+                className="rounded-lg p-1 text-slate-400 hover:bg-slate-100 hover:text-slate-600 transition cursor-pointer"
+              >
+                ✕
+              </button>
+            </div>
+
+            <form onSubmit={handleSaveSupplier} className="space-y-4">
+              <div>
+                <label className="block text-xs font-semibold text-slate-700 mb-1">
+                  {isBn ? "সাপ্লায়ার / প্রতিষ্ঠানের নাম" : "Supplier / Company Name"} *
+                </label>
+                <input
+                  type="text"
+                  value={supplierForm.name}
+                  onChange={(e) => setSupplierForm((prev) => ({ ...prev, name: e.target.value }))}
+                  placeholder="e.g. Green Line Paribahan or Sajek Valley Resort"
+                  className="w-full rounded-lg border border-slate-300 px-3 py-2 text-xs text-slate-900 focus:border-emerald-600 focus:outline-none"
+                  required
+                />
+              </div>
+
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="block text-xs font-semibold text-slate-700 mb-1">
+                    {isBn ? "ক্যাটাগরি" : "Category"}
+                  </label>
+                  <select
+                    value={supplierForm.category}
+                    onChange={(e) => setSupplierForm((prev) => ({ ...prev, category: e.target.value }))}
+                    className="w-full rounded-lg border border-slate-300 px-3 py-2 text-xs text-slate-900 focus:border-emerald-600 focus:outline-none"
+                  >
+                    <option value="hotel">{isBn ? "হোটেল / রিসোর্ট" : "Hotel / Resort"}</option>
+                    <option value="transport">{isBn ? "পরিবহন / বাস" : "Transport / Bus"}</option>
+                    <option value="boat">{isBn ? "নৌকা / লঞ্চ" : "Boat / Ferry"}</option>
+                    <option value="guide">{isBn ? "ট্যুর গাইড" : "Tour Guide"}</option>
+                    <option value="food">{isBn ? "খাবার / রেস্তোরাঁ" : "Restaurant / Catering"}</option>
+                    <option value="other">{isBn ? "অন্যান্য সার্ভিস" : "Other Service"}</option>
+                  </select>
+                </div>
+                <div>
+                  <label className="block text-xs font-semibold text-slate-700 mb-1">
+                    {isBn ? "বর্তমান দেনা / বকেয়া (৳)" : "Outstanding Balance (৳)"}
+                  </label>
+                  <input
+                    type="number"
+                    step="any"
+                    value={supplierForm.outstanding_balance}
+                    onChange={(e) => setSupplierForm((prev) => ({ ...prev, outstanding_balance: e.target.value }))}
+                    className="w-full rounded-lg border border-slate-300 px-3 py-2 text-xs text-slate-900 focus:border-emerald-600 focus:outline-none font-bold"
+                  />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="block text-xs font-semibold text-slate-700 mb-1">
+                    {isBn ? "যোগাযোগ ব্যক্তি" : "Contact Person"}
+                  </label>
+                  <input
+                    type="text"
+                    value={supplierForm.contact_person}
+                    onChange={(e) => setSupplierForm((prev) => ({ ...prev, contact_person: e.target.value }))}
+                    placeholder="e.g. Md. Rafiqul Islam"
+                    className="w-full rounded-lg border border-slate-300 px-3 py-2 text-xs text-slate-900 focus:border-emerald-600 focus:outline-none"
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs font-semibold text-slate-700 mb-1">
+                    {isBn ? "ফোন নম্বর" : "Phone Number"}
+                  </label>
+                  <input
+                    type="tel"
+                    value={supplierForm.phone}
+                    onChange={(e) => setSupplierForm((prev) => ({ ...prev, phone: e.target.value }))}
+                    placeholder="e.g. 01711000000"
+                    className="w-full rounded-lg border border-slate-300 px-3 py-2 text-xs text-slate-900 focus:border-emerald-600 focus:outline-none"
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-xs font-semibold text-slate-700 mb-1">
+                  {isBn ? "নোট বা মন্তব্য" : "Notes"}
+                </label>
+                <input
+                  type="text"
+                  value={supplierForm.notes}
+                  onChange={(e) => setSupplierForm((prev) => ({ ...prev, notes: e.target.value }))}
+                  placeholder="e.g. 30% advance on booking, rest upon arrival"
+                  className="w-full rounded-lg border border-slate-300 px-3 py-2 text-xs text-slate-900 focus:border-emerald-600 focus:outline-none"
+                />
+              </div>
+
+              <div className="flex items-center justify-end gap-2.5 pt-3 border-t border-slate-100">
+                <button
+                  type="button"
+                  onClick={() => setIsSupplierModalOpen(false)}
+                  className="rounded-lg border border-slate-300 bg-white px-4 py-2 text-xs font-medium text-slate-700 hover:bg-slate-50 cursor-pointer"
+                >
+                  {isBn ? "বাতিল" : "Cancel"}
+                </button>
+                <button
+                  type="submit"
+                  disabled={isSavingSupplier}
+                  className="rounded-lg bg-emerald-700 px-5 py-2 text-xs font-semibold text-white hover:bg-emerald-800 transition shadow-xs cursor-pointer disabled:opacity-50"
+                >
+                  {isSavingSupplier
+                    ? (isBn ? "সংরক্ষণ হচ্ছে..." : "Saving...")
+                    : (isBn ? "সাপ্লায়ার সংরক্ষণ করুন" : "Save Supplier")}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
       {/* Change Password Modal */}
       {passwordModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/50 backdrop-blur-xs p-4">
@@ -7634,6 +9016,19 @@ function StaffDashboardContent() {
             </form>
           </div>
         </div>
+      )}
+
+      {/* Official Profit & Loss Statement Preview & Print Modal */}
+      {showPnlModal && (
+        <PnLStatementModal
+          isOpen={showPnlModal}
+          onClose={() => setShowPnlModal(false)}
+          overview={overview}
+          expenses={expenses}
+          suppliers={suppliers}
+          currentUser={user}
+          initialIsBn={isBn}
+        />
       )}
     </div>
   );

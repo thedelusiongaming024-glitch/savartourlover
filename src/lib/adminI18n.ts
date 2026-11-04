@@ -18,6 +18,8 @@ export interface AdminDictionary {
     destinations: string;
     users: string;
     bookings: string;
+    payments: string;
+    expenses: string;
     reports: string;
     cms: string;
     about_cms: string;
@@ -319,6 +321,8 @@ export const adminI18n: Record<AdminLang, AdminDictionary> = {
       destinations: "Destinations",
       users: "Users / Travelers",
       bookings: "Bookings",
+      payments: "Payments Ledger",
+      expenses: "Expenses & Costs",
       reports: "Reports & Manifest",
       cms: "Homepage CMS",
       about_cms: "About Page CMS",
@@ -618,6 +622,8 @@ export const adminI18n: Record<AdminLang, AdminDictionary> = {
       destinations: "গন্তব্যসমূহ",
       users: "ভ্রমণকারী ও ইউজার",
       bookings: "বুকিং সমূহ",
+      payments: "পেমেন্ট লেজার",
+      expenses: "খরচ ও পরিচালন ব্যয়",
       reports: "রিপোর্ট ও ট্রাভেলার্স",
       cms: "হোমপেজ সিএমএস",
       about_cms: "সম্পর্কে পেজ সিএমএস",

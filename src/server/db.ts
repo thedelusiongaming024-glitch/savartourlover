@@ -40,6 +40,8 @@ import {
   fetchDatabaseFromStorageBucket,
   invokeCloudSnapshotSync,
   registerDeletedEntity,
+  unregisterDeletedEntity,
+  knownDeletedEntities,
 } from "./supabase";
 import { normalizeImageUrl } from "@/lib/media";
 import { parseRocketSms, type ParsedRocketSms } from "./rocketSmsParser";
@@ -487,6 +489,41 @@ async function getCloudDatabase(): Promise<DatabaseSchema | null> {
   return await fetchDatabaseFromSupabase();
 }
 
+function mergeCollection<T extends { id: string; updated_at?: string; created_at?: string; slug?: string }>(
+  cloudItems: T[] = [],
+  localItems: T[] = [],
+  deletedIds: Set<string> = new Set()
+): T[] {
+  const map = new Map<string, T>();
+
+  // 1. Add cloud items that are not tombstoned
+  for (const item of cloudItems) {
+    if (!item || !item.id) continue;
+    if (deletedIds.has(item.id) || (item.slug && deletedIds.has(item.slug))) continue;
+    map.set(item.id, item);
+  }
+
+  // 2. Overlay local items: if local is newer or not yet in cloud, local wins!
+  for (const item of localItems) {
+    if (!item || !item.id) continue;
+    if (deletedIds.has(item.id) || (item.slug && deletedIds.has(item.slug))) continue;
+    const existing = map.get(item.id);
+    if (!existing) {
+      // Local item not present in cloud response (newly created locally or pending network sync)
+      map.set(item.id, item);
+    } else {
+      const localTime = new Date(item.updated_at || item.created_at || 0).getTime();
+      const cloudTime = new Date(existing.updated_at || existing.created_at || 0).getTime();
+      // If local item has a newer or equal timestamp, keep the local version
+      if (localTime >= cloudTime) {
+        map.set(item.id, item);
+      }
+    }
+  }
+
+  return Array.from(map.values());
+}
+
 function mergeCloudWithLocal(cloudDb: DatabaseSchema, localDb: DatabaseSchema): DatabaseSchema {
   // Combine deleted entities so local deletions are not lost when merging
   const deletedBookings = new Set([
@@ -501,76 +538,91 @@ function mergeCloudWithLocal(cloudDb: DatabaseSchema, localDb: DatabaseSchema): 
     ...(localDb.deletedEntities?.customers || []),
     ...(cloudDb.deletedEntities?.customers || [])
   ]);
-
-  const filteredCloudBookings = (cloudDb.bookings || []).filter(
-    (b) => !deletedBookings.has(b.id) && !deletedBookings.has(b.reference) && b.status !== "cancelled"
-  );
+  const deletedTours = new Set([
+    ...(localDb.deletedEntities?.tours || []),
+    ...(cloudDb.deletedEntities?.tours || [])
+  ]);
+  const deletedDestinations = new Set([
+    ...(localDb.deletedEntities?.destinations || []),
+    ...(cloudDb.deletedEntities?.destinations || [])
+  ]);
+  const deletedOffers = new Set([
+    ...(localDb.deletedEntities?.offers || []),
+    ...(cloudDb.deletedEntities?.offers || [])
+  ]);
+  const deletedTestimonials = new Set([
+    ...(localDb.deletedEntities?.testimonials || []),
+    ...(cloudDb.deletedEntities?.testimonials || [])
+  ]);
+  const deletedBlogPosts = new Set([
+    ...(localDb.deletedEntities?.blogPosts || []),
+    ...(cloudDb.deletedEntities?.blogPosts || [])
+  ]);
+  const deletedTourCategories = new Set([
+    ...(localDb.deletedEntities?.tourCategories || []),
+    ...(cloudDb.deletedEntities?.tourCategories || [])
+  ]);
+  const deletedHomepageBlocks = new Set([
+    ...(localDb.deletedEntities?.homepageBlocks || []),
+    ...(cloudDb.deletedEntities?.homepageBlocks || [])
+  ]);
+  const deletedAlerts = new Set([
+    ...(localDb.deletedEntities?.alerts || []),
+    ...(cloudDb.deletedEntities?.alerts || [])
+  ]);
+  const deletedInquiries = new Set([
+    ...(localDb.deletedEntities?.contactInquiries || []),
+    ...(cloudDb.deletedEntities?.contactInquiries || [])
+  ]);
 
   const rawStaff = (cloudDb.staffUsers && cloudDb.staffUsers.length > 0) ? cloudDb.staffUsers : (localDb.staffUsers || []);
-  const filteredStaff = rawStaff.filter(
-    (u) => !deletedStaff.has(u.id) && !deletedStaff.has(u.username)
-  );
-
   const rawCustomers = (cloudDb.customers && cloudDb.customers.length > 0) ? cloudDb.customers : (localDb.customers || []);
-  const filteredCustomers = rawCustomers.filter(
-    (c) => !deletedCustomers.has(c.id) && !deletedCustomers.has(c.phone_number)
-  );
 
   const result: DatabaseSchema = {
     ...cloudDb,
-    destinations: cloudDb.destinations || [],
-    tours: cloudDb.tours || [],
-    tourCategories: (cloudDb.tourCategories && cloudDb.tourCategories.length > 0)
-      ? cloudDb.tourCategories
-      : (localDb.tourCategories && localDb.tourCategories.length > 0 ? localDb.tourCategories : DEFAULT_TOUR_CATEGORIES),
-    offers: cloudDb.offers || [],
-    testimonials: cloudDb.testimonials || [],
-    blogPosts: cloudDb.blogPosts || [],
-    homepageBlocks: (cloudDb.homepageBlocks && cloudDb.homepageBlocks.length > 0) ? cloudDb.homepageBlocks : (localDb.homepageBlocks || []),
-    staffUsers: filteredStaff,
-    customers: filteredCustomers,
-    bookings: filteredCloudBookings,
-    payments: cloudDb.payments || [],
-    clearanceTickets: cloudDb.clearanceTickets || [],
-    alerts: cloudDb.alerts || [],
-    contactInquiries: cloudDb.contactInquiries || [],
+    destinations: mergeCollection(cloudDb.destinations || [], localDb.destinations || [], deletedDestinations),
+    tours: mergeCollection(cloudDb.tours || [], localDb.tours || [], deletedTours),
+    tourCategories: mergeCollection(
+      cloudDb.tourCategories && cloudDb.tourCategories.length > 0 ? cloudDb.tourCategories : (localDb.tourCategories || DEFAULT_TOUR_CATEGORIES),
+      localDb.tourCategories || [],
+      deletedTourCategories
+    ),
+    offers: mergeCollection(cloudDb.offers || [], localDb.offers || [], deletedOffers),
+    testimonials: mergeCollection(cloudDb.testimonials || [], localDb.testimonials || [], deletedTestimonials),
+    blogPosts: mergeCollection(cloudDb.blogPosts || [], localDb.blogPosts || [], deletedBlogPosts),
+    homepageBlocks: mergeCollection(cloudDb.homepageBlocks || [], localDb.homepageBlocks || [], deletedHomepageBlocks),
+    staffUsers: mergeCollection(rawStaff, localDb.staffUsers || [], deletedStaff),
+    customers: mergeCollection(rawCustomers, localDb.customers || [], deletedCustomers),
+    bookings: mergeCollection(cloudDb.bookings || [], localDb.bookings || [], deletedBookings).filter(
+      (b) => b.status !== "cancelled"
+    ),
+    payments: mergeCollection(cloudDb.payments || [], localDb.payments || [], new Set()),
+    clearanceTickets: mergeCollection(cloudDb.clearanceTickets || [], localDb.clearanceTickets || [], new Set()),
+    alerts: mergeCollection(cloudDb.alerts || [], localDb.alerts || [], deletedAlerts),
+    contactInquiries: mergeCollection(cloudDb.contactInquiries || [], localDb.contactInquiries || [], deletedInquiries),
     // Storage mirror collections (expenses, suppliers, analytics)
-    expenses: Array.isArray(cloudDb.expenses) ? cloudDb.expenses : (localDb.expenses || []),
-    suppliers: Array.isArray(cloudDb.suppliers) ? cloudDb.suppliers : (localDb.suppliers || []),
-    analyticsEvents: Array.isArray(cloudDb.analyticsEvents) ? cloudDb.analyticsEvents : (localDb.analyticsEvents || []),
+    expenses: mergeCollection(cloudDb.expenses || [], localDb.expenses || [], new Set()),
+    suppliers: mergeCollection(cloudDb.suppliers || [], localDb.suppliers || [], new Set()),
+    analyticsEvents: Array.isArray(cloudDb.analyticsEvents) && cloudDb.analyticsEvents.length > 0
+      ? cloudDb.analyticsEvents
+      : (localDb.analyticsEvents || []),
     deletedEntities: {
       ...localDb.deletedEntities,
       ...cloudDb.deletedEntities,
       bookings: Array.from(deletedBookings),
       staffUsers: Array.from(deletedStaff),
       customers: Array.from(deletedCustomers),
+      tours: Array.from(deletedTours),
+      destinations: Array.from(deletedDestinations),
+      offers: Array.from(deletedOffers),
+      testimonials: Array.from(deletedTestimonials),
+      blogPosts: Array.from(deletedBlogPosts),
+      tourCategories: Array.from(deletedTourCategories),
+      homepageBlocks: Array.from(deletedHomepageBlocks),
+      alerts: Array.from(deletedAlerts),
+      contactInquiries: Array.from(deletedInquiries),
     },
   };
-
-  // Preserve only recent in-flight bookings/payments created locally in the last 2 minutes
-  // that are still propagating over the network to Supabase
-  const now = Date.now();
-  const twoMinutesAgo = new Date(now - 2 * 60 * 1000).toISOString();
-  const cloudBookingIds = new Set(result.bookings.map((b) => b.id));
-  for (const lb of localDb.bookings || []) {
-    if (
-      !cloudBookingIds.has(lb.id) &&
-      !deletedBookings.has(lb.id) &&
-      !deletedBookings.has(lb.reference) &&
-      lb.status !== "cancelled" &&
-      lb.created_at &&
-      lb.created_at >= twoMinutesAgo
-    ) {
-      result.bookings.unshift(lb);
-    }
-  }
-
-  const cloudPaymentIds = new Set(result.payments.map((p) => p.id));
-  for (const lp of localDb.payments || []) {
-    if (!cloudPaymentIds.has(lp.id) && lp.created_at && lp.created_at >= twoMinutesAgo) {
-      result.payments.unshift(lp);
-    }
-  }
 
   return normalizeDatabaseSchema(result);
 }
@@ -651,8 +703,6 @@ export async function ensureDbHydrated(): Promise<DatabaseSchema> {
   const now = Date.now();
   if (
     memoryDb &&
-    Array.isArray(memoryDb.tours) &&
-    memoryDb.tours.length > 0 &&
     lastSupabaseFetch > 0 &&
     now - lastSupabaseFetch < SUPABASE_SYNC_INTERVAL_MS
   ) {
@@ -949,6 +999,7 @@ export async function saveDb(data: DatabaseSchema, forceCloudSync = false): Prom
   }
   memoryDb = normalizeDatabaseSchema(data);
   mutationCounter++;
+  lastSupabaseFetch = Date.now(); // Mark fresh local mutation so subsequent immediate reads don't overwrite with stale cloud data
   try {
     if (!fs.existsSync(DB_DIR)) {
       fs.mkdirSync(DB_DIR, { recursive: true });
@@ -1834,7 +1885,7 @@ export async function getOrCreateCustomerByPhone(input: {
     }
     existing.updated_at = new Date().toISOString();
     if (changed) {
-      await saveDb(db);
+      await saveDb(db, true);
       await syncCustomerToSupabase(existing);
     }
     return { customer: existing, isNew: false };
@@ -1863,7 +1914,7 @@ export async function getOrCreateCustomerByPhone(input: {
   };
 
   db.customers.unshift(newCustomer);
-  await saveDb(db);
+  await saveDb(db, true);
   await syncCustomerToSupabase(newCustomer);
   return { customer: newCustomer, isNew: true };
 }
@@ -1887,7 +1938,7 @@ export async function updateCustomer(
     description: "Profile information was updated.",
   });
 
-  await saveDb(db);
+  await saveDb(db, true);
   await syncCustomerToSupabase(cust);
   return cust;
 }
@@ -1955,7 +2006,7 @@ export async function addCustomerActivity(
 
   cust.activities.unshift(newActivity);
 
-  await saveDb(db);
+  await saveDb(db, true);
   await syncCustomerActivityToSupabase(newActivity);
 }
 
@@ -2173,12 +2224,20 @@ export async function createBooking(input: {
     specialReqs = specialReqs ? `${specialReqs} ${promoTag}` : promoTag;
   }
 
-  // Next reference = highest existing sequence + 1. `bookings.length + 1` produced duplicate
-  // references whenever a booking was removed or two requests overlapped.
+  // Next reference = highest existing sequence + 1. Check existing bookings, tombstoned
+  // deletions, and in-memory deletion sets so references are strictly monotonic and never collide.
   const year = new Date().getFullYear();
   let maxSeq = 0;
   for (const existing of db.bookings) {
     const m = /^(?:STL|AT)-\d{4}-(\d+)$/.exec(existing.reference || "");
+    if (m) maxSeq = Math.max(maxSeq, parseInt(m[1], 10));
+  }
+  for (const del of (db.deletedEntities?.bookings || [])) {
+    const m = /^(?:STL|AT)-\d{4}-(\d+)$/.exec(del || "");
+    if (m) maxSeq = Math.max(maxSeq, parseInt(m[1], 10));
+  }
+  for (const del of knownDeletedEntities.bookings) {
+    const m = /^(?:STL|AT)-\d{4}-(\d+)$/.exec(del || "");
     if (m) maxSeq = Math.max(maxSeq, parseInt(m[1], 10));
   }
   const ref = `STL-${year}-${String(maxSeq + 1).padStart(5, "0")}`;
@@ -2263,8 +2322,9 @@ export async function createBooking(input: {
   }
 
   if (db.deletedEntities?.bookings) {
-    db.deletedEntities.bookings = db.deletedEntities.bookings.filter((id) => id !== bookingId);
+    db.deletedEntities.bookings = db.deletedEntities.bookings.filter((id) => id !== bookingId && id !== ref);
   }
+  unregisterDeletedEntity("bookings", [bookingId, ref]);
   db.bookings.unshift(newBooking);
 
   let pendingCashPay: DbPayment | undefined;
@@ -2318,7 +2378,7 @@ export async function createBooking(input: {
     },
   });
 
-  await saveDb(db);
+  await saveDb(db, true);
   await syncCustomerToSupabase(customer);
   await syncBookingToSupabase(newBooking);
   if (pendingCashPay) {
@@ -2342,7 +2402,7 @@ export async function updateBooking(id: string, update: Partial<DbBooking>): Pro
     ...update,
     updated_at: new Date().toISOString(),
   };
-  await saveDb(db);
+  await saveDb(db, true);
   await syncBookingToSupabase(db.bookings[index]);
   return db.bookings[index];
 }
@@ -2374,7 +2434,7 @@ export async function createPayment(input: {
   };
 
   db.payments.unshift(payment);
-  await saveDb(db);
+  await saveDb(db, true);
   await syncPaymentToSupabase(payment);
   return payment;
 }
@@ -2611,7 +2671,7 @@ async function confirmPaymentSuccessInner(
       created_at: new Date().toISOString(),
     });
     ticket = db.clearanceTickets.find((t) => t.booking_id === booking.id) ?? getClearanceTicket(booking.id) ?? undefined;
-    await saveDb(db);
+    await saveDb(db, true);
     await syncPaymentToSupabase(payment);
     if (!ticket) throw new Error(`Clearance ticket missing for booking ${booking.id}.`);
     return { payment, booking, ticket };
@@ -2753,7 +2813,7 @@ async function confirmPaymentSuccessInner(
     });
   } catch {}
 
-  await saveDb(db);
+  await saveDb(db, true);
   await syncPaymentToSupabase(payment);
   await syncBookingToSupabase(booking);
   if (ticket) {
@@ -2832,7 +2892,7 @@ export async function clearTicketOnTourDay(
     });
   }
 
-  await saveDb(db);
+  await saveDb(db, true);
   await syncBookingToSupabase(booking);
   return { ticket, booking };
 }
@@ -2989,7 +3049,7 @@ export async function requestDueCashPayment(
     });
   }
 
-  await saveDb(db);
+  await saveDb(db, true);
   await syncBookingToSupabase(booking);
   await syncPaymentToSupabase(payment);
 
@@ -3274,12 +3334,15 @@ export function getFinanceOverview() {
     .filter((b) => b.status !== "cancelled" && b.status !== "refunded")
     .reduce((sum, b) => sum + parseFloat(b.amount_paid), 0);
 
+  const isDirect = (cat: string) =>
+    cat === "hotel" || cat === "transport" || cat === "guide" || cat === "food" || cat === "boat";
+
   const totalDirectCost = db.expenses
-    .filter((e) => e.category === "hotel" || e.category === "transport" || e.category === "guide")
+    .filter((e) => isDirect(e.category))
     .reduce((sum, e) => sum + parseFloat(e.amount), 0);
 
   const totalOperationalExpense = db.expenses
-    .filter((e) => e.category !== "hotel" && e.category !== "transport" && e.category !== "guide")
+    .filter((e) => !isDirect(e.category))
     .reduce((sum, e) => sum + parseFloat(e.amount), 0);
 
   const grossProfit = totalRevenue - totalDirectCost;
@@ -3450,7 +3513,7 @@ export async function createInquiry(input: {
   };
   db.alerts.unshift(alert);
 
-  await saveDb(db);
+  await saveDb(db, true);
   await syncContactInquiryToSupabase(inquiry);
   await syncAlertToSupabase(alert);
   return inquiry;
@@ -3530,8 +3593,8 @@ export async function saveTour(tourData: Partial<DbTour>): Promise<DbTour> {
 
   const defaultTour: DbTour = {
     id,
-    title: tourData.title || "Untitled Tour",
-    slug: tourData.slug || `tour-${Date.now()}`,
+    title: tourData.title || existingTour?.title || "Untitled Tour",
+    slug: tourData.slug || existingTour?.slug || `tour-${Date.now()}`,
     destination_id: matchedDest?.id || tourData.destination_id || existingTour?.destination_id,
     destination_slug: matchedDest?.slug || destInput,
     destination_name: matchedDest?.name || tourData.destination_name || existingTour?.destination_name || "Cox's Bazar",
@@ -3600,6 +3663,8 @@ export async function saveTour(tourData: Partial<DbTour>): Promise<DbTour> {
       : (existingTour?.places_to_visit || []),
     is_featured: Boolean(tourData.is_featured),
     status: tourData.status || "published",
+    created_at: existingTour?.created_at || (tourData as any)?.created_at || new Date().toISOString(),
+    updated_at: new Date().toISOString(),
   };
 
   // Un-tombstone if re-created or edited
@@ -3615,7 +3680,7 @@ export async function saveTour(tourData: Partial<DbTour>): Promise<DbTour> {
     db.tours.unshift(defaultTour);
   }
 
-  await saveDb(db);
+  await saveDb(db, true);
   await syncTourToSupabase(defaultTour);
   return defaultTour;
 }
@@ -3635,7 +3700,7 @@ export async function deleteTour(id: string): Promise<boolean> {
     db.deletedEntities.tours.push(removed.slug);
   }
 
-  await saveDb(db);
+  await saveDb(db, true);
   await deleteTourFromSupabase(removed.id, removed.slug);
   return true;
 }
@@ -3714,7 +3779,7 @@ export async function saveTourCategory(categoryData: Partial<DbTourCategory>): P
     db.homepageBlocks.push(blockPayload);
   }
 
-  await saveDb(db);
+  await saveDb(db, true);
   await syncTourCategoriesToSupabase(db.tourCategories);
 
   return categoryToSave;
@@ -3746,7 +3811,9 @@ export async function deleteTourCategory(id: string): Promise<boolean> {
     db.homepageBlocks[blockIdx].content = { categories: db.tourCategories, updated_at: new Date().toISOString() };
   }
 
-  await saveDb(db);
+  await saveDb(db, true);
+  await syncTourCategoriesToSupabase(db.tourCategories);
+  return true;
   await syncTourCategoriesToSupabase(db.tourCategories);
 
   return true;
@@ -3801,6 +3868,8 @@ export async function saveDestination(destData: Partial<DbDestination>): Promise
       : (existing?.gallery || []),
     is_featured: destData.is_featured !== undefined ? Boolean(destData.is_featured) : Boolean(existing?.is_featured),
     status: destData.status || existing?.status || "published",
+    created_at: existing?.created_at || (destData as any)?.created_at || new Date().toISOString(),
+    updated_at: new Date().toISOString(),
   };
 
   // Clear tombstones if re-created or updated
@@ -3827,7 +3896,7 @@ export async function saveDestination(destData: Partial<DbDestination>): Promise
     }
   }
 
-  await saveDb(db);
+  await saveDb(db, true);
   await syncDestinationToSupabase(targetDest);
   return targetDest;
 }
@@ -3847,7 +3916,7 @@ export async function deleteDestination(id: string): Promise<boolean> {
     db.deletedEntities.destinations.push(removed.slug);
   }
 
-  await saveDb(db);
+  await saveDb(db, true);
   await deleteDestinationFromSupabase(removed.id, removed.slug);
   return true;
 }
@@ -3896,6 +3965,8 @@ export async function saveBlogPost(postData: Partial<DbBlogPost>): Promise<DbBlo
     status: postData.status || (postData.is_published === false ? "draft" : "published"),
     is_published: postData.status ? postData.status === "published" : postData.is_published !== false,
     is_featured: Boolean(postData.is_featured),
+    created_at: existing?.created_at || (postData as any)?.created_at || new Date().toISOString(),
+    updated_at: new Date().toISOString(),
   };
 
   // Un-tombstone if re-created
@@ -3911,7 +3982,7 @@ export async function saveBlogPost(postData: Partial<DbBlogPost>): Promise<DbBlo
     db.blogPosts.unshift(defaultPost);
   }
 
-  await saveDb(db);
+  await saveDb(db, true);
   await syncBlogPostToSupabase(defaultPost);
   return defaultPost;
 }
@@ -3931,7 +4002,7 @@ export async function deleteBlogPost(id: string): Promise<boolean> {
     db.deletedEntities.blogPosts.push(removed.slug);
   }
 
-  await saveDb(db);
+  await saveDb(db, true);
   await deleteBlogPostFromSupabase(removed.id, removed.slug);
   return true;
 }
@@ -3969,6 +4040,8 @@ export async function saveOffer(offerData: Partial<DbOffer>): Promise<DbOffer> {
     valid_until: offerData.valid_until || new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(),
     banner_image: offerData.banner_image ? normalizeImageUrl(offerData.banner_image) : null,
     is_active: offerData.is_active !== false,
+    created_at: existing?.created_at || (offerData as any)?.created_at || new Date().toISOString(),
+    updated_at: new Date().toISOString(),
   };
 
   // Un-tombstone if re-created
@@ -3984,7 +4057,7 @@ export async function saveOffer(offerData: Partial<DbOffer>): Promise<DbOffer> {
     db.offers.unshift(defaultOffer);
   }
 
-  await saveDb(db);
+  await saveDb(db, true);
   await syncOfferToSupabase(defaultOffer);
   return defaultOffer;
 }
@@ -4007,7 +4080,7 @@ export async function deleteOffer(id: string): Promise<boolean> {
     db.deletedEntities.offers.push(removed.slug);
   }
 
-  await saveDb(db);
+  await saveDb(db, true);
   await deleteOfferFromSupabase(removed.id, removed.code, removed.slug);
   return true;
 }
@@ -4037,6 +4110,8 @@ export async function saveTestimonial(testData: Partial<DbTestimonial>): Promise
     customer_photo: normalizedPhoto,
     author_avatar: normalizedPhoto,
     is_featured: testData.is_featured !== false,
+    created_at: (db.testimonials[index] as any)?.created_at || (testData as any)?.created_at || new Date().toISOString(),
+    updated_at: new Date().toISOString(),
   };
 
   // Un-tombstone if re-created
@@ -4052,7 +4127,7 @@ export async function saveTestimonial(testData: Partial<DbTestimonial>): Promise
     db.testimonials.unshift(defaultTest);
   }
 
-  await saveDb(db);
+  await saveDb(db, true);
   await syncTestimonialToSupabase(defaultTest);
   return defaultTest;
 }
@@ -4069,7 +4144,7 @@ export async function deleteTestimonial(id: string): Promise<boolean> {
     db.deletedEntities.testimonials.push(removed.id);
   }
 
-  await saveDb(db);
+  await saveDb(db, true);
   await deleteTestimonialFromSupabase(removed.id);
   return true;
 }
@@ -4083,9 +4158,11 @@ export async function saveHomepageBlock(id: string, blockType: DbHomepageBlock["
     db.deletedEntities.homepageBlocks = db.deletedEntities.homepageBlocks.filter((tid) => tid !== id);
   }
 
+  const now = new Date().toISOString();
   let targetBlock: DbHomepageBlock;
   if (index !== -1) {
     db.homepageBlocks[index].content = { ...db.homepageBlocks[index].content, ...content };
+    (db.homepageBlocks[index] as any).updated_at = now;
     targetBlock = db.homepageBlocks[index];
   } else {
     const newBlock: DbHomepageBlock = {
@@ -4094,6 +4171,8 @@ export async function saveHomepageBlock(id: string, blockType: DbHomepageBlock["
       display_order: db.homepageBlocks.length + 1,
       content,
     };
+    (newBlock as any).created_at = now;
+    (newBlock as any).updated_at = now;
     db.homepageBlocks.push(newBlock);
     targetBlock = newBlock;
   }
@@ -4116,11 +4195,13 @@ export async function saveHomepageBlock(id: string, blockType: DbHomepageBlock["
         secondary_cta_label: content.hero_secondary_cta_label,
         secondary_cta_href: content.hero_secondary_cta_href,
       };
+      (db.homepageBlocks[heroIdx] as any).updated_at = now;
+      void syncHomepageBlockToSupabase(db.homepageBlocks[heroIdx]);
     }
   }
 
   memoryDb = db;
-  await saveDb(db);
+  await saveDb(db, true);
   await syncHomepageBlockToSupabase(targetBlock);
   return targetBlock;
 }
@@ -4451,7 +4532,7 @@ export async function recordIncomingRocketSms(input: {
     }
   }
 
-  await saveDb(db);
+  await saveDb(db, true);
   return {
     success: true,
     parsed,
@@ -4553,7 +4634,7 @@ export async function verifyRocketTrxHybrid(input: {
     booking.verified_by_sms_id = matchingSms.id;
     booking.updated_at = new Date().toISOString();
 
-    await saveDb(db);
+    await saveDb(db, true);
 
     return {
       success: true,
@@ -4587,7 +4668,7 @@ export async function verifyRocketTrxHybrid(input: {
     created_at: new Date().toISOString(),
   });
 
-  await saveDb(db);
+  await saveDb(db, true);
 
   return {
     success: true,
@@ -4645,7 +4726,7 @@ export async function approveRocketVerification(
     created_at: new Date().toISOString(),
   });
 
-  await saveDb(db);
+  await saveDb(db, true);
   return { success: true, booking, ticket: result.ticket };
 }
 
@@ -4752,7 +4833,7 @@ export async function recordIncomingBkashSms(input: {
     }
   }
 
-  await saveDb(db);
+  await saveDb(db, true);
   return {
     success: true,
     parsed,
@@ -4854,7 +4935,7 @@ export async function verifyBkashTrxHybrid(input: {
     booking.verified_by_sms_id = matchingSms.id;
     booking.updated_at = new Date().toISOString();
 
-    await saveDb(db);
+    await saveDb(db, true);
 
     return {
       success: true,
@@ -4888,7 +4969,7 @@ export async function verifyBkashTrxHybrid(input: {
     created_at: new Date().toISOString(),
   });
 
-  await saveDb(db);
+  await saveDb(db, true);
 
   return {
     success: true,
@@ -4946,7 +5027,7 @@ export async function approveBkashVerification(
     created_at: new Date().toISOString(),
   });
 
-  await saveDb(db);
+  await saveDb(db, true);
   return { success: true, booking, ticket: result.ticket };
 }
 

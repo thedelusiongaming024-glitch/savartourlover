@@ -41,6 +41,17 @@ export function registerDeletedEntity(type: "bookings" | "customers" | "staffUse
   }
 }
 
+export function unregisterDeletedEntity(type: "bookings" | "customers" | "staffUsers" | "alerts", ids: (string | undefined | null)[]): void {
+  for (const id of ids) {
+    if (id && typeof id === "string") {
+      const trimmed = id.trim();
+      if (trimmed) {
+        knownDeletedEntities[type].delete(trimmed);
+      }
+    }
+  }
+}
+
 let lastSyncTimestamp: string | null = null;
 let lastSyncStatus: "idle" | "syncing" | "success" | "error" = "idle";
 let lastSyncError: string | null = null;
@@ -202,7 +213,7 @@ export async function syncTourToSupabase(tour: DbTour): Promise<boolean> {
       title: tour.title,
       slug: tour.slug,
       destination_id: tour.destination_id || null,
-      destination_slug: tour.destination_slug,
+      destination_slug: tour.destination_slug || "bangladesh",
       category: tour.category || "package_tour",
       duration_days: Number(tour.duration_days || 1),
       duration_nights: Number(tour.duration_nights || 0),
@@ -563,14 +574,10 @@ export async function deleteCustomerFromSupabase(id: string, phone?: string): Pr
 export async function syncBookingToSupabase(booking: DbBooking): Promise<boolean> {
   if (
     booking.status === "cancelled" ||
-    knownDeletedEntities.bookings.has(booking.id) ||
-    (booking.reference && knownDeletedEntities.bookings.has(booking.reference))
+    knownDeletedEntities.bookings.has(booking.id)
   ) {
     console.log(`[Supabase Postgres] Refusing to sync cancelled/deleted booking ${booking.id} (${booking.reference}) - purging from PostgreSQL`);
     await deleteBookingFromSupabase(booking.id);
-    if (booking.reference && booking.reference !== booking.id) {
-      await deleteBookingFromSupabase(booking.reference);
-    }
     return true;
   }
 
@@ -601,8 +608,8 @@ export async function syncBookingToSupabase(booking: DbBooking): Promise<boolean
       id: booking.id,
       reference: booking.reference || null,
       tour_id: booking.tour_id,
-      tour_title: booking.tour_title,
-      tour_slug: booking.tour_slug,
+      tour_title: booking.tour_title || "Tour Package",
+      tour_slug: booking.tour_slug || "tour-package",
       departure_date: booking.departure_date ? booking.departure_date.slice(0, 10) : new Date().toISOString().slice(0, 10),
       traveler_count: Number(booking.traveler_count || (selected_seats.length > 0 ? selected_seats.length : 1)),
       selected_seats: selected_seats,
