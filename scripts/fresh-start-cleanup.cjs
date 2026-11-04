@@ -46,7 +46,7 @@ const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, {
 const ADMIN_USER = {
   id: "usr-admin-1",
   username: "admin",
-  password_hash: "8e5067117177fb5bc6056d3d76ea336f31779c1d21e6aa416cc7b1b0a8e0b4eb7a67a80908c62751951736809a3d2f81f7762e9e6fc203d7715fe126786193d2",
+  password_hash: "210000$de114e3ded15edb546d1266d0d34918b44908858e011fd962a38f1a0b986af67a631bb2f6c4919d37eea531f6be7375af019da6253783e322b595c7a4d77caa2",
   salt: "8e4c1ce665ceb8419ff57a1aefb13252",
   role: "super_admin",
   phone_number: "+8801929582426",
@@ -103,6 +103,8 @@ async function cleanAll() {
   await purgeTable("blog_posts");
   await purgeTable("contact_inquiries");
   await purgeTable("operational_alerts");
+  await purgeTable("expenses");
+  await purgeTable("suppliers");
 
   // Keep ONLY super_admin in staff_users
   console.log("  Syncing super_admin in 'staff_users'...");
