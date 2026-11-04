@@ -27,9 +27,10 @@ export const knownDeletedEntities = {
   bookings: new Set<string>(),
   customers: new Set<string>(),
   staffUsers: new Set<string>(),
+  alerts: new Set<string>(),
 };
 
-export function registerDeletedEntity(type: "bookings" | "customers" | "staffUsers", ids: (string | undefined | null)[]): void {
+export function registerDeletedEntity(type: "bookings" | "customers" | "staffUsers" | "alerts", ids: (string | undefined | null)[]): void {
   for (const id of ids) {
     if (id && typeof id === "string") {
       const trimmed = id.trim();
@@ -775,6 +776,37 @@ export async function syncAlertToSupabase(alert: DbAlert): Promise<boolean> {
   }
 }
 
+export async function deleteAlertFromSupabase(alertId: string): Promise<boolean> {
+  const supabase = getSupabaseAdminClient();
+  registerDeletedEntity("alerts", [alertId]);
+  try {
+    const { error } = await supabase.from("operational_alerts").delete().eq("id", alertId);
+    if (error) {
+      console.warn("[Supabase Postgres] Failed to delete alert from operational_alerts:", error.message);
+      return false;
+    }
+    return true;
+  } catch (err: any) {
+    console.warn("[Supabase Postgres] Exception deleting alert:", err?.message || err);
+    return false;
+  }
+}
+
+export async function deleteAllAlertsFromSupabase(): Promise<boolean> {
+  const supabase = getSupabaseAdminClient();
+  try {
+    const { error } = await supabase.from("operational_alerts").delete().neq("id", "");
+    if (error) {
+      console.warn("[Supabase Postgres] Failed to delete all alerts from operational_alerts:", error.message);
+      return false;
+    }
+    return true;
+  } catch (err: any) {
+    console.warn("[Supabase Postgres] Exception deleting all alerts:", err?.message || err);
+    return false;
+  }
+}
+
 export async function syncContactInquiryToSupabase(inquiry: DbContactInquiry): Promise<boolean> {
   const supabase = getSupabaseAdminClient();
   try {
@@ -942,6 +974,7 @@ export async function fetchDatabaseFromSupabase(): Promise<DatabaseSchema | null
           registerDeletedEntity("bookings", snapshotData.deletedEntities.bookings || []);
           registerDeletedEntity("customers", snapshotData.deletedEntities.customers || []);
           registerDeletedEntity("staffUsers", snapshotData.deletedEntities.staffUsers || []);
+          registerDeletedEntity("alerts", snapshotData.deletedEntities.alerts || []);
         }
       }
     } catch {}
@@ -996,6 +1029,12 @@ export async function fetchDatabaseFromSupabase(): Promise<DatabaseSchema | null
       if (Array.isArray(resolved.customers)) {
         resolved.customers = resolved.customers.filter(
           (c: any) => !deletedCusts.has(c.id) && !deletedCusts.has(c.phone_number)
+        );
+      }
+      const deletedAlerts = new Set(resolved.deletedEntities?.alerts || []);
+      if (Array.isArray(resolved.alerts)) {
+        resolved.alerts = resolved.alerts.filter(
+          (a: any) => !deletedAlerts.has(a.id) && !knownDeletedEntities.alerts.has(a.id)
         );
       }
       return resolved as DatabaseSchema;
@@ -1377,8 +1416,11 @@ export async function fetchDatabaseFromSupabase(): Promise<DatabaseSchema | null
       created_at: t.created_at || new Date().toISOString(),
     }));
 
+    const snapshotDeletedAlerts = new Set(snapshotData.deletedEntities?.alerts || []);
     // Map operational alerts from Postgres table
-    const mappedAlerts: DbAlert[] = (alertsRes.data || []).map((a: any) => ({
+    const mappedAlerts: DbAlert[] = (alertsRes.data || [])
+      .filter((a: any) => !snapshotDeletedAlerts.has(a.id) && !knownDeletedEntities.alerts.has(a.id))
+      .map((a: any) => ({
       id: a.id,
       alert_type: a.alert_type || "general",
       severity: (a.severity === "warning" || a.severity === "critical") ? a.severity : "info",
@@ -1397,7 +1439,9 @@ export async function fetchDatabaseFromSupabase(): Promise<DatabaseSchema | null
     const mergedTickets = ticketsRes.data !== null ? mappedClearanceTickets : (snapshotData.clearanceTickets || []);
 
     // Operational alerts: PostgreSQL table rows are authoritative (Tier 3 master), fallback to snapshot only if table query failed
-    const mergedAlerts = alertsRes.data !== null ? mappedAlerts : (snapshotData.alerts || []);
+    const mergedAlerts = (alertsRes.data !== null ? mappedAlerts : (snapshotData.alerts || [])).filter(
+      (a: any) => !snapshotDeletedAlerts.has(a.id) && !knownDeletedEntities.alerts.has(a.id)
+    );
 
     // Contact Inquiries: PostgreSQL table rows are authoritative (Tier 3 master), fallback to snapshot only if table query failed
     const mergedInquiries = inqsRes.data !== null ? mappedInquiries : (snapshotData.contactInquiries || []);

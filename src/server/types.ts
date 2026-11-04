@@ -669,6 +669,7 @@ export interface DatabaseSchema {
     customers?: string[];
     staffUsers?: string[];
     contactInquiries?: string[];
+    alerts?: string[];
   };
 }
 

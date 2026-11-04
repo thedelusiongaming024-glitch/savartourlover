@@ -27,3 +27,14 @@ export async function POST(request: Request) {
   const count = await clearAllAlertsAdmin();
   return NextResponse.json({ success: true, cleared_count: count });
 }
+
+export async function DELETE(request: Request) {
+  const authUser = getAuthUserFromHeader(request.headers.get("Authorization"));
+  if (!authUser) {
+    return NextResponse.json({ detail: "Authentication credentials were not provided." }, { status: 401 });
+  }
+
+  await ensureDbHydrated();
+  const count = await clearAllAlertsAdmin();
+  return NextResponse.json({ success: true, cleared_count: count });
+}

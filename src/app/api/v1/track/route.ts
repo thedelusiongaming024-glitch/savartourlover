@@ -1,4 +1,6 @@
 import { NextResponse } from "next/server";
+import { getAuthUserFromHeader } from "@/server/auth";
+import { clearAnalyticsEvents } from "@/server/db";
 import {
   extractRequestTrackingData,
   trackServerEvent,
@@ -85,4 +87,17 @@ export async function GET() {
     const message = err instanceof Error ? err.message : "Failed to load analytics";
     return NextResponse.json({ success: false, error: message }, { status: 500 });
   }
+}
+
+/**
+ * DELETE: Resets all server-side analytics events (Super Admin only).
+ */
+export async function DELETE(request: Request) {
+  const authUser = getAuthUserFromHeader(request.headers.get("Authorization"));
+  if (!authUser || authUser.role !== "super_admin") {
+    return NextResponse.json({ detail: "Super Admin privileges required." }, { status: 403 });
+  }
+
+  await clearAnalyticsEvents();
+  return NextResponse.json({ success: true, message: "Analytics events reset successfully." });
 }

@@ -36,10 +36,22 @@ export function HeroSlideshow({ slides, scenes, interval = 6000 }: HeroSlideshow
   const [failedImages, setFailedImages] = useState<Record<string, boolean>>({});
   const reduce = useSafeReducedMotion();
 
-  // Filter out any mock/unsplash URLs
-  const cleanSlides = (slides || []).filter(
-    (s) => s && s.image_url && !s.image_url.includes("unsplash.com")
-  );
+  // Filter out any mock/unsplash/placeholder URLs and ensure all slides have valid id and title
+  const cleanSlides = (slides || [])
+    .filter(
+      (s) =>
+        s &&
+        s.image_url &&
+        !s.image_url.includes("unsplash.com") &&
+        !s.image_url.includes("placehold.co")
+    )
+    .map((s, idx) => ({
+      ...s,
+      id: String(s.id || `slide-${idx}`),
+      title: s.title || (s as any).alt_text || "Savar Tour Lover",
+      subtitle: s.subtitle || "",
+      image_url: s.image_url || "",
+    }));
 
   const activeSlides = cleanSlides.length > 0 ? cleanSlides : FALLBACK_DEFAULT_SLIDES;
 
@@ -51,9 +63,12 @@ export function HeroSlideshow({ slides, scenes, interval = 6000 }: HeroSlideshow
     return () => clearInterval(id);
   }, [paused, activeSlides.length, interval]);
 
-  const activeSlide = activeSlides[index % activeSlides.length];
+  const activeSlide = activeSlides[index % activeSlides.length] || activeSlides[0] || FALLBACK_DEFAULT_SLIDES[0];
+  const slideId = String(activeSlide?.id || `slide-${index}`);
+  const slideTitle = activeSlide?.title || (activeSlide as any)?.alt_text || "Savar Tour Lover";
+  const slideSubtitle = activeSlide?.subtitle || "";
   const normalizedImg = activeSlide?.image_url ? normalizeImageUrl(activeSlide.image_url) : null;
-  const isFailed = Boolean(activeSlide && failedImages[activeSlide.id]);
+  const isFailed = Boolean(failedImages[slideId]);
 
   return (
     <div
@@ -64,7 +79,7 @@ export function HeroSlideshow({ slides, scenes, interval = 6000 }: HeroSlideshow
       {/* Cross-fading scene / real photo layers with a slow Ken Burns drift */}
       <AnimatePresence initial={false}>
         <motion.div
-          key={activeSlide.id || index}
+          key={slideId || index}
           className="absolute inset-0"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
@@ -82,15 +97,15 @@ export function HeroSlideshow({ slides, scenes, interval = 6000 }: HeroSlideshow
               // eslint-disable-next-line @next/next/no-img-element
               <img
                 src={normalizedImg}
-                alt={activeSlide.title || "Hero slide"}
+                alt={slideTitle || "Hero slide"}
                 className="absolute inset-0 h-full w-full object-cover select-none pointer-events-none"
-                onError={() => setFailedImages((prev) => ({ ...prev, [activeSlide.id]: true }))}
+                onError={() => setFailedImages((prev) => ({ ...prev, [slideId]: true }))}
               />
             ) : (
               <SceneBackdrop
                 scene={{
-                  key: (activeSlide.id.replace("slide-", "") as SceneKey) || "coxsbazar",
-                  label: activeSlide.title,
+                  key: ((slideId ? slideId.replace("slide-", "") : "coxsbazar") as SceneKey) || "coxsbazar",
+                  label: slideTitle,
                 }}
                 className="h-full w-full"
                 showLabel={false}
@@ -134,7 +149,7 @@ export function HeroSlideshow({ slides, scenes, interval = 6000 }: HeroSlideshow
       <div className="absolute bottom-3 xs:bottom-4 sm:bottom-7 left-1/2 z-10 flex -translate-x-1/2 flex-col items-center gap-1.5 sm:gap-2.5 px-3 max-w-full pointer-events-none">
         <AnimatePresence mode="wait">
           <motion.span
-            key={activeSlide.id || index}
+            key={slideId || index}
             initial={{ opacity: 0, y: 6 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -6 }}
@@ -142,26 +157,29 @@ export function HeroSlideshow({ slides, scenes, interval = 6000 }: HeroSlideshow
             className="glass inline-flex items-center gap-1.5 sm:gap-2 rounded-full px-3 py-1 sm:px-4 sm:py-1.5 text-[10px] xs:text-[11px] sm:text-xs font-semibold uppercase tracking-[0.12em] text-emerald-deep shadow-xs max-w-[85vw] truncate pointer-events-auto"
           >
             <span className="h-1.5 w-1.5 rounded-full bg-emerald-600 animate-pulse shrink-0" />
-            <span className="truncate">{activeSlide.title}{activeSlide.subtitle ? ` · ${activeSlide.subtitle}` : ""}</span>
+            <span className="truncate">{slideTitle}{slideSubtitle ? ` · ${slideSubtitle}` : ""}</span>
           </motion.span>
         </AnimatePresence>
 
         {/* Progress dots */}
         {activeSlides.length > 1 && (
           <div className="flex items-center gap-1.5 sm:gap-2 pointer-events-auto">
-            {activeSlides.map((slide, i) => (
-              <button
-                key={slide.id || i}
-                type="button"
-                aria-label={`Show ${slide.title}`}
-                onClick={() => setIndex(i)}
-                className={`h-1.5 rounded-full transition-all duration-500 cursor-pointer ${
-                  i === (index % activeSlides.length)
-                    ? "w-5 sm:w-7 bg-emerald-deep shadow-xs"
-                    : "w-1.5 bg-ink/30 hover:bg-ink/60"
-                }`}
-              />
-            ))}
+            {activeSlides.map((slide, i) => {
+              const sId = slide?.id || `dot-${i}`;
+              return (
+                <button
+                  key={sId}
+                  type="button"
+                  aria-label={`Show ${slide?.title || (slide as any)?.alt_text || `Slide ${i + 1}`}`}
+                  onClick={() => setIndex(i)}
+                  className={`h-1.5 rounded-full transition-all duration-500 cursor-pointer ${
+                    i === (index % activeSlides.length)
+                      ? "w-5 sm:w-7 bg-emerald-deep shadow-xs"
+                      : "w-1.5 bg-ink/30 hover:bg-ink/60"
+                  }`}
+                />
+              );
+            })}
           </div>
         )}
       </div>

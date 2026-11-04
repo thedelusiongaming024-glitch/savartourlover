@@ -26,6 +26,8 @@ import {
   deletePaymentFromSupabase,
   syncClearanceTicketToSupabase,
   syncAlertToSupabase,
+  deleteAlertFromSupabase,
+  deleteAllAlertsFromSupabase,
   syncContactInquiryToSupabase,
   deleteInquiryFromSupabase,
   syncStaffUserToSupabase,
@@ -533,9 +535,9 @@ function mergeCloudWithLocal(cloudDb: DatabaseSchema, localDb: DatabaseSchema): 
     alerts: cloudDb.alerts || [],
     contactInquiries: cloudDb.contactInquiries || [],
     // Storage mirror collections (expenses, suppliers, analytics)
-    expenses: (cloudDb.expenses && cloudDb.expenses.length > 0) ? cloudDb.expenses : (localDb.expenses || []),
-    suppliers: (cloudDb.suppliers && cloudDb.suppliers.length > 0) ? cloudDb.suppliers : (localDb.suppliers || []),
-    analyticsEvents: (cloudDb.analyticsEvents && cloudDb.analyticsEvents.length > 0) ? cloudDb.analyticsEvents : (localDb.analyticsEvents || []),
+    expenses: Array.isArray(cloudDb.expenses) ? cloudDb.expenses : (localDb.expenses || []),
+    suppliers: Array.isArray(cloudDb.suppliers) ? cloudDb.suppliers : (localDb.suppliers || []),
+    analyticsEvents: Array.isArray(cloudDb.analyticsEvents) ? cloudDb.analyticsEvents : (localDb.analyticsEvents || []),
     deletedEntities: {
       ...localDb.deletedEntities,
       ...cloudDb.deletedEntities,
@@ -1560,13 +1562,20 @@ export function getHomePageCms(): HomePageCmsContent {
 
   if (!block || !block.content) return baseHomeCms;
   const content = block.content as Partial<HomePageCmsContent>;
+  const rawSlides = Array.isArray(content.hero_slides) ? content.hero_slides : [];
+  const validCustomSlides: HeroSlideItem[] = rawSlides
+    .filter((s: any) => s && s.image_url && !s.image_url.includes("placehold.co") && !s.image_url.includes("unsplash.com"))
+    .map((s: any, idx: number) => ({
+      id: String(s.id || `slide-${idx}`),
+      title: s.title || s.alt_text || "Savar Tour Lover",
+      subtitle: s.subtitle || "",
+      image_url: s.image_url || "",
+    }));
+
   return {
     ...baseHomeCms,
     ...content,
-    hero_slides:
-      Array.isArray(content.hero_slides) && content.hero_slides.length > 0
-        ? content.hero_slides
-        : (dynamicHeroSlides.length > 0 ? dynamicHeroSlides : []),
+    hero_slides: validCustomSlides.length > 0 ? validCustomSlides : (dynamicHeroSlides.length > 0 ? dynamicHeroSlides : []),
   };
 }
 
@@ -3220,21 +3229,38 @@ export function getAlerts(isAcknowledged?: boolean): DbAlert[] {
 
 export async function acknowledgeAlert(id: string): Promise<boolean> {
   const db = loadDb();
-  const alert = db.alerts.find((a) => a.id === id);
-  if (!alert) return false;
-  alert.is_acknowledged = true;
-  await saveDb(db);
+  const index = db.alerts.findIndex((a) => a.id === id);
+  if (index === -1) {
+    // If not found in local array, still ensure deleted in Supabase PostgreSQL
+    await deleteAlertFromSupabase(id);
+    return false;
+  }
+  db.alerts.splice(index, 1);
+  if (!db.deletedEntities) db.deletedEntities = {};
+  if (!db.deletedEntities.alerts) db.deletedEntities.alerts = [];
+  if (!db.deletedEntities.alerts.includes(id)) {
+    db.deletedEntities.alerts.push(id);
+  }
+  await saveDb(db, true);
+  await deleteAlertFromSupabase(id);
   return true;
 }
 
 export async function clearAllAlertsAdmin(): Promise<number> {
   const db = loadDb();
-  const unacknowledged = db.alerts.filter((a) => !a.is_acknowledged);
-  for (const a of unacknowledged) {
-    a.is_acknowledged = true;
+  const alertIds = db.alerts.map((a) => a.id);
+  const count = alertIds.length;
+  db.alerts = [];
+  if (!db.deletedEntities) db.deletedEntities = {};
+  if (!db.deletedEntities.alerts) db.deletedEntities.alerts = [];
+  for (const id of alertIds) {
+    if (!db.deletedEntities.alerts.includes(id)) {
+      db.deletedEntities.alerts.push(id);
+    }
   }
-  await saveDb(db);
-  return unacknowledged.length;
+  await saveDb(db, true);
+  await deleteAllAlertsFromSupabase();
+  return count;
 }
 
 // ---------------------------------------------------------------------------
@@ -4270,6 +4296,13 @@ export function recordAnalyticsEvent(
 export function getRecentAnalyticsEvents(limit = 100): DbAnalyticsEvent[] {
   const db = loadDb();
   return (db.analyticsEvents || []).slice(0, limit);
+}
+
+export async function clearAnalyticsEvents(): Promise<boolean> {
+  const db = loadDb();
+  db.analyticsEvents = [];
+  await saveDb(db, true);
+  return true;
 }
 
 export function getAnalyticsStats() {
