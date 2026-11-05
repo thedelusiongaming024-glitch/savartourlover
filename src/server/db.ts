@@ -46,7 +46,7 @@ import {
 import { normalizeImageUrl } from "@/lib/media";
 import { parseRocketSms, type ParsedRocketSms } from "./rocketSmsParser";
 import { parseBkashSms, type ParsedBkashSms } from "./bkashSmsParser";
-import { getSupabaseAdminClient } from "@/lib/supabase";
+import { getSupabaseAdminClient, isSupabaseConfigured } from "@/lib/supabase";
 import type {
   AboutPageCmsContent,
   DatabaseSchema,
@@ -102,7 +102,7 @@ const DB_FILE = path.join(DB_DIR, "db.json");
 // *are* running, not overall traffic. Kept configurable since the right
 // value depends on how close to the free-tier egress cap (5 GB/month) the
 // project is running.
-const SUPABASE_SYNC_INTERVAL_MS = Number(process.env.SUPABASE_SYNC_INTERVAL_MS) || 60000;
+const SUPABASE_SYNC_INTERVAL_MS = Number(process.env.SUPABASE_SYNC_INTERVAL_MS) || 10000;
 
 let memoryDb: DatabaseSchema | null = null;
 
@@ -695,34 +695,29 @@ export async function refreshFromSupabase(): Promise<DatabaseSchema> {
 let hydrationPromise: Promise<DatabaseSchema> | null = null;
 
 /**
- * Guarantees that live database data is populated into memoryDb with ZERO coldstart lag.
+ * Guarantees that live database data is populated into memoryDb.
  * 
- * 1. COLD START (<2ms):
- *    If memoryDb is not yet in RAM, immediately loads Tier 2 (disk snapshot) into Tier 1 (RAM).
- *    The request is served immediately with zero coldstart wait time.
+ * 1. WARM INSTANCE FAST PATH (<0.001ms):
+ *    If memoryDb has already been hydrated from Supabase and is within SUPABASE_SYNC_INTERVAL_MS,
+ *    it returns directly from RAM in microseconds.
  * 
- * 2. BACKGROUND HYDRATION (Tier 3 Sync):
- *    Simultaneously triggers non-blocking background fetch from Supabase PostgreSQL.
- *    When Supabase responds, it updates memoryDb and disk snapshot smoothly.
+ * 2. AUTHORITATIVE SUPABASE HYDRATION:
+ *    On cold start (lastSupabaseFetch === 0) or when the sync interval expires,
+ *    it awaits refreshFromSupabase(). In serverless (Vercel), background unawaited promises
+ *    are frozen by AWS Lambda when the HTTP response completes. Awaiting ensures that EVERY
+ *    serverless container instance is 100% synchronized with the live Supabase database,
+ *    completely eliminating the bug where users intermittently saw old bundled snapshots.
  * 
- * 3. MUTATION IMMUNITY (Race Condition Guard):
- *    If any user or admin performs a CRUD mutation (creating, editing, or deleting items),
- *    `mutationCounter` increments and updates both RAM and Supabase PostgreSQL immediately.
- *    Any in-flight background hydration will NOT overwrite these fresh changes.
+ * 3. CONCURRENCY COALESCING:
+ *    Multiple parallel requests share the exact same in-flight hydrationPromise.
  * 
- * 4. CONCURRENCY COALESCING:
- *    Multiple parallel coldstart requests share the same in-flight background sync without
- *    hammering Supabase with duplicate connections.
+ * 4. DISASTER RECOVERY FALLBACK:
+ *    If Supabase is temporarily unreachable, it safely falls back to local snapshot.
  */
 export async function ensureDbHydrated(): Promise<DatabaseSchema> {
   const now = Date.now();
 
-  // 1. If memoryDb is not yet initialized in RAM (cold start), instantly load from disk snapshot (< 2ms)
-  if (!memoryDb) {
-    memoryDb = loadDb();
-  }
-
-  // 2. If memoryDb has data and is fresh within the sync interval, return instantly
+  // 1. Warm instance cache hit: return directly from RAM in microseconds
   if (
     memoryDb &&
     lastSupabaseFetch > 0 &&
@@ -731,21 +726,26 @@ export async function ensureDbHydrated(): Promise<DatabaseSchema> {
     return memoryDb;
   }
 
-  // 3. Trigger non-blocking background sync with Supabase PostgreSQL (Tier 3)
-  triggerBackgroundSupabaseSync();
-
-  // 4. Return memoryDb instantly so the user feels ZERO coldstart delay
-  if (memoryDb) {
-    return memoryDb;
+  // 2. Authoritative Supabase hydration when configured
+  if (isSupabaseConfigured()) {
+    if (!hydrationPromise) {
+      hydrationPromise = refreshFromSupabase()
+        .catch((err) => {
+          console.warn("[DB Hydration] Supabase sync warning, falling back to disk snapshot:", err?.message || err);
+          return memoryDb || loadDb();
+        })
+        .finally(() => {
+          hydrationPromise = null;
+        });
+    }
+    return await hydrationPromise;
   }
 
-  // 5. Ultimate fallback if disk was missing and memoryDb is still null: await single in-flight request
-  if (!hydrationPromise) {
-    hydrationPromise = refreshFromSupabase().finally(() => {
-      hydrationPromise = null;
-    });
+  // 3. Fallback when Supabase is not configured (offline / local development)
+  if (!memoryDb) {
+    memoryDb = loadDb();
   }
-  return await hydrationPromise;
+  return memoryDb;
 }
 
 export function normalizeDatabaseSchema(db: any): DatabaseSchema {

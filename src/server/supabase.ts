@@ -922,11 +922,9 @@ async function selectAllRows(
     for (let from = 0; from < 10000; from += pageSize) {
       let query = supabase.from(table).select("*");
       if (orderColumn) query = query.order(orderColumn, { ascending });
-      // Stable tiebreaker so rows are never skipped or duplicated between pages.
-      query = query.order("id", { ascending: true });
 
       const timeoutPromise = new Promise<{ data: null; error: { message: string } }>((_, reject) =>
-        setTimeout(() => reject(new Error(`Timeout fetching table "${table}"`)), 6000)
+        setTimeout(() => reject(new Error(`Timeout fetching table "${table}" after 15000ms`)), 15000)
       );
 
       const result = (await Promise.race([
@@ -934,12 +932,16 @@ async function selectAllRows(
         timeoutPromise,
       ])) as { data: any[] | null; error: any };
 
-      if (result.error) return { data: null, error: result.error };
+      if (result.error) {
+        console.warn(`[Supabase selectAllRows] Error on table "${table}":`, result.error.message || result.error);
+        return { data: null, error: result.error };
+      }
       rows.push(...(result.data ?? []));
       if (!result.data || result.data.length < pageSize) break;
     }
     return { data: rows, error: null };
   } catch (err: any) {
+    console.warn(`[Supabase selectAllRows] Exception on table "${table}":`, err?.message || String(err));
     return { data: null, error: { message: err?.message || String(err) } };
   }
 }

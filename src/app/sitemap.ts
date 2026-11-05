@@ -2,7 +2,7 @@ import type { MetadataRoute } from "next";
 import { fetchDestinations, fetchJournalPosts, fetchTours } from "@/lib/api";
 import { getSeoSettings } from "@/server/db";
 
-export const revalidate = 3600; // Cache dynamic sitemap for 1 hour
+export const dynamic = "force-dynamic";
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const seo = getSeoSettings();
