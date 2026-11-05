@@ -16,10 +16,12 @@ import "@fontsource-variable/fraunces/wght.css";
 import "@fontsource-variable/plus-jakarta-sans/wght.css";
 import "./globals.css";
 import { LanguageProvider } from "@/context/LanguageContext";
+import { PwaProvider } from "@/context/PwaContext";
 import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
 import { ServerTracker } from "@/components/ServerTracker";
 import { WhatsAppWidget } from "@/components/WhatsAppWidget";
+import { IosInstallModal } from "@/components/IosInstallModal";
 import {
   siteDescription,
   siteName,
@@ -118,6 +120,11 @@ export async function generateMetadata(): Promise<Metadata> {
       ],
     },
     manifest: "/site.webmanifest",
+    appleWebApp: {
+      capable: true,
+      statusBarStyle: "default",
+      title: "Savar Tour",
+    },
     openGraph: {
       title: seo.site_title || `${siteName} — ${siteTagline}`,
       description: seo.meta_description || siteDescription,
@@ -269,11 +276,14 @@ export default function RootLayout({
       </head>
       <body suppressHydrationWarning className="min-h-full flex flex-col text-ink overflow-x-clip max-w-[100vw] selection:bg-emerald/20">
         <LanguageProvider>
-          <ServerTracker />
-          <Navbar />
-          <main className="flex-1 w-full max-w-[100vw] overflow-x-clip">{children}</main>
-          <Footer />
-          <WhatsAppWidget />
+          <PwaProvider>
+            <ServerTracker />
+            <Navbar />
+            <main className="flex-1 w-full max-w-[100vw] overflow-x-clip">{children}</main>
+            <Footer />
+            <WhatsAppWidget />
+            <IosInstallModal />
+          </PwaProvider>
         </LanguageProvider>
       </body>
     </html>

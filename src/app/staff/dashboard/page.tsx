@@ -10,6 +10,7 @@ import { toBengaliNumber } from "@/lib/translations";
 import { adminI18n, type AdminLang } from "@/lib/adminI18n";
 import { LanguageToggle } from "@/components/LanguageToggle";
 import { MarkdownEditor } from "@/components/MarkdownEditor";
+import { AdminInstallAppButton } from "@/components/AdminInstallAppButton";
 import type {
   DbTour,
   DbDeparture,
@@ -2118,6 +2119,7 @@ function StaffDashboardContent() {
 
           <div className="flex items-center gap-1.5 sm:gap-2.5 text-xs sm:text-sm">
             <LanguageToggle variant="compact" />
+            <AdminInstallAppButton variant="header" />
             <a
               href="/"
               target="_blank"

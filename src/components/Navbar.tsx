@@ -7,6 +7,7 @@ import { useSafeReducedMotion } from "@/lib/useSafeReducedMotion";
 import { useEffect, useState } from "react";
 import { useLanguage } from "@/context/LanguageContext";
 import { LanguageToggle } from "@/components/LanguageToggle";
+import { InstallAppButton } from "@/components/InstallAppButton";
 
 export function Navbar() {
   const [open, setOpen] = useState(false);
@@ -216,6 +217,18 @@ export function Navbar() {
                   <span>{isBn ? "বুকিং ও প্রোফাইল" : "My Bookings & Profile"}</span>
                 </Link>
               </motion.div>
+
+              {/* Install App CTA in Mobile Drawer */}
+              <motion.div
+                variants={{
+                  hidden: { opacity: 0, x: reduce ? 0 : -12 },
+                  show: { opacity: 1, x: 0 },
+                }}
+                className="mt-1"
+              >
+                <InstallAppButton variant="drawer" onClickCustom={() => setOpen(false)} />
+              </motion.div>
+
               <motion.div
                 variants={{
                   hidden: { opacity: 0, x: reduce ? 0 : -12 },

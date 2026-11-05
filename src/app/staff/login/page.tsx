@@ -3,6 +3,7 @@
 import { Suspense, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { staffLogin } from "@/lib/staffAuth";
+import { AdminInstallAppButton } from "@/components/AdminInstallAppButton";
 
 // Only ever redirect to a known, internal staff route after login. The
 // `next` query param previously passed straight to router.push() with no
@@ -114,10 +115,14 @@ function StaffLoginForm() {
         <button
           type="submit"
           disabled={loading}
-          className="mt-6 w-full rounded-lg bg-emerald-700 px-4 py-2.5 font-medium text-white shadow-xs transition hover:bg-emerald-800 disabled:opacity-60"
+          className="mt-6 w-full rounded-lg bg-emerald-700 px-4 py-2.5 font-medium text-white shadow-xs transition hover:bg-emerald-800 disabled:opacity-60 cursor-pointer"
         >
           {loading ? "Authenticating…" : "Sign In to Back Office"}
         </button>
+
+        <div className="mt-4 pt-4 border-t border-slate-100">
+          <AdminInstallAppButton variant="login" />
+        </div>
       </form>
     </main>
   );

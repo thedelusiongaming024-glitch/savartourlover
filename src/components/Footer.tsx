@@ -6,6 +6,7 @@ import { Reveal } from "@/components/Reveal";
 import { siteName, siteNameBn, siteTagline, siteTaglineBn, siteAddressEn, siteAddressBn, sitePhones } from "@/data/site";
 import { useLanguage } from "@/context/LanguageContext";
 import { LanguageToggle } from "@/components/LanguageToggle";
+import { InstallAppButton } from "@/components/InstallAppButton";
 
 export function Footer() {
   const pathname = usePathname();
@@ -99,11 +100,12 @@ export function Footer() {
 
           <div className="hairline my-4 sm:my-8" />
 
-          <div className="flex flex-row items-center justify-between gap-2 text-[10px] sm:text-xs">
-            <p className="text-ink-faint truncate">
+          <div className="flex flex-col sm:flex-row items-center justify-between gap-3 text-[10px] sm:text-xs">
+            <p className="text-ink-faint truncate order-2 sm:order-1 text-center sm:text-left">
               © {new Date().getFullYear()} {siteName}.
             </p>
-            <div className="flex items-center gap-2 sm:gap-4 font-medium text-ink-faint shrink-0">
+            <div className="flex items-center gap-2 sm:gap-4 font-medium text-ink-faint shrink-0 order-1 sm:order-2 flex-wrap justify-center sm:justify-end">
+              <InstallAppButton variant="footer" />
               <span className="hidden xs:inline">{t("footer.location")}</span>
               <LanguageToggle className="scale-90 sm:scale-100" />
             </div>
