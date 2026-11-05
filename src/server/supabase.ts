@@ -916,26 +916,39 @@ async function selectAllRows(
   orderColumn?: string,
   ascending: boolean = true
 ): Promise<{ data: any[] | null; error: { message: string } | null }> {
-  const pageSize = 1000;
-  const rows: any[] = [];
-  for (let from = 0; ; from += pageSize) {
-    let query = supabase.from(table).select("*");
-    if (orderColumn) query = query.order(orderColumn, { ascending });
-    // Stable tiebreaker so rows are never skipped or duplicated between pages.
-    query = query.order("id", { ascending: true });
-    const { data, error } = await query.range(from, from + pageSize - 1);
-    if (error) return { data: null, error };
-    rows.push(...(data ?? []));
-    if (!data || data.length < pageSize) break;
+  try {
+    const pageSize = 1000;
+    const rows: any[] = [];
+    for (let from = 0; from < 10000; from += pageSize) {
+      let query = supabase.from(table).select("*");
+      if (orderColumn) query = query.order(orderColumn, { ascending });
+      // Stable tiebreaker so rows are never skipped or duplicated between pages.
+      query = query.order("id", { ascending: true });
+
+      const timeoutPromise = new Promise<{ data: null; error: { message: string } }>((_, reject) =>
+        setTimeout(() => reject(new Error(`Timeout fetching table "${table}"`)), 6000)
+      );
+
+      const result = (await Promise.race([
+        query.range(from, from + pageSize - 1),
+        timeoutPromise,
+      ])) as { data: any[] | null; error: any };
+
+      if (result.error) return { data: null, error: result.error };
+      rows.push(...(result.data ?? []));
+      if (!result.data || result.data.length < pageSize) break;
+    }
+    return { data: rows, error: null };
+  } catch (err: any) {
+    return { data: null, error: { message: err?.message || String(err) } };
   }
-  return { data: rows, error: null };
 }
 
 // =============================================================================
-// Full PostgreSQL Hydration from Supabase
+// Full PostgreSQL Hydration from Supabase (Resilient Against Network Blips)
 // =============================================================================
 
-export async function fetchDatabaseFromSupabase(): Promise<DatabaseSchema | null> {
+export async function fetchDatabaseFromSupabase(currentDb?: DatabaseSchema | null): Promise<DatabaseSchema | null> {
   const supabase = getSupabaseAdminClient();
   try {
     const [
@@ -970,12 +983,29 @@ export async function fetchDatabaseFromSupabase(): Promise<DatabaseSchema | null
       selectAllRows(supabase, "operational_alerts", "created_at", false),
     ]);
 
-    let destsData = destsRes.data;
-    let toursData = toursRes.data;
-    let offersData = offersRes.data;
-    let blocksData = blocksRes.data;
+    // Data-loss prevention: If a query returns error/null, DO NOT treat as empty array!
+    // Retain existing records from currentDb so data NEVER disappears.
+    let destsData = !destsRes.error && Array.isArray(destsRes.data) ? destsRes.data : null;
+    let toursData = !toursRes.error && Array.isArray(toursRes.data) ? toursRes.data : null;
+    let offersData = !offersRes.error && Array.isArray(offersRes.data) ? offersRes.data : null;
+    let blocksData = !blocksRes.error && Array.isArray(blocksRes.data) ? blocksRes.data : null;
+    let testsData = !testsRes.error && Array.isArray(testsRes.data) ? testsRes.data : null;
+    let blogsData = !blogsRes.error && Array.isArray(blogsRes.data) ? blogsRes.data : null;
+    let custsData = !custsRes.error && Array.isArray(custsRes.data) ? custsRes.data : null;
+    let bookingsData = !bookingsRes.error && Array.isArray(bookingsRes.data) ? bookingsRes.data : null;
+    let paymentsData = !paymentsRes.error && Array.isArray(paymentsRes.data) ? paymentsRes.data : null;
+    let inqsData = !inqsRes.error && Array.isArray(inqsRes.data) ? inqsRes.data : null;
+    let ticketsData = !ticketsRes.error && Array.isArray(ticketsRes.data) ? ticketsRes.data : null;
+    let alertsData = !alertsRes.error && Array.isArray(alertsRes.data) ? alertsRes.data : null;
 
-    if (destsRes.error && toursRes.error) {
+    if (!destsData && currentDb?.destinations) {
+      console.warn("[Supabase Sync] Warning: failed to fetch destinations, preserving existing cache.");
+    }
+    if (!toursData && currentDb?.tours) {
+      console.warn("[Supabase Sync] Warning: failed to fetch tours, preserving existing cache.");
+    }
+
+    if (!destsData && !toursData) {
       // Fallback: try reading catalog tables via browser/publishable client before giving up
       try {
         const fallbackClient = getSupabaseBrowserClient();
@@ -994,29 +1024,32 @@ export async function fetchDatabaseFromSupabase(): Promise<DatabaseSchema | null
       } catch {}
     }
 
-    const mappedDestinations: DbDestination[] = (destsData || []).map((d: any) => ({
-      id: d.id,
-      name: d.name,
-      slug: d.slug,
-      division: d.division,
-      tagline: d.tagline || "",
-      description: d.description || "",
-      best_time_to_visit: d.best_time_to_visit || "October to March",
-      weather_notes: d.weather_notes || "",
-      popular_attractions: Array.isArray(d.popular_attractions) ? d.popular_attractions : [],
-      recommended_accommodation: d.recommended_accommodation || "",
-      travel_tips: d.travel_tips || "",
-      permits_required: d.permits_required || "None",
-      cover_image: d.cover_image,
-      cover_video_url: d.cover_video_url,
-      seo_title: d.seo_title,
-      seo_description: d.seo_description,
-      gallery: Array.isArray(d.gallery) ? d.gallery : [],
-      is_featured: Boolean(d.is_featured),
-      status: d.status || "published",
-    }));
+    const mappedDestinations: DbDestination[] = destsData !== null
+      ? destsData.map((d: any) => ({
+          id: d.id,
+          name: d.name,
+          slug: d.slug,
+          division: d.division,
+          tagline: d.tagline || "",
+          description: d.description || "",
+          best_time_to_visit: d.best_time_to_visit || "October to March",
+          weather_notes: d.weather_notes || "",
+          popular_attractions: Array.isArray(d.popular_attractions) ? d.popular_attractions : [],
+          recommended_accommodation: d.recommended_accommodation || "",
+          travel_tips: d.travel_tips || "",
+          permits_required: d.permits_required || "None",
+          cover_image: d.cover_image,
+          cover_video_url: d.cover_video_url,
+          seo_title: d.seo_title,
+          seo_description: d.seo_description,
+          gallery: Array.isArray(d.gallery) ? d.gallery : [],
+          is_featured: Boolean(d.is_featured),
+          status: d.status || "published",
+        }))
+      : (currentDb?.destinations || []);
 
-    const mappedTours: DbTour[] = (toursData || []).map((t: any) => {
+    const mappedTours: DbTour[] = toursData !== null
+      ? toursData.map((t: any) => {
       const tourTotalSeats = Number(t.total_seats) || (Array.isArray(t.departures) && Number(t.departures[0]?.total_seats)) || 40;
       const departures = Array.isArray(t.departures)
         ? t.departures.map((d: any) => {
@@ -1101,59 +1134,66 @@ export async function fetchDatabaseFromSupabase(): Promise<DatabaseSchema | null
         is_featured: Boolean(t.is_featured),
         status: t.status || "published",
       };
-    });
+    })
+  : (currentDb?.tours || []);
 
-    const mappedOffers: DbOffer[] = (offersData || []).map((o: any) => ({
-      id: o.id,
-      title: o.title,
-      code: o.code || "PROMO",
-      slug: (o.code || o.title).toLowerCase().replace(/[^a-z0-9]+/g, "-"),
-      description: o.tagline || "",
-      discount_type: o.discount_type === "percentage" ? "percent" : "flat",
-      discount_value: String(o.discount_value || 0),
-      minimum_spend: String(o.minimum_spend || 0),
-      valid_from: o.valid_from || new Date().toISOString().slice(0, 10),
-      valid_until: o.valid_until || new Date(Date.now() + 30 * 86400000).toISOString().slice(0, 10),
-      banner_image: o.image_url || null,
-      tour_id: o.tour_id || null,
-      tour_title: o.tour_title || null,
-      tour_slug: o.tour_slug || null,
-      is_active: o.is_active !== undefined ? Boolean(o.is_active) : true,
-    }));
+    const mappedOffers: DbOffer[] = offersData !== null
+      ? offersData.map((o: any) => ({
+          id: o.id,
+          title: o.title,
+          code: o.code || "PROMO",
+          slug: (o.code || o.title).toLowerCase().replace(/[^a-z0-9]+/g, "-"),
+          description: o.tagline || "",
+          discount_type: o.discount_type === "percentage" ? "percent" : "flat",
+          discount_value: String(o.discount_value || 0),
+          minimum_spend: String(o.minimum_spend || 0),
+          valid_from: o.valid_from || new Date().toISOString().slice(0, 10),
+          valid_until: o.valid_until || new Date(Date.now() + 30 * 86400000).toISOString().slice(0, 10),
+          banner_image: o.image_url || null,
+          tour_id: o.tour_id || null,
+          tour_title: o.tour_title || null,
+          tour_slug: o.tour_slug || null,
+          is_active: o.is_active !== undefined ? Boolean(o.is_active) : true,
+        }))
+      : (currentDb?.offers || []);
 
-    const mappedTestimonials: DbTestimonial[] = (testsRes.data || []).map((t: any) => ({
-      id: t.id,
-      author_name: t.author_name,
-      customer_name: t.author_name,
-      trip_name: t.trip_name,
-      tour_title: t.trip_name,
-      author_location: t.author_location || "Bangladesh",
-      rating: Number(t.rating || 5),
-      quote: t.quote,
-      author_avatar: t.author_avatar || null,
-      customer_photo: t.author_avatar || null,
-      is_featured: Boolean(t.is_featured),
-    }));
+    const mappedTestimonials: DbTestimonial[] = testsData !== null
+      ? testsData.map((t: any) => ({
+          id: t.id,
+          author_name: t.author_name,
+          customer_name: t.author_name,
+          trip_name: t.trip_name,
+          tour_title: t.trip_name,
+          author_location: t.author_location || "Bangladesh",
+          rating: Number(t.rating || 5),
+          quote: t.quote,
+          author_avatar: t.author_avatar || null,
+          customer_photo: t.author_avatar || null,
+          is_featured: Boolean(t.is_featured),
+        }))
+      : (currentDb?.testimonials || []);
 
-    const mappedBlogs: DbBlogPost[] = (blogsRes.data || []).map((b: any) => ({
-      id: b.id,
-      title: b.title,
-      slug: b.slug,
-      excerpt: b.excerpt || "",
-      body: b.content || "",
-      content: b.content || "",
-      author_name: b.author || "Savar Tour Lover Editorial",
-      author: b.author || "Savar Tour Lover Editorial",
-      cover_image: b.hero_image || null,
-      hero_image: b.hero_image || null,
-      read_time_minutes: Number(b.read_time_minutes || 5),
-      tags: Array.isArray(b.tags) ? b.tags : [],
-      published_at: b.created_at || new Date().toISOString(),
-      created_at: b.created_at,
-      status: b.is_published ? "published" : "draft",
-      is_published: Boolean(b.is_published),
-      category: { name: "Travel Guide" },
-    }));
+    const mappedBlogs: DbBlogPost[] = blogsData !== null
+      ? blogsData.map((b: any) => ({
+          id: b.id,
+          title: b.title,
+          slug: b.slug,
+          excerpt: b.excerpt || "",
+          body: b.content || "",
+          content: b.content || "",
+          author_name: b.author || "Savar Tour Lover Editorial",
+          author: b.author || "Savar Tour Lover Editorial",
+          cover_image: b.hero_image || null,
+          hero_image: b.hero_image || null,
+          read_time_minutes: Number(b.read_time_minutes || 5),
+          tags: Array.isArray(b.tags) ? b.tags : [],
+          published_at: b.created_at || new Date().toISOString(),
+          created_at: b.created_at,
+          status: b.is_published ? "published" : "draft",
+          is_published: Boolean(b.is_published),
+          category: { name: "Travel Guide" },
+        }))
+      : (currentDb?.blogPosts || []);
 
     // Ensure super_admin password hash is valid
     const adminSalt = "8e4c1ce665ceb8419ff57a1aefb13252";
@@ -1203,37 +1243,42 @@ export async function fetchDatabaseFromSupabase(): Promise<DatabaseSchema | null
       activitiesByCustomer.set(act.customer_id, list);
     }
 
-    const mappedCustomers: DbCustomerUser[] = (custsRes.data || [])
-      .filter((c: any) => !knownDeletedEntities.customers.has(c.id) && !knownDeletedEntities.customers.has(c.phone_number))
-      .map((c: any) => ({
-      id: c.id,
-      phone_number: c.phone_number,
-      full_name: c.full_name,
-      email: c.email || undefined,
-      created_at: c.created_at || new Date().toISOString(),
-      updated_at: c.updated_at || new Date().toISOString(),
-      last_login_at: c.last_login_at || undefined,
-      activities: activitiesByCustomer.get(c.id) || [],
-    }));
+    const mappedCustomers: DbCustomerUser[] = custsData !== null
+      ? custsData
+          .filter((c: any) => !knownDeletedEntities.customers.has(c.id) && !knownDeletedEntities.customers.has(c.phone_number))
+          .map((c: any) => ({
+            id: c.id,
+            phone_number: c.phone_number,
+            full_name: c.full_name,
+            email: c.email || undefined,
+            created_at: c.created_at || new Date().toISOString(),
+            updated_at: c.updated_at || new Date().toISOString(),
+            last_login_at: c.last_login_at || undefined,
+            activities: activitiesByCustomer.get(c.id) || [],
+          }))
+      : (currentDb?.customers || []);
 
     // Map payments from Postgres table first so bookings can link to them
-    const mappedPayments: DbPayment[] = (paymentsRes.data || []).map((p: any) => ({
-      id: p.id,
-      booking_id: p.booking_id,
-      amount: String(p.amount || "0"),
-      payment_type: p.payment_type || "advance",
-      payment_method: p.payment_method || "Bkash payment",
-      status: p.status || "pending",
-      tran_id: p.transaction_id || p.tran_id || `TRAN-${p.id}`,
-      val_id: p.raw_payload?.val_id || p.val_id || undefined,
-      card_type: p.card_type || undefined,
-      created_at: p.created_at || new Date().toISOString(),
-      paid_at: p.paid_at || undefined,
-    }));
+    const mappedPayments: DbPayment[] = paymentsData !== null
+      ? paymentsData.map((p: any) => ({
+          id: p.id,
+          booking_id: p.booking_id,
+          amount: String(p.amount || "0"),
+          payment_type: p.payment_type || "advance",
+          payment_method: p.payment_method || "Bkash payment",
+          status: p.status || "pending",
+          tran_id: p.transaction_id || p.tran_id || `TRAN-${p.id}`,
+          val_id: p.raw_payload?.val_id || p.val_id || undefined,
+          card_type: p.card_type || undefined,
+          created_at: p.created_at || new Date().toISOString(),
+          paid_at: p.paid_at || undefined,
+        }))
+      : (currentDb?.payments || []);
 
-    const mappedBookings: DbBooking[] = (bookingsRes.data || [])
-      .filter((b: any) => b.status !== "cancelled" && !knownDeletedEntities.bookings.has(b.id) && !knownDeletedEntities.bookings.has(b.reference))
-      .map((b: any) => {
+    const mappedBookings: DbBooking[] = bookingsData !== null
+      ? bookingsData
+          .filter((b: any) => b.status !== "cancelled" && !knownDeletedEntities.bookings.has(b.id) && !knownDeletedEntities.bookings.has(b.reference))
+          .map((b: any) => {
       let selected_seats: string[] = [];
       if (Array.isArray(b.selected_seats) && b.selected_seats.length > 0) {
         selected_seats = b.selected_seats.map((s: any) => String(s).trim().toUpperCase()).filter(Boolean);
@@ -1336,63 +1381,72 @@ export async function fetchDatabaseFromSupabase(): Promise<DatabaseSchema | null
         created_at: b.created_at || new Date().toISOString(),
         updated_at: b.updated_at || new Date().toISOString(),
       };
-    });
+    })
+  : (currentDb?.bookings || []);
 
     // Map contact inquiries from Postgres table if present
-    const mappedInquiries: DbContactInquiry[] = (inqsRes.data || []).map((i: any) => ({
-      id: i.id,
-      name: i.name || "Traveler",
-      email: i.email || "",
-      phone: i.phone || "",
-      destination: i.destination || "",
-      dates: i.dates || "",
-      trip_type: i.trip_type || "",
-      travelers: Number(i.travelers || 1),
-      message: i.message || "",
-      status: i.status || "new",
-      admin_notes: i.admin_notes || undefined,
-      created_at: i.created_at || new Date().toISOString(),
-    }));
+    const mappedInquiries: DbContactInquiry[] = inqsData !== null
+      ? inqsData.map((i: any) => ({
+          id: i.id,
+          name: i.name || "Traveler",
+          email: i.email || "",
+          phone: i.phone || "",
+          destination: i.destination || "",
+          dates: i.dates || "",
+          trip_type: i.trip_type || "",
+          travelers: Number(i.travelers || 1),
+          message: i.message || "",
+          status: i.status || "new",
+          admin_notes: i.admin_notes || undefined,
+          created_at: i.created_at || new Date().toISOString(),
+        }))
+      : (currentDb?.contactInquiries || []);
 
     // Map clearance tickets from Postgres table
-    const mappedClearanceTickets: DbClearanceTicket[] = (ticketsRes.data || []).map((t: any) => ({
-      id: t.id,
-      booking_id: t.booking_id,
-      token: t.signed_token || t.token || "",
-      token_expires_at: t.token_expires_at || new Date(Date.now() + 30 * 86400000).toISOString(),
-      is_cleared: Boolean(t.is_verified || t.is_cleared),
-      cleared_at: t.verified_at || t.cleared_at || undefined,
-      cleared_by_staff_id: t.cleared_by_host || t.verified_by || t.cleared_by_staff_id || undefined,
-      clearance_method: t.clearance_method || (t.is_verified ? "host_verification" : undefined),
-      created_at: t.created_at || new Date().toISOString(),
-    }));
+    const mappedClearanceTickets: DbClearanceTicket[] = ticketsData !== null
+      ? ticketsData.map((t: any) => ({
+          id: t.id,
+          booking_id: t.booking_id,
+          token: t.signed_token || t.token || "",
+          token_expires_at: t.token_expires_at || new Date(Date.now() + 30 * 86400000).toISOString(),
+          is_cleared: Boolean(t.is_verified || t.is_cleared),
+          cleared_at: t.verified_at || t.cleared_at || undefined,
+          cleared_by_staff_id: t.cleared_by_host || t.verified_by || t.cleared_by_staff_id || undefined,
+          clearance_method: t.clearance_method || (t.is_verified ? "host_verification" : undefined),
+          created_at: t.created_at || new Date().toISOString(),
+        }))
+      : (currentDb?.clearanceTickets || []);
 
     // Map operational alerts from Postgres table
-    const mappedAlerts: DbAlert[] = (alertsRes.data || [])
-      .filter((a: any) => !knownDeletedEntities.alerts.has(a.id))
-      .map((a: any) => ({
-      id: a.id,
-      alert_type: a.alert_type || "general",
-      severity: (a.severity === "warning" || a.severity === "critical") ? a.severity : "info",
-      message: a.message || "",
-      is_acknowledged: Boolean(a.is_acknowledged),
-      created_at: a.created_at || new Date().toISOString(),
-    }));
+    const mappedAlerts: DbAlert[] = alertsData !== null
+      ? alertsData
+          .filter((a: any) => !knownDeletedEntities.alerts.has(a.id))
+          .map((a: any) => ({
+            id: a.id,
+            alert_type: a.alert_type || "general",
+            severity: (a.severity === "warning" || a.severity === "critical") ? a.severity : "info",
+            message: a.message || "",
+            is_acknowledged: Boolean(a.is_acknowledged),
+            created_at: a.created_at || new Date().toISOString(),
+          }))
+      : (currentDb?.alerts || []);
 
-    const tableBlocks: DbHomepageBlock[] = blocksData && blocksData.length > 0 ? blocksData : [];
+    const tableBlocks: DbHomepageBlock[] = (blocksData && blocksData.length > 0)
+      ? blocksData
+      : (currentDb?.homepageBlocks || []);
     const mergedHomepageBlocks = tableBlocks;
 
     // Payments: PostgreSQL table rows are authoritative (Master of Record)
-    const mergedPayments = paymentsRes.data !== null ? mappedPayments : [];
+    const mergedPayments = paymentsRes.data !== null ? mappedPayments : (currentDb?.payments || []);
 
     // Clearance tickets: PostgreSQL table rows are authoritative (Master of Record)
-    const mergedTickets = ticketsRes.data !== null ? mappedClearanceTickets : [];
+    const mergedTickets = ticketsRes.data !== null ? mappedClearanceTickets : (currentDb?.clearanceTickets || []);
 
     // Operational alerts: PostgreSQL table rows are authoritative (Master of Record)
-    const mergedAlerts = alertsRes.data !== null ? mappedAlerts : [];
+    const mergedAlerts = alertsRes.data !== null ? mappedAlerts : (currentDb?.alerts || []);
 
     // Contact Inquiries: PostgreSQL table rows are authoritative (Master of Record)
-    const mergedInquiries = inqsRes.data !== null ? mappedInquiries : [];
+    const mergedInquiries = inqsRes.data !== null ? mappedInquiries : (currentDb?.contactInquiries || []);
 
     // Tour categories: extract from homepage_blocks block-tour-categories
     const categoriesBlock = (blocksData || []).find((b: any) => b.id === "block-tour-categories");
@@ -1400,15 +1454,15 @@ export async function fetchDatabaseFromSupabase(): Promise<DatabaseSchema | null
     if (categoriesBlock && categoriesBlock.content && Array.isArray((categoriesBlock.content as any).categories)) {
       mappedTourCategories = (categoriesBlock.content as any).categories;
     } else {
-      mappedTourCategories = DEFAULT_TOUR_CATEGORIES;
+      mappedTourCategories = currentDb?.tourCategories || DEFAULT_TOUR_CATEGORIES;
     }
 
     // Expenses & Suppliers: extract directly from PostgreSQL (homepage_blocks)
     const expensesBlock = (blocksData || []).find((b: any) => b.id === "block-expenses-data");
-    const mappedExpenses: DbExpense[] = (expensesBlock?.content as any)?.expenses || [];
+    const mappedExpenses: DbExpense[] = (expensesBlock?.content as any)?.expenses || (currentDb?.expenses || []);
 
     const suppliersBlock = (blocksData || []).find((b: any) => b.id === "block-suppliers-data");
-    const mappedSuppliers: DbSupplier[] = (suppliersBlock?.content as any)?.suppliers || [];
+    const mappedSuppliers: DbSupplier[] = (suppliersBlock?.content as any)?.suppliers || (currentDb?.suppliers || []);
 
     const result: DatabaseSchema = {
       destinations: mappedDestinations,

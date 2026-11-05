@@ -10,14 +10,9 @@ import { Icon } from "@/components/Icon";
 import { fetchDestinations, fetchTours } from "@/lib/api";
 import { getTourCategories } from "@/server/db";
 
-// ISR: cached for 120s instead of force-dynamic. Content here comes from
-// Supabase-backed catalog/CMS tables that change rarely (admin edits), so
-// re-rendering (and re-querying the DB) on every single visitor request
-// wastes Vercel function invocations and Supabase egress under real
-// traffic — both capped on the free tier. Admin writes call
-// revalidatePublicContent() (src/server/revalidatePublicContent.ts) to
-// invalidate this immediately instead of waiting out the TTL.
-export const revalidate = 30;
+// Dynamic rendering: reads from in-memory RAM in sub-millisecond time.
+// Ensures admin edits reflect instantly in the user panel without stale cache delay.
+export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
   title: "Tour Packages Across Bangladesh",

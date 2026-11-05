@@ -102,7 +102,7 @@ const DB_FILE = path.join(DB_DIR, "db.json");
 // *are* running, not overall traffic. Kept configurable since the right
 // value depends on how close to the free-tier egress cap (5 GB/month) the
 // project is running.
-const SUPABASE_SYNC_INTERVAL_MS = Number(process.env.SUPABASE_SYNC_INTERVAL_MS) || 15000;
+const SUPABASE_SYNC_INTERVAL_MS = Number(process.env.SUPABASE_SYNC_INTERVAL_MS) || 60000;
 
 let memoryDb: DatabaseSchema | null = null;
 
@@ -644,7 +644,7 @@ function triggerBackgroundSupabaseSync() {
   isFetchingSupabase = true;
   const counterAtStart = mutationCounter;
 
-  fetchDatabaseFromSupabase()
+  fetchDatabaseFromSupabase(memoryDb)
     .then((cloudDb) => {
       if (!cloudDb) return;
       if (mutationCounter !== counterAtStart) return;
@@ -673,7 +673,7 @@ export function resetMemoryDb(): void {
 }
 
 export async function refreshFromSupabase(): Promise<DatabaseSchema> {
-  const cloudDb = await fetchDatabaseFromSupabase();
+  const cloudDb = await fetchDatabaseFromSupabase(memoryDb);
   if (cloudDb) {
     lastSupabaseFetch = Date.now();
     memoryDb = normalizeDatabaseSchema(cloudDb);
@@ -948,7 +948,6 @@ export function normalizeDatabaseSchema(db: any): DatabaseSchema {
 }
 
 export function loadDb(): DatabaseSchema {
-  triggerBackgroundSupabaseSync();
   try {
     if (fs.existsSync(DB_FILE)) {
       const stat = fs.statSync(DB_FILE);
@@ -956,7 +955,7 @@ export function loadDb(): DatabaseSchema {
         if (autoCancelExpiredCashBookings(memoryDb)) {
           void saveDb(memoryDb);
         }
-        return normalizeDatabaseSchema(memoryDb);
+        return memoryDb;
       }
       const raw = fs.readFileSync(DB_FILE, "utf-8");
       memoryDb = normalizeDatabaseSchema(JSON.parse(raw));

@@ -3,14 +3,7 @@ import { notFound } from "next/navigation";
 import { fetchJournalPost, fetchJournalPosts } from "@/lib/api";
 import { JournalPostClient } from "@/components/JournalPostClient";
 
-// ISR: cached for 300s instead of force-dynamic. Content here comes from
-// Supabase-backed catalog/CMS tables that change rarely (admin edits), so
-// re-rendering (and re-querying the DB) on every single visitor request
-// wastes Vercel function invocations and Supabase egress under real
-// traffic — both capped on the free tier. Admin writes call
-// revalidatePublicContent() (src/server/revalidatePublicContent.ts) to
-// invalidate this immediately instead of waiting out the TTL.
-export const revalidate = 300;
+export const dynamic = "force-dynamic";
 
 interface PageProps {
   params: Promise<{ slug: string }>;

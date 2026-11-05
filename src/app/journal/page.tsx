@@ -2,14 +2,9 @@ import type { Metadata } from "next";
 import { fetchJournalPageCms, fetchJournalPosts } from "@/lib/api";
 import { JournalClient } from "@/components/JournalClient";
 
-// ISR: cached for 180s instead of force-dynamic. Content here comes from
-// Supabase-backed catalog/CMS tables that change rarely (admin edits), so
-// re-rendering (and re-querying the DB) on every single visitor request
-// wastes Vercel function invocations and Supabase egress under real
-// traffic — both capped on the free tier. Admin writes call
-// revalidatePublicContent() (src/server/revalidatePublicContent.ts) to
-// invalidate this immediately instead of waiting out the TTL.
-export const revalidate = 180;
+// Dynamic rendering: reads from in-memory RAM in sub-millisecond time.
+// Ensures admin edits reflect instantly in the user panel without stale cache delay.
+export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
   title: "Travel Journal & Guides",
