@@ -43,10 +43,10 @@ function RocketRealPaymentContent() {
   const [actionType, setActionType] = useState<string | null>(null);
 
   const numAmount = parseFloat(amount) || 0;
-  const merchantAccount = "016205930072";
-  const merchantName = "SHIMUL HASAN PRINCE";
-  const merchantTid = "60084230";
-  const merchantId = "999016205930072";
+  const merchantAccount = process.env.NEXT_PUBLIC_ROCKET_ACCOUNT_NUMBER || "016205930072";
+  const merchantName = process.env.NEXT_PUBLIC_ROCKET_MERCHANT_NAME || "SHIMUL HASAN PRINCE";
+  const merchantTid = process.env.NEXT_PUBLIC_ROCKET_MERCHANT_TID || "60084230";
+  const merchantId = process.env.NEXT_PUBLIC_ROCKET_MERCHANT_ID || "999016205930072";
 
   function copyToClipboard(text: string, type: "account" | "amount" | "ref") {
     if (navigator?.clipboard) {

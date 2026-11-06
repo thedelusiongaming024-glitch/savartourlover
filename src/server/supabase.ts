@@ -232,18 +232,20 @@ export async function syncTourToSupabase(tour: DbTour): Promise<boolean> {
         `meta:accommodation:${tour.accommodation_notes || "Standard hotel / resort"}`,
         `meta:transportation:${tour.transportation_notes || "AC Bus / Private Jeep"}`,
         ...(tour.places_to_visit && tour.places_to_visit.length > 0 ? [`meta:places:${tour.places_to_visit.join("||")}`] : []),
+        ...(Array.isArray(tour.gallery) && tour.gallery.length > 0 ? [`meta:gallery:${JSON.stringify(tour.gallery)}`] : []),
       ],
       departures: departures,
       meeting_point: tour.meeting_point || "Dhaka Sayedabad / Fakirapool",
       pickup_points: Array.isArray(tour.pickup_points) ? tour.pickup_points : [],
       departure_schedule: tour.departure_schedule || "Every Friday 7:00 AM",
       faqs: tour.faqs || [],
+      gallery: Array.isArray(tour.gallery) ? tour.gallery : [],
       status: tour.status || "published",
       is_featured: Boolean(tour.is_featured),
       updated_at: new Date().toISOString(),
     };
 
-    // Attempt upsert with total_seats column
+    // Attempt upsert with total_seats and gallery column
     const payloadWithSeats = {
       ...basePayload,
       total_seats: totalSeats,
@@ -251,10 +253,13 @@ export async function syncTourToSupabase(tour: DbTour): Promise<boolean> {
 
     let { error } = await supabase.from("tours").upsert(payloadWithSeats);
 
-    // If PostgreSQL tours table doesn't have total_seats column yet, fallback to basePayload
-    // (total_seats is still securely saved per departure in the departures JSONB column)
-    if (error && error.message && error.message.includes("total_seats")) {
-      const retry = await supabase.from("tours").upsert(basePayload);
+    // If PostgreSQL tours table doesn't have total_seats or gallery column yet, fallback gracefully
+    if (error && error.message && (error.message.includes("total_seats") || error.message.includes("gallery"))) {
+      const sanitizedPayload: Record<string, any> = { ...basePayload };
+      if (error.message.includes("gallery")) {
+        delete sanitizedPayload.gallery;
+      }
+      const retry = await supabase.from("tours").upsert(sanitizedPayload);
       error = retry.error;
     }
 
@@ -1078,6 +1083,13 @@ export async function fetchDatabaseFromSupabase(currentDb?: DatabaseSchema | nul
       const transMeta = packingSuggestions.find((p: any) => typeof p === "string" && p.startsWith("meta:transportation:"))?.slice("meta:transportation:".length);
       const placesMeta = packingSuggestions.find((p: any) => typeof p === "string" && p.startsWith("meta:places:"))?.slice("meta:places:".length);
       const decodedPlaces = placesMeta ? placesMeta.split("||").filter(Boolean) : [];
+      const galleryMeta = packingSuggestions.find((p: any) => typeof p === "string" && p.startsWith("meta:gallery:"))?.slice("meta:gallery:".length);
+      let decodedGallery: any[] = Array.isArray(t.gallery) && t.gallery.length > 0 ? t.gallery : [];
+      if (decodedGallery.length === 0 && galleryMeta) {
+        try {
+          decodedGallery = JSON.parse(galleryMeta);
+        } catch {}
+      }
 
       const matchedDest = (mappedDestinations || []).find(
         (d: any) => d.id === t.destination_id || (d.slug && d.slug.toLowerCase() === (t.destination_slug || "").toLowerCase())
@@ -1132,7 +1144,7 @@ export async function fetchDatabaseFromSupabase(currentDb?: DatabaseSchema | nul
         itinerary: Array.isArray(t.itinerary) ? t.itinerary : [],
         departures,
         faqs: Array.isArray(t.faqs) ? t.faqs : [],
-        gallery: Array.isArray(t.gallery) ? t.gallery : [],
+        gallery: Array.isArray(decodedGallery) ? decodedGallery : [],
         is_featured: Boolean(t.is_featured),
         status: t.status || "published",
       };

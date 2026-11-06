@@ -108,12 +108,13 @@ export default async function TourPage({ params }: PageProps) {
 
   // 2. Tour gallery photos (only real uploaded tour gallery photos)
   if (Array.isArray(tour.gallery)) {
-    tour.gallery.forEach((g, idx) => {
-      if (g.imageUrl && !isMockImage(g.imageUrl)) {
+    tour.gallery.forEach((g: any, idx) => {
+      const img = g.imageUrl || g.image;
+      if (img && !isMockImage(img)) {
         registerSlide({
           id: `tour-gallery-${idx}`,
-          image: g.imageUrl,
-          title: g.label || tour.title,
+          image: img,
+          title: g.label || g.title || tour.title,
           subtitle: destination?.name || tour.category,
           sceneKey: g.key,
         });
@@ -123,11 +124,12 @@ export default async function TourPage({ params }: PageProps) {
 
   // 2b. Tour custom gallery items (admin uploaded)
   if (Array.isArray(tour.galleryItems)) {
-    tour.galleryItems.forEach((gi, idx) => {
-      if (gi.imageUrl && !isMockImage(gi.imageUrl)) {
+    tour.galleryItems.forEach((gi: any, idx) => {
+      const img = gi.imageUrl || gi.image;
+      if (img && !isMockImage(img)) {
         registerSlide({
           id: `tour-gallery-item-${idx}`,
-          image: gi.imageUrl,
+          image: img,
           title: gi.title || gi.caption || tour.title,
           subtitle: destination?.name || tour.category,
         });

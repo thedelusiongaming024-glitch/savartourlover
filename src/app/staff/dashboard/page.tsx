@@ -1224,7 +1224,19 @@ function StaffDashboardContent() {
   }
 
   function openTourGalleryModal(tour: DbTour) {
-    const rawGallery: DbTourGalleryItem[] = Array.isArray(tour.gallery) ? JSON.parse(JSON.stringify(tour.gallery)) : [];
+    const rawGallery: DbTourGalleryItem[] = Array.isArray(tour.gallery)
+      ? tour.gallery.map((g: any, idx) => ({
+          id: g.id || `img-${idx}`,
+          image: g.image || g.imageUrl || (typeof g === "string" ? g : ""),
+          title: g.title || g.caption || "",
+          caption: g.caption || g.title || "",
+          location: g.location || tour.destination_name || "",
+          price: g.price !== undefined ? String(g.price) : "",
+          badge: g.badge || "",
+          watermarkText: g.watermarkText || g.watermark_text || "",
+          slot: g.slot || (idx === 0 ? "featured_main" : idx <= 4 ? `grid_${idx}` : idx === 5 ? "panorama" : "grid_1"),
+        }))
+      : [];
     setTourGalleryModal({
       isOpen: true,
       tour,
@@ -1299,17 +1311,19 @@ function StaffDashboardContent() {
     setTourGalleryModal((prev) => ({ ...prev, isSaving: true }));
     try {
       const tourId = tourGalleryModal.tour.id;
-      const updatedGallery = tourGalleryModal.gallery.map((g, idx) => ({
-        id: g.id || `img-${Date.now()}-${idx}`,
-        image: normalizeImageUrl(g.image || (g as any).imageUrl || ""),
-        caption: g.caption || g.title || "",
-        title: g.title || g.caption || "",
-        location: g.location || tourGalleryModal.tour?.destination_name || "",
-        price: g.price !== undefined ? String(g.price) : "",
-        badge: g.badge || "",
-        watermarkText: g.watermarkText || "",
-        slot: g.slot || "",
-      }));
+      const updatedGallery = tourGalleryModal.gallery
+        .map((g, idx) => ({
+          id: g.id || `img-${Date.now()}-${idx}`,
+          image: normalizeImageUrl(g.image || (g as any).imageUrl || ""),
+          caption: g.caption || g.title || "",
+          title: g.title || g.caption || "",
+          location: g.location || tourGalleryModal.tour?.destination_name || "",
+          price: g.price !== undefined ? String(g.price) : "",
+          badge: g.badge || "",
+          watermarkText: g.watermarkText || "",
+          slot: g.slot || "",
+        }))
+        .filter((g) => Boolean(g.image));
 
       const res = await staffFetch(`/admin/tours/${tourId}`, {
         method: "PUT",
@@ -1322,7 +1336,7 @@ function StaffDashboardContent() {
       if (res.ok) {
         showNotification("success", "Tour gallery photos saved successfully!");
         setTourGalleryModal({ isOpen: false, tour: null, gallery: [], isSaving: false });
-        loadData();
+        await loadData();
       } else {
         showNotification("error", "Failed to save tour gallery.");
         setTourGalleryModal((prev) => ({ ...prev, isSaving: false }));

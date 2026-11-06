@@ -51,8 +51,8 @@ function BKashPaymentContent() {
   const [loading, setLoading] = useState(false);
 
   const numAmount = parseFloat(amount) || 0;
-  const personalBkashNumber = "01620592884";
-  const recipientName = "সাভার ট্যুর লাভার";
+  const personalBkashNumber = process.env.NEXT_PUBLIC_BKASH_ACCOUNT_NUMBER || "01620592884";
+  const recipientName = process.env.NEXT_PUBLIC_BKASH_ACCOUNT_NAME || "সাভার ট্যুর লাভার";
 
   function copyToClipboard(text: string, type: "account" | "amount" | "ref") {
     if (navigator?.clipboard) {

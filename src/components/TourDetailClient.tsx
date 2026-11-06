@@ -31,8 +31,11 @@ export function TourDetailClient({
   const remaining = Math.max(0, final - advance);
 
   const hasRealGallery =
-    (Array.isArray(tour.galleryItems) && tour.galleryItems.some((g) => Boolean(g?.imageUrl || (g as any)?.image))) ||
-    (Array.isArray(tour.gallery) && tour.gallery.some((g) => Boolean(g?.imageUrl && !g.imageUrl.includes("mountain-hero"))));
+    (Array.isArray(tour.galleryItems) && tour.galleryItems.some((g) => Boolean(g?.imageUrl || (g as any)?.image || (g as any)?.url))) ||
+    (Array.isArray(tour.gallery) && tour.gallery.some((g) => {
+      const u = g?.imageUrl || (g as any)?.image || (g as any)?.url;
+      return Boolean(u) && !String(u).includes("mountain-hero");
+    }));
 
   const displayCategory = isBn
     ? (() => {
