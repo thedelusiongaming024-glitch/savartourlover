@@ -1,8 +1,8 @@
 import Link from "next/link";
 
-// Dynamic rendering: reads from in-memory RAM in sub-millisecond time.
-// Ensures admin edits reflect instantly in the user panel without stale cache delay.
-export const dynamic = "force-dynamic";
+// Incremental Static Regeneration (ISR): serves instantly from Vercel Edge CDN cache (<50ms TTFB).
+// On-demand revalidation is triggered whenever an admin publishes edits via revalidatePublicContent().
+export const revalidate = 60;
 import { Atmosphere } from "@/components/Atmosphere";
 import { HeroSlideshow } from "@/components/HeroSlideshow";
 import { Reveal } from "@/components/Reveal";
@@ -99,28 +99,43 @@ export default async function Home() {
   const whyUsList = homeCms.why_us_items && homeCms.why_us_items.length > 0 ? homeCms.why_us_items : whyUs;
   const servicesList = homeCms.services_items && homeCms.services_items.length > 0 ? homeCms.services_items : services;
 
+  const heroSlides =
+    homeCms.hero_slides && homeCms.hero_slides.length > 0
+      ? homeCms.hero_slides
+      : (Array.isArray(heroContent.slides) && heroContent.slides.length > 0
+          ? (heroContent.slides as any)
+          : (destinations.length > 0
+              ? destinations.map((d) => ({
+                  id: `slide-${d.slug}`,
+                  title: d.name,
+                  subtitle: d.tagline || d.region,
+                  image_url: d.cover?.imageUrl || "",
+                }))
+              : undefined
+            )
+        );
+
+  const firstHeroImage = heroSlides && heroSlides.length > 0 && heroSlides[0]?.image_url
+    ? normalizeImageUrl(heroSlides[0].image_url)
+    : null;
+
   return (
     <>
+      {/* High-priority preload for LCP hero background image */}
+      {firstHeroImage && (
+        <link
+          rel="preload"
+          as="image"
+          href={firstHeroImage}
+          // @ts-ignore
+          fetchPriority="high"
+        />
+      )}
       {/* ============ HERO ============ */}
       <HomeHero
         mediaType={homeCms.hero_media_type ?? (heroContent.hero_media_type as "slideshow" | "video") ?? (heroContent.media_type as "slideshow" | "video") ?? "slideshow"}
         videoUrl={homeCms.hero_video_url || str(heroContent, "hero_video_url") || str(heroContent, "video_url")}
-        slides={
-          homeCms.hero_slides && homeCms.hero_slides.length > 0
-            ? homeCms.hero_slides
-            : (Array.isArray(heroContent.slides) && heroContent.slides.length > 0
-                ? (heroContent.slides as any)
-                : (destinations.length > 0
-                    ? destinations.map((d) => ({
-                        id: `slide-${d.slug}`,
-                        title: d.name,
-                        subtitle: d.tagline || d.region,
-                        image_url: d.cover?.imageUrl || "",
-                      }))
-                    : undefined
-                  )
-              )
-        }
+        slides={heroSlides}
         eyebrow={homeCms.hero_eyebrow || str(heroContent, "eyebrow")}
         headline={homeCms.hero_headline || str(heroContent, "headline")}
         highlight={homeCms.hero_highlight || str(heroContent, "highlight")}

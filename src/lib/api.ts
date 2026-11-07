@@ -217,6 +217,8 @@ function adaptTour(t: any): Tour {
     category: CATEGORY_LABELS[t.category] ?? t.category ?? "Group Tour",
     summary: t.short_description || t.overview || t.description || "",
     description: t.full_description || t.overview || t.short_description || "",
+    tourPlan: t.tour_plan || t.tourPlan || "",
+    tour_plan: t.tour_plan || t.tourPlan || "",
     cover: sceneForSlug(slug, title, t.hero_image),
     gallery: Array.isArray(t.gallery) && t.gallery.length > 0
       ? t.gallery.map((g: any) => sceneForSlug(slug, g.title || g.caption || title, g.image || g.imageUrl))

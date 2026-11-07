@@ -21,6 +21,7 @@ const nextConfig: NextConfig = {
     "/api/**/*": ["./.data/**/*", "./data_storage/**/*"],
   },
   images: {
+    formats: ["image/avif", "image/webp"],
     qualities: [75, 82],
     // Only the specific hosts this app actually serves images from are allowed.
     remotePatterns: [

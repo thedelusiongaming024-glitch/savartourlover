@@ -249,6 +249,7 @@ export interface AdminDictionary {
       editTitle: string;
       basicInfo: string;
       logistics: string;
+      tourPlan: string;
       placesToVisit: string;
       pricing: string;
       itinerary: string;
@@ -552,6 +553,7 @@ export const adminI18n: Record<AdminLang, AdminDictionary> = {
         editTitle: "Edit Tour Package Details",
         basicInfo: "Basic Information",
         logistics: "Tour Logistics & Boarding",
+        tourPlan: "Tour Plan (Markdown Editor)",
         placesToVisit: "Places You'll Visit",
         pricing: "Pricing & Advance Payment",
         itinerary: "Day-by-Day Itinerary",
@@ -853,6 +855,7 @@ export const adminI18n: Record<AdminLang, AdminDictionary> = {
         editTitle: "ট্যুর প্যাকেজ বিবরণ সম্পাদনা করুন",
         basicInfo: "প্রাথমিক তথ্য",
         logistics: "লজিস্টিকস ও বোর্ডিং পয়েন্ট",
+        tourPlan: "ট্যুর প্ল্যান (ভ্রমণ পরিকল্পনা ও নির্দেশনা)",
         placesToVisit: "যে স্থানগুলো ঘুরে দেখবেন",
         pricing: "মূল্য ও প্রয়োজনীয় অগ্রিম",
         itinerary: "দিন অনুযায়ী ভ্রমণসূচি",

@@ -3,7 +3,9 @@ import { fetchAboutPageCms } from "@/lib/api";
 import { DEFAULT_ABOUT_CMS } from "@/server/db";
 import { AboutClient } from "@/components/AboutClient";
 
-export const dynamic = "force-dynamic";
+// Incremental Static Regeneration (ISR): serves instantly from Vercel Edge CDN cache (<50ms TTFB).
+// On-demand revalidation is triggered whenever an admin publishes edits via revalidatePublicContent().
+export const revalidate = 60;
 
 export const metadata: Metadata = {
   title: "About Us & Our Story",

@@ -3620,6 +3620,9 @@ export async function saveTour(tourData: Partial<DbTour>): Promise<DbTour> {
     category: tourData.category || "group_tour",
     short_description: tourData.short_description || tourData.full_description?.split("\n")[0]?.trim() || existingTour?.short_description || "",
     full_description: tourData.full_description || tourData.short_description || existingTour?.full_description || "",
+    tour_plan: tourData.tour_plan !== undefined
+      ? String(tourData.tour_plan)
+      : ((tourData as any)?.tourPlan !== undefined ? String((tourData as any).tourPlan) : (existingTour?.tour_plan || "")),
     hero_image: tourData.hero_image ? normalizeImageUrl(tourData.hero_image) : null,
     duration_days: tourData.duration_days || 3,
     duration_nights: tourData.duration_nights || 2,

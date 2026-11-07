@@ -106,6 +106,8 @@ export interface Tour {
   faqs: Faq[];
   featured?: boolean;
   placesToVisit?: string[];
+  tourPlan?: string;
+  tour_plan?: string;
 }
 
 export interface TourGalleryItem {

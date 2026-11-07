@@ -81,7 +81,7 @@ export function HeroSlideshow({ slides, scenes, interval = 6000 }: HeroSlideshow
         <motion.div
           key={slideId || index}
           className="absolute inset-0"
-          initial={{ opacity: 0 }}
+          initial={index === 0 ? false : { opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
           transition={{ duration: 1.4, ease: [0.22, 1, 0.36, 1] }}
@@ -99,6 +99,10 @@ export function HeroSlideshow({ slides, scenes, interval = 6000 }: HeroSlideshow
                 src={normalizedImg}
                 alt={slideTitle || "Hero slide"}
                 className="absolute inset-0 h-full w-full object-cover select-none pointer-events-none"
+                // @ts-ignore
+                fetchPriority={index === 0 ? "high" : "auto"}
+                loading={index === 0 ? "eager" : "lazy"}
+                decoding="async"
                 onError={() => setFailedImages((prev) => ({ ...prev, [slideId]: true }))}
               />
             ) : (

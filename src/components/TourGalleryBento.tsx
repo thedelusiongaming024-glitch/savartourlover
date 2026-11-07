@@ -87,7 +87,8 @@ export function TourGalleryBento({ tour, className = "" }: TourGalleryBentoProps
             src={images[0].url}
             alt={images[0].alt}
             className="w-full h-full object-cover transition-transform duration-500 ease-out group-hover:scale-105"
-            loading="eager"
+            loading="lazy"
+            decoding="async"
           />
           <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex items-end p-4">
             <span className="text-white text-xs font-medium">🔍 {isBn ? "বড় করে দেখুন" : "Click to view full size"}</span>
@@ -131,7 +132,8 @@ export function TourGalleryBento({ tour, className = "" }: TourGalleryBentoProps
                 src={images[0].url}
                 alt={images[0].alt}
                 className="w-full h-full object-cover transition-transform duration-500 ease-out group-hover:scale-105"
-                loading="eager"
+                loading="lazy"
+                decoding="async"
               />
               <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex items-end p-4">
                 <span className="text-white text-xs font-semibold">{images[0].title}</span>

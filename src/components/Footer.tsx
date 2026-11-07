@@ -50,6 +50,10 @@ export function Footer() {
                 <img
                   src="/images/logo-horizontal.png"
                   alt="Savar Tour Lover"
+                  width={220}
+                  height={64}
+                  loading="lazy"
+                  decoding="async"
                   className="relative h-10 xs:h-12 sm:h-16 w-auto object-contain transition-transform duration-300 group-hover:scale-105 select-none"
                 />
               </Link>

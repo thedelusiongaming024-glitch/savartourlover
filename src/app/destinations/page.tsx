@@ -9,9 +9,9 @@ import { DestinationPromptBox } from "@/components/DestinationPromptBox";
 import { PopularDestinationsCoverflow } from "@/components/PopularDestinationsCoverflow";
 import { fetchDestinations } from "@/lib/api";
 
-// Dynamic rendering: reads from in-memory RAM in sub-millisecond time.
-// Ensures admin edits reflect instantly in the user panel without stale cache delay.
-export const dynamic = "force-dynamic";
+// Incremental Static Regeneration (ISR): serves instantly from Vercel Edge CDN cache (<50ms TTFB).
+// On-demand revalidation is triggered whenever an admin publishes edits via revalidatePublicContent().
+export const revalidate = 60;
 
 export const metadata: Metadata = {
   title: "Explore Destinations Across Bangladesh",

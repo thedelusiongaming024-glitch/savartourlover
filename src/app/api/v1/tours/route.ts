@@ -18,6 +18,7 @@ export async function GET(request: Request) {
     destination_name: t.destination_name,
     category: t.category,
     short_description: t.short_description,
+    tour_plan: t.tour_plan || "",
     hero_image: t.hero_image,
     duration_days: t.duration_days,
     duration_nights: t.duration_nights,

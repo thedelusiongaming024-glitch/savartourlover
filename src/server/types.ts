@@ -76,6 +76,7 @@ export interface DbTour {
   faqs: { question: string; answer: string }[];
   is_featured: boolean;
   places_to_visit?: string[];
+  tour_plan?: string;
   status: "published" | "draft" | "archived";
 }
 

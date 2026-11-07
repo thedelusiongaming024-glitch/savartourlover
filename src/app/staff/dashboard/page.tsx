@@ -1066,6 +1066,7 @@ function StaffDashboardContent() {
       const matchDest = destinations.find((d) => d.slug === destSlug);
 
       const fullDesc = (formData.get("full_description") as string) || "";
+      const tourPlan = (formData.get("tour_plan") as string) || "";
       const shortDesc = (formData.get("short_description") as string) || fullDesc.split("\n")[0]?.trim() || fullDesc.slice(0, 160) || "";
 
       const payload: Partial<DbTour> = {
@@ -1077,6 +1078,7 @@ function StaffDashboardContent() {
         category: formData.get("category") as string,
         short_description: shortDesc,
         full_description: fullDesc,
+        tour_plan: tourPlan,
         hero_image: normalizeImageUrl((formData.get("hero_image") as string)) || null,
         duration_days: Number(formData.get("duration_days")),
         duration_nights: Number(formData.get("duration_nights")),
@@ -7592,6 +7594,27 @@ function StaffDashboardContent() {
                   </div>
                 }
                 placeholder={"প্রথম দিন: সকালে নাস্তা শেষে চান্দের গাড়িতে সাজেকের উদ্দেশ্যে রওনা...\n\nদ্বিতীয় দিন: সারাদিন পাহাড়ে ভ্রমণ...\n\n- হোটেল চেক-ইন\n- কংলাক পাহাড় ভ্রমণ"}
+              />
+
+              <MarkdownEditor
+                key={`plan-${tourModal.tour?.id || "new"}`}
+                name="tour_plan"
+                defaultValue={tourModal.tour?.tour_plan || ""}
+                label={
+                  <div className="flex items-center justify-between">
+                    <span className="font-semibold text-slate-800 flex items-center gap-1.5">
+                      <span>🗺️ Tour Plan (ট্যুর প্ল্যান — ভ্রমণ পরিকল্পনা, বিস্তারিত কার্যক্রম ও নির্দেশনা)</span>
+                      <span className="rounded-sm bg-emerald-100 px-1.5 py-0.5 text-[10px] font-medium text-emerald-800">Displayed below Logistics</span>
+                    </span>
+                    <span className="text-[11px] font-normal text-emerald-700">Markdown Editor</span>
+                  </div>
+                }
+                placeholder={"ট্যুর প্ল্যান ও বিশদ বিবরণ:\n\n### ১ম দিন: ঢাকা থেকে যাত্রা ও গন্তব্যে পৌঁছানো\n- সকাল ৭:০০ টায় সাভার থেকে যাত্রা শুরু\n- দুপুর ১:০০ টায় রিসোর্টে চেক-ইন ও দুপুরের খাবার\n- বিকেলে সূর্যাস্ত ও স্থানীয় দর্শনীয় স্থান ভ্রমণ\n\n### ২য় দিন: রোমাঞ্চকর ভ্রমণ ও দর্শনীয় স্থান\n- সকালে নাস্তা শেষে মূল আকর্ষণ ভ্রমণ\n\n### বিশেষ নির্দেশনা\n- প্রয়োজনীয় ওষুধ, ছাতা এবং জাতীয় পরিচয়পত্র সাথে রাখুন।"}
+                helperText={
+                  <span className="text-[11px] font-normal text-slate-500">
+                    Displayed in its dedicated slot below &quot;Tour Logistics &amp; Meeting Point&quot;. Supports Markdown headers, lists, and formatting.
+                  </span>
+                }
               />
 
               <label className="flex flex-col gap-1 text-slate-700 text-xs font-semibold">

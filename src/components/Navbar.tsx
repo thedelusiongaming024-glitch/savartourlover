@@ -63,6 +63,10 @@ export function Navbar() {
             <img
               src="/images/logo-horizontal.png"
               alt="Savar Tour Lover"
+              width={220}
+              height={65}
+              loading="eager"
+              decoding="async"
               className="h-12 xs:h-[50px] sm:h-[58px] md:h-[60px] lg:h-[65px] w-auto object-contain transition-all duration-300 select-none"
             />
           </motion.div>

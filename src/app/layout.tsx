@@ -240,6 +240,20 @@ export default function RootLayout({
       suppressHydrationWarning
     >
       <head>
+        {/* Resource Hints: Preconnect to image CDN & analytics domains early */}
+        <link rel="preconnect" href="https://drive.google.com" />
+        <link rel="dns-prefetch" href="https://drive.google.com" />
+        <link rel="preconnect" href="https://lh3.googleusercontent.com" />
+        <link rel="dns-prefetch" href="https://lh3.googleusercontent.com" />
+        {seo.google_analytics_id && (
+          <>
+            <link rel="preconnect" href="https://www.googletagmanager.com" crossOrigin="anonymous" />
+            <link rel="dns-prefetch" href="https://www.googletagmanager.com" />
+          </>
+        )}
+        {seo.facebook_pixel_id && (
+          <link rel="dns-prefetch" href="https://connect.facebook.net" />
+        )}
         <script
           dangerouslySetInnerHTML={{
             __html: `try{var l=localStorage.getItem('tourlover_lang')||localStorage.getItem('atithi_lang')||(document.cookie.match(/(?:tourlover_lang|atithi_lang)=(en|bn)/)||[])[1];if(l==='bn'){document.documentElement.lang='bn';document.documentElement.classList.add('lang-bn');}}catch(_){};try{var o=new MutationObserver(function(m){for(var i=0;i<m.length;i++){if(m[i].attributeName==='cz-shortcut-listen'&&document.body){document.body.removeAttribute('cz-shortcut-listen');}}});o.observe(document.documentElement,{attributes:true,subtree:true,attributeFilter:['cz-shortcut-listen']});}catch(_){}`,

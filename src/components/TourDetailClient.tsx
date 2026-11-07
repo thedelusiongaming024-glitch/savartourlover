@@ -400,6 +400,23 @@ export function TourDetailClient({
                 </Reveal>
               </div>
 
+              {/* Tour Plan (Rendered below Tour Logistics & Boarding Points) */}
+              {(tour.tourPlan || tour.tour_plan) ? (
+                <Reveal>
+                  <div className="glass glass-sweep rounded-3xl p-7 sm:p-8">
+                    <div className="flex items-center gap-2.5 mb-4">
+                      <span className="flex h-9 w-9 items-center justify-center rounded-2xl bg-emerald/10 text-emerald text-base">
+                        🗺️
+                      </span>
+                      <h2 className="font-display text-xl font-semibold text-ink sm:text-2xl">
+                        {isBn ? "ট্যুর প্ল্যান" : "Tour Plan"}
+                      </h2>
+                    </div>
+                    <TourOverviewRenderer content={tour.tourPlan || tour.tour_plan || ""} />
+                  </div>
+                </Reveal>
+              ) : null}
+
               {/* Payment Explainer Card */}
               <Reveal>
                 <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-emerald to-emerald-deep p-6 sm:p-7 text-white shadow-md">

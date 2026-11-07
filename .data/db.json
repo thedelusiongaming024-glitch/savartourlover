@@ -2,25 +2,26 @@
   "destinations": [],
   "tours": [
     {
-      "id": "tour-1793912328844",
-      "title": "Savar Tour Lover",
-      "slug": "savar-tour-lover",
+      "id": "tour-1794077046167",
+      "title": "test",
+      "slug": "test",
       "destination_id": null,
       "destination_slug": "bangladesh",
       "destination_name": "Bangladesh",
       "category": "group_tour",
       "short_description": "",
       "full_description": "",
+      "tour_plan": "",
       "hero_image": null,
-      "duration_days": 10,
+      "duration_days": 3,
       "duration_nights": 2,
-      "base_price": "5000",
-      "discount_type": "flat",
-      "discount_value": "1000",
-      "final_price": "4000",
+      "base_price": "25000",
+      "discount_type": "none",
+      "discount_value": "0",
+      "final_price": "25000",
       "allow_partial_payment": true,
-      "advance_payment_percent": "50",
-      "advance_amount": "2000",
+      "advance_payment_percent": "20",
+      "advance_amount": "5000",
       "inclusions": [
         "AC Bus",
         "Cottage stay",
@@ -47,66 +48,51 @@
       "status": "published"
     },
     {
-      "id": "tour-1793957306151",
-      "title": "সেন্ট মার্টিন  দ্বীপ মাত্র  ৮৬০০/-  টাকায়",
-      "slug": "saint-martin",
+      "id": "tour-1794073920255",
+      "title": "কক্সবাজার রিলাক্স ট্যুর",
+      "slug": "-",
       "destination_id": null,
       "destination_slug": "bangladesh",
       "destination_name": "Bangladesh",
       "category": "group_tour",
-      "short_description": "ট্যুর প্লানঃ\n> যাত্রার: বিকাল ৫ টায় জাহাঙ্গীরনগর ক্যাম্পাস হতে রওনা!\n\n১ম দিন: \nখুব ভোরে কক্সবাজার পৌছে ফ্রেস হয়ে নাস্তা শেষে নুনিয়াছড়া/ইনানী জেটি ঘাটে চলে যাবো,এন্ট্রি পাস নিয়ে শীপে উঠে পড়বো, নীল জলের সাথে দুলতে দুলতে সেন্টমার্টিন চলে যাবো।\nদুপুর নাগাদ সেন্ট মার্টিন পৌছে>রিসোর্টে চেক-ইন>ফ্রেস হয়ে লাঞ্চ করে নিবো>লাঞ্চ শেষে বিচে নিজেদের মতো ঘুড়াফেরা>সন্ধায় আড্ডা>রাতে ডিনার শেষে ঘুম।\n২য় দিন: \nখুব ভোরে উঠে ছেড়াদ্বীপ যাওয়া গেলে অটোতে ছেঁড়া দ্বীপ চলে যাবো>ফটোসেশান শেষে কটেজে ফিরবো>লাঞ্চ শেষে নিজেদের মত ঘুড়াফেরা>সন্ধায় বিচে আড্ডা>রাতে বার্বিকিউ পাটি>ডিনার শেষে ঘুম।\n{বি: দ্র: ছেড়াদ্বীপে নিজ খরচে যেতে হবে}\n৩য় দিন: \nভোরে উঠে নাস্তা শেষে, রুম চেক-আউট করে, ব্যাগ রেখে, কেনাকাটা করে নিজেদের মত ঘুড়াফেরা করবো।তারপর লাঞ্চ শেষে জেটিতে চলে আসবো,শীপে কক্সবাজারের উদ্দেশ্যে রওনা হবো, রাতে কক্সবাজার পৌছে- ফ্রেস হয়ে ডিনার শেষে ঢাকার উদ্দেশ্যে রওনা করবো।\n\n> ভোর ৭ টার দিকে সাভারে থাকবো ইনশাআল্লাহ ",
-      "full_description": "ট্যুর প্লানঃ\n> যাত্রার: বিকাল ৫ টায় জাহাঙ্গীরনগর ক্যাম্পাস হতে রওনা!\n\n১ম দিন: \nখুব ভোরে কক্সবাজার পৌছে ফ্রেস হয়ে নাস্তা শেষে নুনিয়াছড়া/ইনানী জেটি ঘাটে চলে যাবো,এন্ট্রি পাস নিয়ে শীপে উঠে পড়বো, নীল জলের সাথে দুলতে দুলতে সেন্টমার্টিন চলে যাবো।\nদুপুর নাগাদ সেন্ট মার্টিন পৌছে>রিসোর্টে চেক-ইন>ফ্রেস হয়ে লাঞ্চ করে নিবো>লাঞ্চ শেষে বিচে নিজেদের মতো ঘুড়াফেরা>সন্ধায় আড্ডা>রাতে ডিনার শেষে ঘুম।\n২য় দিন: \nখুব ভোরে উঠে ছেড়াদ্বীপ যাওয়া গেলে অটোতে ছেঁড়া দ্বীপ চলে যাবো>ফটোসেশান শেষে কটেজে ফিরবো>লাঞ্চ শেষে নিজেদের মত ঘুড়াফেরা>সন্ধায় বিচে আড্ডা>রাতে বার্বিকিউ পাটি>ডিনার শেষে ঘুম।\n{বি: দ্র: ছেড়াদ্বীপে নিজ খরচে যেতে হবে}\n৩য় দিন: \nভোরে উঠে নাস্তা শেষে, রুম চেক-আউট করে, ব্যাগ রেখে, কেনাকাটা করে নিজেদের মত ঘুড়াফেরা করবো।তারপর লাঞ্চ শেষে জেটিতে চলে আসবো,শীপে কক্সবাজারের উদ্দেশ্যে রওনা হবো, রাতে কক্সবাজার পৌছে- ফ্রেস হয়ে ডিনার শেষে ঢাকার উদ্দেশ্যে রওনা করবো।\n\n> ভোর ৭ টার দিকে সাভারে থাকবো ইনশাআল্লাহ ",
-      "hero_image": "https://drive.google.com/thumbnail?id=1fFvo8ktgaI3HbLfa1mGhxJ4PfexHxF0h&sz=w1920",
+      "short_description": "cox's bazar",
+      "full_description": "cox's bazar",
+      "tour_plan": "🏖️ কক্সবাজার ট্যুর | আমাদের ভ্রমণ পরিকল্পনা\n\nসকালে কক্সবাজার পৌঁছে নাস্তা করে সকাল ১১টার দিকে হোটেলে চেক-ইন করবো। এরপর সবাই নিজেদের মতো ঘুরাঘুরি ও সময় কাটাবো এবং সময়মতো দুপুর ও রাতের খাবার খেয়ে নেবো।\n\nপরের দিন সকালে নাস্তা করে রুম চেক-আউট করবো। এরপর চাইলে নিজ খরচে মেরিন ড্রাইভ ঘুরে আসতে পারবেন। ঘুরে এসে দুপুরের খাবার শেষে সমুদ্রের সূর্যাস্ত উপভোগ করে রাত ৮টায় ঢাকার উদ্দেশ্যে রওনা হবো। 🌊🌅",
+      "hero_image": "https://scontent.fdac5-1.fna.fbcdn.net/v/t39.99422-6/874475587_1147120564548346_8513020187139816260_n.png?stp=dst-jpg_tt6&cstp=mx960x1280&ctp=s590x590&_nc_cat=110&_nc_map=urlgen_bucketless&ccb=1-7&_nc_sid=127cfc&_nc_ohc=K1JKV760F2QQ7kNvwGrirN9&_nc_oc=AdpZ87PXpSsB9zpJdQYQrx8iWck9tEEVsYM-K5lwLO7eFamBWNPlOr_4wtjnbIzIKRE&_nc_zt=14&_nc_ht=scontent.fdac5-1.fna&_nc_gid=VlHMqlukCTmSp_b00dIq6g&_nc_ss=7b2a8&oh=00_AQSgMj6si3ibo9KddlMlQhloI1Md-QJiUNQG6mSD5oP1Ww&oe=6AF55585",
       "duration_days": 3,
-      "duration_nights": 4,
-      "base_price": "9000",
-      "discount_type": "flat",
-      "discount_value": "400",
-      "final_price": "8600",
+      "duration_nights": 2,
+      "base_price": "3500",
+      "discount_type": "none",
+      "discount_value": "0",
+      "final_price": "3500",
       "allow_partial_payment": true,
-      "advance_payment_percent": "42",
-      "advance_amount": "3600",
+      "advance_payment_percent": "29",
+      "advance_amount": "1000",
       "inclusions": [
-        "সাভার-কক্সবাজার-সাভার আপ-ডাউন রিজার্ভ বাস",
-        "আপ-ডাউন শীপ টিকিট",
-        "দুই রাত স্ট্যান্ডার্ড মানের রিসোর্টে থাকার খরচ।",
-        "ট্রাভেল পাস (ভ্রমণ পারমিশন)",
-        "৩ দিনে বার্বিকিউ সহ মোট ১০ বেলা খাবার",
-        "অভিজ্ঞ গাইড সার্ভিস",
-        "রিসোর্টঃ রিসোর্ট থেকে ২-৩ মিনিট এর বিচের দূরত্ব!"
+        "ননএসি চেয়ারকোচ বাস",
+        "একরাত হোটেলে থাকা",
+        "৫ বেলা মানসম্মত খাবার।"
       ],
       "exclusions": [
-        "ম্যানুর বাহিরের খাবার খরচ।",
-        "সেন্টমার্টিন জেটি ঘাট থেকে রিসোর্টে হেটে যেতে  না চাইলে অটো ভাড়া",
-        "ছেড়া দ্বীপে আসা যাওয়ার লোকাল খরচ"
+        "যাত্রাবিরতির খাবার খরচ",
+        "আসার দিন রাতের খাবার",
+        "ব্যাক্তিগত খরচ",
+        "কোন প্রকার লোকাল ট্রান্সপোর্ট খরচ।"
       ],
-      "accommodation_notes": "রিসোর্টঃ রিসোর্ট থেকে ২-৩ মিনিট এর বিচের দূরত্ব!",
-      "transportation_notes": "নন-এসি রিজার্ভ বাসে",
-      "meals_notes": "যাত্রার দিন রাতে: ডিম খিচুরি\n\n1️⃣ ১ম দিনঃ\n◾সকালঃ ডিম খিচুরি+সালাদ/ ২টি পরোটা+ডিম+ডাল-সবজি\n◾দুপুরঃ- সাদা ভাত,কোরাল মাছ,সবজি,ভর্তা,ডাল,সালাদ।\n◾রাতঃ- মোরগ পোলাও,কোল্ড ড্রিংক্স,সালাদ\n\n2️⃣ ২য় দিনঃ\n◾সকালঃ- পরোটা+ ডাল- সবজি,সালাদ/ ডিম খিচুরি+সালাদ।\n◾দুপুরঃ- সাদা ভাত,চিকেন কারী, সবজি, ভর্তা, ডাল, সালাদ।\n◾রাতঃ- কোরাল বারবিকিউ, পরোটা,সস,সালাদ,কোল্ড ড্রিংকস\n\n3️⃣ ৩য় দিনঃ\n◾সকালঃ- ডিম খিচুরি, সালাদ/ পরোটা,ডিম ওমলেট,ডাল- সবজি,সালাদ\n◾দুপুরঃ- সাদা ভাত, সামুদ্রিক চিংড়ি মাছ, সবজি, ভর্তা, ডাল, সালাদ\n\n◾রাতঃ- সাদা ভাত,গরুর মাংস,সবজি,ভর্তা,ডাল।",
+      "accommodation_notes": "Standard hotel / resort",
+      "transportation_notes": "None Ac Chair Coach Bus",
+      "meals_notes": "Breakfast included",
       "places_to_visit": [
-        "কক্সবাজার",
-        "সেন্টমার্টিন দ্বীপ",
-        "ছেঁড়াদ্বীপ",
-        "হুমায়ুন আহমেদের বাড়ি",
-        "নারিকেল জিনজিরা"
+        "লাবনী পয়েন্ট",
+        "সুগন্ধা পয়েন্ট",
+        "কলাতলী পয়েন্ট"
       ],
-      "meeting_point": "Jahangirnagar University",
-      "pickup_points": [
-        "Department of Physics JU"
-      ],
-      "departure_schedule": "যাত্রার শিডিউল   ১০ই নভেম্বর  বিকাল ৫ টায়",
-      "total_seats": 44,
+      "meeting_point": "নবীনগর",
+      "pickup_points": [],
+      "departure_schedule": "Every Thursday night",
+      "total_seats": 45,
       "itinerary": [],
-      "departures": [
-        {
-          "id": "dep-2026-11-10-1793957185456",
-          "departure_date": "2026-11-10",
-          "total_seats": 44,
-          "seats_remaining": 44,
-          "booked_seats": [],
-          "is_active": true
-        }
-      ],
+      "departures": [],
       "faqs": [],
       "gallery": [],
       "is_featured": true,
@@ -314,6 +300,203 @@
       "updated_at": "2026-11-05T19:10:30.944+00:00"
     },
     {
+      "id": "block-seo-settings",
+      "block_type": "seo_settings",
+      "display_order": 4,
+      "content": {
+        "pages": {
+          "home": {
+            "title": "Savar Tour Lover — আপনার স্বপ্ন উড়তে দিন | Top Bangladesh Tour Packages",
+            "keywords": [
+              "Savar Tour Lover",
+              "সাভার ট্যুর লাভার",
+              "Bangladesh tour package",
+              "সাজেক ট্যুর",
+              "কক্সবাজার ট্যুর"
+            ],
+            "description": "Book authentic domestic tour packages in Bangladesh with verified local hosts. Sajek Valley, Cox's Bazar, Saint Martin, Sylhet, Sundarbans & more."
+          },
+          "about": {
+            "title": "About Savar Tour Lover | Trusted Local Travel Agency in Bangladesh",
+            "keywords": [
+              "about Savar Tour Lover",
+              "আমাদের সম্পর্কে",
+              "best travel agency savar"
+            ],
+            "description": "Learn about Savar Tour Lover's story, verified local hosts, radical transparency in pricing, and commitment to domestic tourism in Bangladesh."
+          },
+          "tours": {
+            "title": "All Tour Packages in Bangladesh | Savar Tour Lover",
+            "keywords": [
+              "Bangladesh tour packages",
+              "ট্যুর প্যাকেজ",
+              "sajek tour",
+              "coxs bazar package",
+              "saint martin package"
+            ],
+            "description": "Browse all curated domestic tour packages across Bangladesh. Fixed departures, small groups, transparent pricing with only 40% advance."
+          },
+          "contact": {
+            "title": "Contact & Booking Support | Savar Tour Lover",
+            "keywords": [
+              "contact Savar Tour Lover",
+              "সাভার ট্যুর লাভার যোগাযোগ",
+              "travel agency phone number"
+            ],
+            "description": "Reach Savar Tour Lover 24/7 on WhatsApp or call our hotline. Office at Savar Pollibidut, Dhaka."
+          },
+          "journal": {
+            "title": "Travel Journal & Bangladesh Travel Guides | Savar Tour Lover",
+            "keywords": [
+              "Bangladesh travel guide",
+              "ভ্রমণ গাইড",
+              "travel blog bangladesh"
+            ],
+            "description": "Honest travel stories, itinerary guides, packing lists, and local food tips from experienced Bangladeshi hosts."
+          },
+          "destinations": {
+            "title": "Popular Travel Destinations in Bangladesh | Savar Tour Lover",
+            "keywords": [
+              "Bangladesh tourist destinations",
+              "বাংলাদেশের দর্শনীয় স্থান",
+              "Sajek",
+              "Coxs Bazar",
+              "Saint Martin",
+              "Sylhet"
+            ],
+            "description": "Explore top tourist destinations across Bangladesh — hill tracts, sea beaches, mangrove forests, tea estates, and historical landmarks."
+          }
+        },
+        "keywords": [
+          "Savar Tour Lover",
+          "সাভার ট্যুর লাভার",
+          "Bangladesh tour package",
+          "বাংলাদেশ ট্যুর প্যাকেজ",
+          "Sajek tour package",
+          "সাজেক ট্যুর প্যাকেজ",
+          "Cox's Bazar tour package",
+          "কক্সবাজার ভ্রমণ প্যাকেজ",
+          "Saint Martin tour package",
+          "সেন্টমার্টিন জাহাজ টিকিট প্যাকেজ",
+          "Sylhet tour package",
+          "সিলেট ভ্রমণ প্যাকেজ",
+          "Sreemangal tea garden tour",
+          "শ্রীমঙ্গল চা বাগান ট্যুর",
+          "Sundarbans tour package",
+          "সুন্দরবন ভ্রমণ প্যাকেজ",
+          "Bandarban tour package",
+          "বান্দরবান ট্যুর প্যাকেজ",
+          "cheap tour package Bangladesh",
+          "কম খরচে ভ্রমণ বাংলাদেশ",
+          "domestic tours Bangladesh",
+          "সেরা ট্রাভেল এজেন্সি সাভার",
+          "best travel agency in Savar Dhaka",
+          "family tour package BD",
+          "corporate tour Bangladesh",
+          "Saint Martin ship ticket booking",
+          "আপনার স্বপ্ন উড়তে দিন"
+        ],
+        "geo_region": "BD-13",
+        "site_title": "Savar Tour Lover — আপনার স্বপ্ন উড়তে দিন | Best Bangladesh Tour Packages",
+        "tiktok_url": "",
+        "price_range": "৳৳",
+        "youtube_url": "",
+        "facebook_url": "https://facebook.com/savartourlover",
+        "geo_latitude": "23.8583",
+        "robots_index": true,
+        "contact_email": "info@savartourlover.com",
+        "contact_phone": "+880 1620-592884",
+        "geo_longitude": "90.2667",
+        "geo_placename": "Savar, Dhaka, Bangladesh",
+        "instagram_url": "https://instagram.com/savartourlover",
+        "opening_hours": "Mo-Su 00:00-23:59",
+        "robots_follow": true,
+        "site_title_bn": "সাভার ট্যুর লাভার — আপনার স্বপ্ন উড়তে দিন | সেরা বাংলাদেশ ট্যুর প্যাকেজ",
+        "title_template": "%s | Savar Tour Lover — আপনার স্বপ্ন উড়তে দিন",
+        "twitter_handle": "@savartourlover",
+        "business_name_bn": "সাভার ট্যুর লাভার",
+        "business_name_en": "Savar Tour Lover",
+        "default_og_image": "/images/logo-badge.png",
+        "meta_description": "Savar Tour Lover (সাভার ট্যুর লাভার) offers premium, budget-friendly domestic tour packages across Bangladesh. Explore Sajek Valley, Cox's Bazar, Saint Martin, Sylhet, Sreemangal & Sundarbans with trusted local hosts. Book with a 40% advance.",
+        "contact_phone_alt": "+880 1700-000000",
+        "facebook_pixel_id": "",
+        "office_address_bn": "সাভার পল্লীবিদ্যুৎ, কবরস্থান রোড, সাভার, ঢাকা ১৩৪০",
+        "office_address_en": "Savar Pollibidut, Kobarsthan Road, Savar, Dhaka 1340, Bangladesh",
+        "baidu_verification": "",
+        "canonical_base_url": "https://savartourlover.com",
+        "google_analytics_id": "G-72K5V96BMV",
+        "meta_description_bn": "সাভার ট্যুর লাভার (Savar Tour Lover) — আপনার স্বপ্ন উড়তে দিন। সাজেক, কক্সবাজার, সেন্টমার্টিন, সিলেট, শ্রীমঙ্গল ও সুন্দরবন সহ বাংলাদেশের সেরা সব ভ্রমণ প্যাকেজ। বিশ্বস্ত হোস্ট, স্বচ্ছ মূল্য ও সহজ কিস্তি।",
+        "yandex_verification": "",
+        "bing_site_verification": "",
+        "google_site_verification": ""
+      },
+      "updated_at": "2026-11-07T06:17:43.012+00:00"
+    },
+    {
+      "id": "block-about-page",
+      "block_type": "about_page",
+      "display_order": 6,
+      "content": {
+        "team": [
+          {
+            "bio": "Ten years guiding across the Chittagong Hill Tracts before building Savar Tour Lover's tour design team.",
+            "name": "Shimul Hasan Prince ",
+            "role": "Co-founder & Head of Experience",
+            "scene": "sajek"
+          }
+        ],
+        "values": [
+          {
+            "icon": "shield",
+            "title": "Radical transparency",
+            "description": "No hidden resort fees, surprise fuel charges, or mandatory tips. Every BDT is accounted for upfront."
+          },
+          {
+            "icon": "users",
+            "title": "Local, always",
+            "description": "No outsourced guides, no foreign templates. Every host is Bangladeshi, and every itinerary is built around real local knowledge."
+          },
+          {
+            "icon": "heart",
+            "title": "Hospitality first",
+            "description": "At Savar Tour Lover, guest hospitality is central to our culture. We host you the way we'd host family, not process you like a booking number."
+          },
+          {
+            "icon": "sparkle",
+            "title": "Considered detail",
+            "description": "From the ridge walk only locals know to the candlelit dinner arranged without being asked — the small things are the trip."
+          }
+        ],
+        "cta_href": "/contact",
+        "cta_label": "Plan My Trip",
+        "cta_title": "Ready to plan your own story?",
+        "hero_title": "Thoughtful journeys across Bangladesh",
+        "team_title": "A few of the people who'll host you",
+        "story_badge": "Our Story",
+        "story_title": "Born out of a simple conviction",
+        "hero_eyebrow": "About Savar Tour Lover",
+        "mission_text": "To make domestic travel across Bangladesh seamless, transparent, and genuinely memorable — while ensuring tourism directly benefits the local communities and guides who make these places special.",
+        "team_eyebrow": "The team",
+        "booking_title": "Zero-friction, start to finish",
+        "hero_subtitle": "Built by local travelers who believe the best trips happen when you're hosted like family, not processed like a transaction.",
+        "mission_title": "Our Mission",
+        "payment_badge": "Payment & Confirmation",
+        "payment_title": "How your money is handled, end to end",
+        "booking_eyebrow": "How booking works",
+        "cta_description": "Tell us where you want to go — we'll take it from there, right through to your final confirmed payment.",
+        "payment_cta_href": "/contact",
+        "story_paragraphs": [
+          "Most domestic travel in Bangladesh was broken in two ways: either you were on your own navigating erratic transport, unverified hotels, and hidden costs — or you were packed into a thirty-person bus tour with fixed buffets and thirty-minute photo stops.",
+          "We wanted something different: trips designed the way an experienced friend would show you their hometown. Small groups, handpicked local hosts, honest pricing, and genuine hospitality.",
+          "Today, Savar Tour Lover runs curated journeys to twelve destinations across Bangladesh — from the tea valleys of Sreemangal to the coral reefs of Saint Martin. Every trip is led by someone who actually lives there."
+        ],
+        "payment_cta_label": "Talk to us",
+        "booking_description": "From your first search to your final confirmed payment, every step is designed to remove friction and ambiguity.",
+        "payment_description": "Pay in full or pay a small advance through bKash, Nagad, Rocket, or card at booking. If you paid partially, the remaining balance is settled on the day of the tour — either online or in cash directly with your host. The moment it clears, both you and our team get a WhatsApp and email confirmation, so there's a clean record of what was paid, when, on both sides."
+      },
+      "updated_at": "2026-11-07T17:12:39.713+00:00"
+    },
+    {
       "id": "block-tour-categories",
       "block_type": "service_list",
       "display_order": 99,
@@ -373,6 +556,16 @@
         "updated_at": "2026-11-05T03:16:09.689Z"
       },
       "updated_at": "2026-11-04T22:51:27.527601+00:00"
+    },
+    {
+      "id": "block-expenses-data",
+      "block_type": "custom",
+      "display_order": 991,
+      "content": {
+        "expenses": [],
+        "updated_at": "2026-11-07T13:09:43.177Z"
+      },
+      "updated_at": "2026-11-07T12:56:04.324656+00:00"
     }
   ],
   "staffUsers": [
@@ -396,7 +589,21 @@
   "expenses": [],
   "suppliers": [],
   "contactInquiries": [],
-  "analyticsEvents": [],
+  "analyticsEvents": [
+    {
+      "event_name": "page_view",
+      "path": "/tours/-",
+      "title": "কক্সবাজার রিলাক্স ট্যুর Tour Package | Savar Tour Lover — আপনার স্বপ্ন উড়তে দিন",
+      "referrer": "http://localhost:3000/tours/-",
+      "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/156.0.0.0 Safari/537.36",
+      "ip_hash": "531cd2206a132e03",
+      "session_id": "sid-mw6swn38-414ybj",
+      "visitor_id": "vid-mvzsx38z-iuy68t",
+      "metadata": {},
+      "id": "evt-1794079996968-ef0ae8c9",
+      "created_at": "2026-11-07T19:33:16.969Z"
+    }
+  ],
   "deletedEntities": {
     "destinations": [],
     "tours": [],

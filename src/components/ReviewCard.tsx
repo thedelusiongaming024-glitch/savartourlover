@@ -46,6 +46,10 @@ export function ReviewCard({ review }: ReviewCardProps) {
           <img
             src={photo}
             alt={review.name}
+            width={40}
+            height={40}
+            loading="lazy"
+            decoding="async"
             className="h-10 w-10 shrink-0 rounded-full object-cover"
             onError={() => setImgFailed(true)}
           />

@@ -5,9 +5,9 @@ import type { TourHeroSlide } from "@/components/TourHeroBackgroundSlider";
 import { fetchDestination, fetchTour } from "@/lib/api";
 import { getBanglaWatermark } from "@/lib/banglaNames";
 
-// Dynamic rendering: reads from in-memory RAM in sub-millisecond time.
-// Ensures admin edits reflect instantly in the user panel without stale cache delay.
-export const dynamic = "force-dynamic";
+// Incremental Static Regeneration (ISR): serves instantly from Vercel Edge CDN cache (<50ms TTFB).
+// On-demand revalidation is triggered whenever an admin publishes edits via revalidatePublicContent().
+export const revalidate = 60;
 
 interface PageProps {
   params: Promise<{ slug: string }>;

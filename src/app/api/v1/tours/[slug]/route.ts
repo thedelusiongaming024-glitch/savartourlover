@@ -24,6 +24,7 @@ export async function GET(
     category: tour.category,
     short_description: tour.short_description,
     full_description: tour.full_description,
+    tour_plan: tour.tour_plan || "",
     hero_image: tour.hero_image,
     duration_days: tour.duration_days,
     duration_nights: tour.duration_nights,

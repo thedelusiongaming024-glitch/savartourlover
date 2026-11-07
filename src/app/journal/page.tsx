@@ -2,9 +2,9 @@ import type { Metadata } from "next";
 import { fetchJournalPageCms, fetchJournalPosts } from "@/lib/api";
 import { JournalClient } from "@/components/JournalClient";
 
-// Dynamic rendering: reads from in-memory RAM in sub-millisecond time.
-// Ensures admin edits reflect instantly in the user panel without stale cache delay.
-export const dynamic = "force-dynamic";
+// Incremental Static Regeneration (ISR): serves instantly from Vercel Edge CDN cache (<50ms TTFB).
+// On-demand revalidation is triggered whenever an admin publishes edits via revalidatePublicContent().
+export const revalidate = 60;
 
 export const metadata: Metadata = {
   title: "Travel Journal & Guides",

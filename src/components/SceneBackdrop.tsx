@@ -70,6 +70,8 @@ export function SceneBackdrop({ scene, className, showLabel = true }: SceneProps
           className="absolute inset-0 h-full w-full object-cover"
           src={normalizedImage}
           alt={scene.label}
+          loading="lazy"
+          decoding="async"
           onError={() => setImageFailed(true)}
         />
       )}

@@ -223,6 +223,7 @@ export async function syncTourToSupabase(tour: DbTour): Promise<boolean> {
       advance_amount: Number(tour.advance_amount || 0),
       hero_image: tour.hero_image || null,
       overview: tour.full_description || tour.short_description || "",
+      tour_plan: tour.tour_plan || "",
       itinerary: tour.itinerary || [],
       inclusions: tour.inclusions || [],
       exclusions: tour.exclusions || [],
@@ -233,6 +234,7 @@ export async function syncTourToSupabase(tour: DbTour): Promise<boolean> {
         `meta:transportation:${tour.transportation_notes || "AC Bus / Private Jeep"}`,
         ...(tour.places_to_visit && tour.places_to_visit.length > 0 ? [`meta:places:${tour.places_to_visit.join("||")}`] : []),
         ...(Array.isArray(tour.gallery) && tour.gallery.length > 0 ? [`meta:gallery:${JSON.stringify(tour.gallery)}`] : []),
+        ...(tour.tour_plan ? [`meta:tour_plan:${encodeURIComponent(tour.tour_plan)}`] : []),
       ],
       departures: departures,
       meeting_point: tour.meeting_point || "Dhaka Sayedabad / Fakirapool",
@@ -253,11 +255,14 @@ export async function syncTourToSupabase(tour: DbTour): Promise<boolean> {
 
     let { error } = await supabase.from("tours").upsert(payloadWithSeats);
 
-    // If PostgreSQL tours table doesn't have total_seats or gallery column yet, fallback gracefully
-    if (error && error.message && (error.message.includes("total_seats") || error.message.includes("gallery"))) {
+    // If PostgreSQL tours table doesn't have total_seats, gallery, or tour_plan column yet, fallback gracefully
+    if (error && error.message && (error.message.includes("total_seats") || error.message.includes("gallery") || error.message.includes("tour_plan"))) {
       const sanitizedPayload: Record<string, any> = { ...basePayload };
       if (error.message.includes("gallery")) {
         delete sanitizedPayload.gallery;
+      }
+      if (error.message.includes("tour_plan")) {
+        delete sanitizedPayload.tour_plan;
       }
       const retry = await supabase.from("tours").upsert(sanitizedPayload);
       error = retry.error;
@@ -1090,6 +1095,15 @@ export async function fetchDatabaseFromSupabase(currentDb?: DatabaseSchema | nul
           decodedGallery = JSON.parse(galleryMeta);
         } catch {}
       }
+      const tourPlanMeta = packingSuggestions.find((p: any) => typeof p === "string" && p.startsWith("meta:tour_plan:"))?.slice("meta:tour_plan:".length);
+      let decodedTourPlan = "";
+      if (tourPlanMeta) {
+        try {
+          decodedTourPlan = decodeURIComponent(tourPlanMeta);
+        } catch {
+          decodedTourPlan = tourPlanMeta;
+        }
+      }
 
       const matchedDest = (mappedDestinations || []).find(
         (d: any) => d.id === t.destination_id || (d.slug && d.slug.toLowerCase() === (t.destination_slug || "").toLowerCase())
@@ -1106,6 +1120,7 @@ export async function fetchDatabaseFromSupabase(currentDb?: DatabaseSchema | nul
         category: t.category,
         short_description: t.overview || "",
         full_description: t.overview || "",
+        tour_plan: t.tour_plan || decodedTourPlan || "",
         hero_image: t.hero_image,
         duration_days: Number(t.duration_days || 1),
         duration_nights: Number(t.duration_nights || 0),
