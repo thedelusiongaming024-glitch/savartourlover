@@ -4280,11 +4280,61 @@ export async function updateBookingStatus(id: string, status: DbBooking["status"
   const db = loadDb();
   const booking = db.bookings.find((b) => b.id === id || b.reference === id);
   if (!booking) return null;
+
+  const oldStatus = booking.status;
   booking.status = status;
 
-  if (status === "confirmed_fully_paid" || status === "cleared_on_tour_day") {
+  if (status === "confirmed_advance_paid" && oldStatus !== "confirmed_advance_paid" && oldStatus !== "confirmed_fully_paid") {
+    const adv = parseFloat(booking.advance_amount) || Math.round(parseFloat(booking.total_price) * 0.4);
+    booking.amount_paid = adv.toFixed(2);
+    booking.amount_due = Math.max(0, parseFloat(booking.total_price) - adv).toFixed(2);
+    let p = db.payments.find((pm) => pm.booking_id === booking.id && (pm.status === "pending" || pm.status === "pending_verification" || pm.status === "pending_cash_approval"));
+    if (!p) {
+      p = {
+        id: `pay-${Date.now()}-${randomToken(4)}`,
+        booking_id: booking.id,
+        amount: adv.toFixed(2),
+        payment_type: "advance",
+        payment_method: booking.payment_method || "Bkash payment",
+        status: "success",
+        tran_id: `ONL-${Date.now().toString(36).toUpperCase()}${randomToken(5).toUpperCase()}`,
+        val_id: booking.submitted_trx_id || `MANUAL-${Date.now()}`,
+        trx_id: booking.submitted_trx_id || `MANUAL-${Date.now()}`,
+        paid_at: new Date().toISOString(),
+        created_at: new Date().toISOString(),
+      };
+      db.payments.unshift(p);
+    } else {
+      p.status = "success";
+      p.amount = adv.toFixed(2);
+      p.paid_at = new Date().toISOString();
+    }
+    getClearanceTicket(booking.id);
+    await syncPaymentToSupabase(p);
+  } else if (status === "confirmed_fully_paid" || status === "cleared_on_tour_day" || status === "confirmed") {
     booking.amount_paid = booking.total_price;
     booking.amount_due = "0.00";
+    let p = db.payments.find((pm) => pm.booking_id === booking.id);
+    if (!p) {
+      p = {
+        id: `pay-${Date.now()}-${randomToken(4)}`,
+        booking_id: booking.id,
+        amount: booking.total_price,
+        payment_type: "full",
+        payment_method: booking.payment_method || "Bkash payment",
+        status: "success",
+        tran_id: `ONL-${Date.now().toString(36).toUpperCase()}${randomToken(5).toUpperCase()}`,
+        val_id: booking.submitted_trx_id || `MANUAL-${Date.now()}`,
+        trx_id: booking.submitted_trx_id || `MANUAL-${Date.now()}`,
+        paid_at: new Date().toISOString(),
+        created_at: new Date().toISOString(),
+      };
+      db.payments.unshift(p);
+    } else {
+      p.status = "success";
+      p.amount = booking.total_price;
+      p.paid_at = new Date().toISOString();
+    }
     let ticket = db.clearanceTickets.find((t) => t.booking_id === booking.id);
     if (!ticket) {
       ticket = getClearanceTicket(booking.id) || undefined;
@@ -4294,6 +4344,7 @@ export async function updateBookingStatus(id: string, status: DbBooking["status"
       ticket.cleared_at = new Date().toISOString();
       ticket.clearance_method = status === "cleared_on_tour_day" ? "host_verification" : "verification_only";
     }
+    await syncPaymentToSupabase(p);
   }
 
   booking.updated_at = new Date().toISOString();
@@ -4701,55 +4752,164 @@ export async function verifyRocketTrxHybrid(input: {
   };
 }
 
-export async function approveRocketVerification(
+export async function approveOnlinePayment(
   bookingId: string,
-  adminName: string = "Staff Admin"
-): Promise<{ success: boolean; booking: DbBooking; ticket?: any }> {
+  adminUsername: string = "Staff Admin",
+  options?: {
+    trxId?: string;
+    paymentMethod?: string;
+    receivedType?: "advance" | "full" | "due";
+    paymentId?: string;
+  }
+): Promise<{ booking: DbBooking; payment: DbPayment; ticket: DbClearanceTicket }> {
   const db = loadDb();
-  const booking = db.bookings.find((b) => b.id === bookingId);
+  const booking = db.bookings.find((b) => b.id === bookingId || b.reference === bookingId);
   if (!booking) {
     throw new Error(`Booking ${bookingId} not found.`);
   }
 
-  if (booking.status === "confirmed_advance_paid" || booking.status === "confirmed_fully_paid") {
-    return { success: true, booking };
+  const receivedType = options?.receivedType || (booking.payment_plan === "full" ? "full" : "advance");
+  const totalPrice = parseFloat(booking.total_price);
+  const advanceAmount = parseFloat(booking.advance_amount);
+  const currentPaid = parseFloat(booking.amount_paid) || 0;
+
+  let paymentAmount: number;
+  let paymentType: "advance" | "full" | "final";
+
+  if (receivedType === "due") {
+    paymentAmount = Math.max(0, parseFloat(booking.amount_due) || (totalPrice - currentPaid));
+    paymentType = "final";
+  } else if (receivedType === "full") {
+    paymentAmount = Math.max(0, totalPrice - currentPaid);
+    paymentType = currentPaid > 0 ? "final" : "full";
+  } else {
+    // Advance payment
+    paymentAmount = Math.max(0, advanceAmount - currentPaid);
+    paymentType = "advance";
   }
 
-  if (booking.status === "cancelled") {
-    throw new Error("Cannot approve a cancelled booking. The hold window may have expired.");
+  if (paymentAmount <= 0) {
+    paymentAmount = Math.max(0, totalPrice - currentPaid);
   }
 
-  const payment = db.payments.find((p) => p.booking_id === booking.id);
-  const tranId = payment?.tran_id || `TRAN-${Date.now()}`;
-  const trxId = booking.submitted_trx_id || payment?.trx_id || `RKT-MANUAL-${Date.now()}`;
+  const newPaid = currentPaid + paymentAmount;
+  const remainingDue = Math.max(0, totalPrice - newPaid);
 
-  const result = await confirmPaymentSuccess(
-    tranId,
-    trxId,
-    "Rocket payment",
-    {
-      bookingId: booking.id,
-      bookingRef: booking.reference,
-      verifiedAmount: booking.advance_amount,
-    }
-  );
-
-  booking.status = "confirmed_advance_paid";
-  booking.cash_approved_by = adminName;
-  booking.cash_approved_at = new Date().toISOString();
+  booking.amount_paid = newPaid.toFixed(2);
+  booking.amount_due = remainingDue.toFixed(2);
+  booking.status = remainingDue <= 0 ? "confirmed_fully_paid" : "confirmed_advance_paid";
+  booking.cash_approval_expires_at = undefined;
+  booking.verification_expires_at = undefined;
   booking.updated_at = new Date().toISOString();
 
+  const method = options?.paymentMethod || booking.payment_method || "Bkash payment";
+  const trxId =
+    options?.trxId ||
+    booking.submitted_trx_id ||
+    booking.advance_transaction_id ||
+    booking.transaction_id ||
+    `ONL-${Date.now().toString(36).toUpperCase()}${randomToken(4).toUpperCase()}`;
+
+  booking.submitted_trx_id = trxId;
+  booking.transaction_id = trxId;
+  booking.advance_transaction_id = trxId;
+  booking.payment_method = method;
+  booking.advance_payment_method = method;
+  booking.cash_approved_by = adminUsername;
+  booking.cash_approved_at = new Date().toISOString();
+
+  // Find or create payment record
+  let payment = options?.paymentId
+    ? db.payments.find((p) => p.id === options.paymentId)
+    : db.payments.find(
+        (p) =>
+          p.booking_id === booking.id &&
+          (p.status === "pending" || p.status === "pending_cash_approval" || (p.status as string) === "pending_verification")
+      );
+
+  if (payment) {
+    payment.status = "success";
+    payment.amount = paymentAmount.toFixed(2);
+    payment.payment_type = paymentType;
+    payment.payment_method = method;
+    payment.trx_id = trxId;
+    payment.val_id = trxId;
+    payment.paid_at = new Date().toISOString();
+  } else {
+    payment = {
+      id: `pay-${Date.now()}-${randomToken(4)}`,
+      booking_id: booking.id,
+      amount: paymentAmount.toFixed(2),
+      payment_type: paymentType,
+      payment_method: method,
+      status: "success",
+      tran_id: `ONL-${Date.now().toString(36).toUpperCase()}${randomToken(5).toUpperCase()}`,
+      val_id: trxId,
+      trx_id: trxId,
+      card_type: method,
+      paid_at: new Date().toISOString(),
+      created_at: new Date().toISOString(),
+    };
+    db.payments.unshift(payment);
+  }
+
+  // Ensure clearance ticket exists and update clearance status if fully paid
+  let ticket = db.clearanceTickets.find((t) => t.booking_id === booking.id) || getClearanceTicket(booking.id) || undefined;
+  if (ticket && remainingDue <= 0) {
+    ticket.is_cleared = true;
+    ticket.cleared_at = new Date().toISOString();
+    ticket.clearance_method = "customer_self_pay";
+  }
+
+  // Mark matching SMS as used if exists
+  if (Array.isArray(db.bkashIncomingSms)) {
+    const matchingSms = db.bkashIncomingSms.find(
+      (s) => !s.is_used && s.trx_id?.toUpperCase() === trxId.toUpperCase()
+    );
+    if (matchingSms) {
+      matchingSms.is_used = true;
+      matchingSms.matched_booking_id = booking.id;
+      matchingSms.matched_at = new Date().toISOString();
+    }
+  }
+  if (Array.isArray(db.rocketIncomingSms)) {
+    const matchingSms = db.rocketIncomingSms.find(
+      (s) => !s.is_used && s.trx_id?.toUpperCase() === trxId.toUpperCase()
+    );
+    if (matchingSms) {
+      matchingSms.is_used = true;
+      matchingSms.matched_booking_id = booking.id;
+      matchingSms.matched_at = new Date().toISOString();
+    }
+  }
+
   db.alerts.unshift({
-    id: `alt-appr-${Date.now()}-${randomToken(3)}`,
-    alert_type: "rocket_manual_approved",
+    id: `alt-onl-appr-${Date.now()}-${randomToken(3)}`,
+    alert_type: "payment_approved",
     severity: "info",
-    message: `✓ Rocket payment for ${booking.reference} was manually approved by ${adminName} (TrxID: ${trxId}).`,
+    message: `✓ ${method} for ${booking.reference} (৳${paymentAmount}) was manually approved by ${adminUsername} (TrxID: ${trxId}).`,
     is_acknowledged: false,
     created_at: new Date().toISOString(),
   });
 
   await saveDb(db, true);
-  return { success: true, booking, ticket: result.ticket };
+  await syncBookingToSupabase(booking);
+  await syncPaymentToSupabase(payment);
+
+  return { booking, payment, ticket: ticket! };
+}
+
+export async function approveRocketVerification(
+  bookingId: string,
+  adminName: string = "Staff Admin",
+  trxId?: string
+): Promise<{ success: boolean; booking: DbBooking; ticket?: any }> {
+  const result = await approveOnlinePayment(bookingId, adminName, {
+    paymentMethod: "Rocket payment",
+    trxId,
+    receivedType: "advance",
+  });
+  return { success: true, booking: result.booking, ticket: result.ticket };
 }
 
 export async function rejectRocketVerification(
@@ -5004,53 +5164,15 @@ export async function verifyBkashTrxHybrid(input: {
 
 export async function approveBkashVerification(
   bookingId: string,
-  adminName: string = "Staff Admin"
+  adminName: string = "Staff Admin",
+  trxId?: string
 ): Promise<{ success: boolean; booking: DbBooking; ticket?: any }> {
-  const db = loadDb();
-  const booking = db.bookings.find((b) => b.id === bookingId);
-  if (!booking) {
-    throw new Error(`Booking ${bookingId} not found.`);
-  }
-
-  if (booking.status === "confirmed_advance_paid" || booking.status === "confirmed_fully_paid") {
-    return { success: true, booking };
-  }
-
-  if (booking.status === "cancelled") {
-    throw new Error("Cannot approve a cancelled booking. The hold window may have expired.");
-  }
-
-  const payment = db.payments.find((p) => p.booking_id === booking.id);
-  const tranId = payment?.tran_id || `TRAN-${Date.now()}`;
-  const trxId = booking.submitted_trx_id || payment?.trx_id || `BKA-MANUAL-${Date.now()}`;
-
-  const result = await confirmPaymentSuccess(
-    tranId,
+  const result = await approveOnlinePayment(bookingId, adminName, {
+    paymentMethod: "Bkash payment",
     trxId,
-    "Bkash payment",
-    {
-      bookingId: booking.id,
-      bookingRef: booking.reference,
-      verifiedAmount: booking.advance_amount,
-    }
-  );
-
-  booking.status = "confirmed_advance_paid";
-  booking.cash_approved_by = adminName;
-  booking.cash_approved_at = new Date().toISOString();
-  booking.updated_at = new Date().toISOString();
-
-  db.alerts.unshift({
-    id: `alt-bka-appr-${Date.now()}-${randomToken(3)}`,
-    alert_type: "bkash_manual_approved",
-    severity: "info",
-    message: `✓ bKash payment for ${booking.reference} was manually approved by ${adminName} (TrxID: ${trxId}).`,
-    is_acknowledged: false,
-    created_at: new Date().toISOString(),
+    receivedType: "advance",
   });
-
-  await saveDb(db, true);
-  return { success: true, booking, ticket: result.ticket };
+  return { success: true, booking: result.booking, ticket: result.ticket };
 }
 
 export async function rejectBkashVerification(

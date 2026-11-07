@@ -1,6 +1,17 @@
 import { NextResponse } from "next/server";
 import { ensureDbHydrated, recordIncomingRocketSms } from "@/server/db";
 
+export async function GET() {
+  return NextResponse.json({
+    status: "online",
+    gateway: "Rocket Automated SMS Webhook",
+    supported_method: "POST",
+    usage: "Send HTTP POST requests with SMS notification payload and secret token.",
+    auth: "Pass secret via 'x-rocket-secret' header or '?secret=...' URL query parameter.",
+    timestamp: new Date().toISOString(),
+  });
+}
+
 export async function POST(request: Request) {
   try {
     await ensureDbHydrated();

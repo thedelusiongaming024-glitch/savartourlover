@@ -1,6 +1,17 @@
 import { NextResponse } from "next/server";
 import { ensureDbHydrated, recordIncomingBkashSms } from "@/server/db";
 
+export async function GET() {
+  return NextResponse.json({
+    status: "online",
+    gateway: "bKash Automated SMS Webhook",
+    supported_method: "POST",
+    usage: "Send HTTP POST requests with SMS notification payload and secret token.",
+    auth: "Pass secret via 'x-bkash-secret' header or '?secret=...' URL query parameter.",
+    timestamp: new Date().toISOString(),
+  });
+}
+
 export async function POST(request: Request) {
   try {
     await ensureDbHydrated();

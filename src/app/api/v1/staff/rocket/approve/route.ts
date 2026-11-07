@@ -5,7 +5,7 @@ export async function POST(request: Request) {
   try {
     await ensureDbHydrated();
     const body = await request.json().catch(() => ({}));
-    const { booking_id, admin_name } = body;
+    const { booking_id, admin_name, trx_id } = body;
 
     if (!booking_id) {
       return NextResponse.json({ detail: "booking_id is required." }, { status: 400 });
@@ -13,7 +13,8 @@ export async function POST(request: Request) {
 
     const result = await approveRocketVerification(
       String(booking_id),
-      admin_name || "Staff Admin"
+      admin_name || "Staff Admin",
+      trx_id
     );
 
     return NextResponse.json({

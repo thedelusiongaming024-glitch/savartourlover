@@ -8,6 +8,7 @@ import {
   completeDuePayment,
   approveCashPayment,
   rejectCashPayment,
+  approveOnlinePayment,
 } from "@/server/db";
 
 function isStaffOrAdmin(role?: string) {
@@ -43,6 +44,16 @@ export async function PATCH(request: Request) {
     if (action === "approve_cash_payment") {
       const recType = received_type === "due" ? "due" : received_type === "full" ? "full" : "advance";
       const result = await approveCashPayment(id, user.username, recType);
+      return NextResponse.json(result.booking);
+    }
+
+    if (action === "approve_online_payment") {
+      const recType = received_type === "due" ? "due" : received_type === "full" ? "full" : "advance";
+      const result = await approveOnlinePayment(id, user.username, {
+        trxId: body.trx_id,
+        paymentMethod: body.payment_method,
+        receivedType: recType,
+      });
       return NextResponse.json(result.booking);
     }
 

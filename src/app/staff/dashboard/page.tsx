@@ -1841,7 +1841,7 @@ function StaffDashboardContent() {
     }
     const res = await staffFetch("/staff/rocket/approve", {
       method: "POST",
-      body: JSON.stringify({ booking_id: id, admin_name: user?.username || "Staff Admin" }),
+      body: JSON.stringify({ booking_id: id, admin_name: user?.username || "Staff Admin", trx_id: trxId }),
     });
     if (res.ok) {
       showNotification("success", `Rocket payment approved for booking ${reference}!`);
@@ -1880,7 +1880,7 @@ function StaffDashboardContent() {
     }
     const res = await staffFetch("/staff/bkash/approve", {
       method: "POST",
-      body: JSON.stringify({ booking_id: id, admin_name: user?.username || "Staff Admin" }),
+      body: JSON.stringify({ booking_id: id, admin_name: user?.username || "Staff Admin", trx_id: trxId }),
     });
     if (res.ok) {
       showNotification("success", `bKash payment approved for booking ${reference}!`);
@@ -1888,6 +1888,62 @@ function StaffDashboardContent() {
     } else {
       const err = await res.json().catch(() => ({}));
       showNotification("error", err.detail || "Failed to approve bKash payment.");
+    }
+  }
+
+  // Generic Manual Online Payment Approval (bKash / Rocket / Card / SSLCommerz)
+  async function handleApproveOnlinePayment(
+    bookingId: string,
+    reference: string,
+    defaultMethod: string = "Bkash payment",
+    defaultTrx?: string,
+    receivedType?: "advance" | "full" | "due"
+  ) {
+    const trxId = prompt(
+      `Approve online payment for booking ${reference} (${defaultMethod})?\n\nEnter Transaction ID (TrxID) or leave blank for auto-generated:`,
+      defaultTrx || ""
+    );
+    if (trxId === null) return;
+
+    const res = await staffFetch("/admin/bookings", {
+      method: "PATCH",
+      body: JSON.stringify({
+        id: bookingId,
+        action: "approve_online_payment",
+        payment_method: defaultMethod,
+        trx_id: trxId.trim() || undefined,
+        received_type: receivedType || "advance",
+      }),
+    });
+
+    if (res.ok) {
+      showNotification("success", `Online payment approved and booking ${reference} confirmed!`);
+      loadData();
+    } else {
+      const err = await res.json().catch(() => ({}));
+      showNotification("error", err.detail || "Failed to approve online payment.");
+    }
+  }
+
+  // Approve Payment Directly From Payments Ledger Table
+  async function handleApprovePaymentLedgerRow(paymentId: string, bookingRef: string, trxId?: string) {
+    if (!confirm(`Are you sure you want to approve this pending payment for booking ${bookingRef}?`)) {
+      return;
+    }
+    const res = await staffFetch("/admin/payments", {
+      method: "PATCH",
+      body: JSON.stringify({
+        id: paymentId,
+        action: "approve",
+        trx_id: trxId,
+      }),
+    });
+    if (res.ok) {
+      showNotification("success", `Payment approved for ${bookingRef}!`);
+      loadData();
+    } else {
+      const err = await res.json().catch(() => ({}));
+      showNotification("error", err.detail || "Failed to approve payment.");
     }
   }
 
@@ -5186,6 +5242,51 @@ function StaffDashboardContent() {
                               )
                             )}
 
+                            {/* Pending Online Payment Quick Approval Card */}
+                            {b.status === "pending_payment" && (
+                              <div className="rounded-lg border border-sky-300 bg-sky-50 p-2 space-y-1.5 shadow-2xs">
+                                <div className="text-[11px] font-bold text-sky-950 flex items-center justify-between">
+                                  <span>💳 {isBn ? "অনলাইন পেমেন্ট বাকি" : "Online Payment Pending"}</span>
+                                  <span className="font-mono text-sky-900 font-extrabold">{bdt(b.advance_amount || b.amount_paid || b.total_price)}</span>
+                                </div>
+                                <div className="text-[10px] space-y-0.5 font-mono text-slate-700 bg-white/80 p-1.5 rounded border border-sky-200">
+                                  <div><span className="font-semibold text-slate-500">Method:</span> <span className="font-bold text-slate-800">{b.payment_method || b.advance_payment_method || "Online Payment"}</span></div>
+                                  {(b.submitted_trx_id || b.advance_transaction_id || b.transaction_id) && (
+                                    <div><span className="font-semibold text-slate-500">TrxID:</span> <span className="font-bold text-sky-950">{b.submitted_trx_id || b.advance_transaction_id || b.transaction_id}</span></div>
+                                  )}
+                                  {b.submitted_sender_phone && (
+                                    <div><span className="font-semibold text-slate-500">Sender:</span> {b.submitted_sender_phone}</div>
+                                  )}
+                                </div>
+                                <div className="flex flex-wrap items-center gap-1 pt-0.5">
+                                  <button
+                                    type="button"
+                                    onClick={() => handleApproveOnlinePayment(b.id, b.reference, b.payment_method || b.advance_payment_method || "Bkash payment", b.submitted_trx_id || b.advance_transaction_id || b.transaction_id, "advance")}
+                                    className="rounded bg-sky-700 hover:bg-sky-800 text-white px-2 py-1 text-[10px] font-bold shadow-2xs transition cursor-pointer"
+                                    title="Approve advance deposit and confirm seats"
+                                  >
+                                    ✓ {isBn ? "অগ্রিম অনুমোদন" : "Approve Advance"} ({bdt(b.advance_amount || b.total_price)})
+                                  </button>
+                                  <button
+                                    type="button"
+                                    onClick={() => handleApproveOnlinePayment(b.id, b.reference, b.payment_method || b.advance_payment_method || "Bkash payment", b.submitted_trx_id || b.advance_transaction_id || b.transaction_id, "full")}
+                                    className="rounded bg-emerald-800 hover:bg-emerald-900 text-white px-2 py-1 text-[10px] font-bold shadow-2xs transition cursor-pointer"
+                                    title="Approve full amount paid and confirm booking"
+                                  >
+                                    ✓ {isBn ? "পূর্ণ অনুমোদন" : "Approve Full"} ({bdt(b.total_price)})
+                                  </button>
+                                  <button
+                                    type="button"
+                                    onClick={() => handleUpdateBookingStatus(b.id, "cancelled")}
+                                    className="rounded bg-rose-600 hover:bg-rose-700 text-white px-2 py-1 text-[10px] font-bold shadow-2xs transition cursor-pointer"
+                                    title="Cancel booking"
+                                  >
+                                    ✕ {isBn ? "বাতিল" : "Cancel"}
+                                  </button>
+                                </div>
+                              </div>
+                            )}
+
                             {/* Pending Cash Approval 10-Minute Timer & Quick Actions */}
                             {b.status === "pending_cash_approval" && (
                               <div className="rounded-lg border border-amber-300 bg-amber-50 p-2 space-y-1.5">
@@ -5439,6 +5540,7 @@ function StaffDashboardContent() {
                     <th className="px-4 py-3">{isBn ? "পেমেন্ট মেথড" : "Method"}</th>
                     <th className="px-4 py-3">{isBn ? "ট্রানজেকশন আইডি" : "Transaction ID"}</th>
                     <th className="px-4 py-3">{isBn ? "স্ট্যাটাস" : "Status"}</th>
+                    <th className="px-4 py-3 text-right">{isBn ? "অ্যাকশন" : "Action"}</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-slate-100">
@@ -5478,7 +5580,7 @@ function StaffDashboardContent() {
                     if (filtered.length === 0) {
                       return (
                         <tr>
-                          <td colSpan={9} className="px-4 py-8 text-center text-slate-500 italic">
+                          <td colSpan={10} className="px-4 py-8 text-center text-slate-500 italic">
                             {isBn
                               ? "কোনো পেমেন্ট রেকর্ড খুঁজে পাওয়া যায়নি।"
                               : "No payment transactions found matching the selected filters."}
@@ -5600,6 +5702,22 @@ function StaffDashboardContent() {
                                 ? isBn ? "পেন্ডিং" : "Pending"
                                 : isBn ? "ব্যর্থ" : "Failed"}
                             </span>
+                          </td>
+                          <td className="px-4 py-3 whitespace-nowrap text-right">
+                            {p.status === "success" ? (
+                              <span className="inline-flex items-center gap-1 rounded bg-emerald-50 px-2 py-0.5 text-[11px] font-semibold text-emerald-700 border border-emerald-200">
+                                ✓ {isBn ? "অনুমোদিত" : "Credited"}
+                              </span>
+                            ) : (
+                              <button
+                                type="button"
+                                onClick={() => handleApprovePaymentLedgerRow(p.id, b?.reference || p.booking_id, p.trx_id || p.val_id)}
+                                className="inline-flex items-center gap-1 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white px-2.5 py-1 text-xs font-bold shadow-xs transition cursor-pointer"
+                                title="Manually verify and approve this payment transaction"
+                              >
+                                ✓ {isBn ? "অনুমোদন" : "Approve"}
+                              </button>
+                            )}
                           </td>
                         </tr>
                       );
