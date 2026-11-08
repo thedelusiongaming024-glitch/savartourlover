@@ -15,14 +15,28 @@ import { revalidatePath } from "next/cache";
  * pages are invalidated immediately instead of waiting out the TTL.
  */
 export function revalidatePublicContent(extraPaths: string[] = []): void {
-  const paths = new Set<string>(["/", "/tours", "/destinations", "/journal", "/about", "/contact", ...extraPaths]);
+  const paths = new Set<string>([
+    "/",
+    "/tours",
+    "/destinations",
+    "/journal",
+    "/about",
+    "/contact",
+    ...extraPaths,
+  ]);
+
   for (const path of paths) {
     try {
       revalidatePath(path);
+      revalidatePath(path, "page");
     } catch (err) {
-      // Never let a cache-invalidation failure fail the admin write itself —
-      // worst case the page just serves stale content until its TTL expires.
       console.warn(`[cache] revalidatePath(${path}) failed:`, err);
     }
+  }
+
+  try {
+    revalidatePath("/", "layout");
+  } catch (err) {
+    console.warn("[cache] revalidatePath('/', 'layout') failed:", err);
   }
 }

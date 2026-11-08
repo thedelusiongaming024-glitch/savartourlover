@@ -2,52 +2,6 @@
   "destinations": [],
   "tours": [
     {
-      "id": "tour-1794077046167",
-      "title": "test",
-      "slug": "test",
-      "destination_id": null,
-      "destination_slug": "bangladesh",
-      "destination_name": "Bangladesh",
-      "category": "group_tour",
-      "short_description": "",
-      "full_description": "",
-      "tour_plan": "",
-      "hero_image": null,
-      "duration_days": 3,
-      "duration_nights": 2,
-      "base_price": "25000",
-      "discount_type": "none",
-      "discount_value": "0",
-      "final_price": "25000",
-      "allow_partial_payment": true,
-      "advance_payment_percent": "20",
-      "advance_amount": "5000",
-      "inclusions": [
-        "AC Bus",
-        "Cottage stay",
-        "3 meals daily",
-        "Guide fee"
-      ],
-      "exclusions": [
-        "Personal expenses",
-        "Tips"
-      ],
-      "accommodation_notes": "Standard hotel / resort",
-      "transportation_notes": "AC Bus / Private Jeep",
-      "meals_notes": "Breakfast included",
-      "places_to_visit": [],
-      "meeting_point": "Dhaka Sayedabad / Fakirapool",
-      "pickup_points": [],
-      "departure_schedule": "Every Thursday night",
-      "total_seats": 40,
-      "itinerary": [],
-      "departures": [],
-      "faqs": [],
-      "gallery": [],
-      "is_featured": true,
-      "status": "published"
-    },
-    {
       "id": "tour-1794073920255",
       "title": "কক্সবাজার রিলাক্স ট্যুর",
       "slug": "cox'sbazar-tour",
@@ -94,7 +48,181 @@
       "itinerary": [],
       "departures": [],
       "faqs": [],
-      "gallery": [],
+      "gallery": [
+        {
+          "id": "img-1794119980091-0",
+          "slot": "featured_main",
+          "badge": "",
+          "image": "https://scontent.fdac198-2.fna.fbcdn.net/v/t39.30808-6/857664705_1777115853501275_8433534090763809900_n.jpg?stp=dst-jpg_tt6&cstp=mx1366x2048&ctp=s1366x2048&_nc_cat=106&_nc_map=urlgen_bucketless&ccb=1-7&_nc_sid=833d8c&_nc_ohc=KyhFJAF_XN4Q7kNvwG_enwb&_nc_oc=AdopYeVbnrpkOeeqWdeRkM97x_L3NSEXuXqPooiZkhqceV9EoY-Dv74o4FWYeDNxusw&_nc_zt=23&_nc_ht=scontent.fdac198-2.fna&_nc_gid=TvMFWWjAg9iJ2XqSxiNxdQ&_nc_ss=7a2a8&oh=00_AQSjctvtGMxEcaHmgtXJxvDZYXyB4OSOSs74u4qNnx350Q&oe=6AF5F5FB",
+          "price": "৳3,500",
+          "title": "কক্সবাজার রিলাক্স ট্যুর View 1",
+          "caption": "কক্সবাজার রিলাক্স ট্যুর View 1",
+          "location": "Bangladesh",
+          "watermarkText": ""
+        },
+        {
+          "id": "img-1794120017102-1",
+          "slot": "grid_1",
+          "badge": "",
+          "image": "https://scontent.fdac198-1.fna.fbcdn.net/v/t39.30808-6/706474277_985763910872927_7996510935688535377_n.jpg?stp=dst-jpg_tt6&cstp=mx1536x2048&ctp=s590x590&_nc_cat=105&_nc_map=urlgen_bucketless&ccb=1-7&_nc_sid=833d8c&_nc_ohc=tqS50TaPEVkQ7kNvwFeoh6B&_nc_oc=Adr1n2C-nKNHlk_jRS3BZDExLoSIOCuHHWEu_yijJjfQRUiA7K3gTG4qXnyyeGrpV9g&_nc_zt=23&_nc_ht=scontent.fdac198-1.fna&_nc_gid=5NE4mxvsWbNRxrY45ss1Yg&_nc_ss=7a2a8&oh=00_AQQzJC1th0PhSi8L-KOORoJcK74DJmuf0BeSMUuVXUwnVg&oe=6AF5FC06",
+          "price": "৳3,500",
+          "title": "কক্সবাজার রিলাক্স ট্যুর View 2",
+          "caption": "কক্সবাজার রিলাক্স ট্যুর View 2",
+          "location": "Bangladesh",
+          "watermarkText": ""
+        },
+        {
+          "id": "img-1794120017737-2",
+          "slot": "grid_2",
+          "badge": "",
+          "image": "https://scontent.fdac198-1.fna.fbcdn.net/v/t39.30808-6/579746526_773747755710475_6936887406750313286_n.jpg?stp=dst-jpg_tt6&cstp=mx675x900&ctp=s675x900&_nc_cat=106&_nc_map=urlgen_bucketless&ccb=1-7&_nc_sid=833d8c&_nc_ohc=RybGoXw2CcwQ7kNvwFNvPG1&_nc_oc=AdoI9-37a538PVbyi7jIJYtF2_-ZpV2dAvfDqUK1jd9efeZGj-ec3dYMsIrb-zRbEho&_nc_zt=23&_nc_ht=scontent.fdac198-1.fna&_nc_gid=m_fHnj5gkF-7pTqpVvfzAQ&_nc_ss=7a2a8&oh=00_AQQM60Ddzgl9q1F9Lsfo_166ncEVnO7Ca-D8c66ZiUqeIg&oe=6AF5EB80",
+          "price": "৳3,500",
+          "title": "কক্সবাজার রিলাক্স ট্যুর View 3",
+          "caption": "কক্সবাজার রিলাক্স ট্যুর View 3",
+          "location": "Bangladesh",
+          "watermarkText": ""
+        },
+        {
+          "id": "img-1794120019810-3",
+          "slot": "grid_3",
+          "badge": "",
+          "image": "https://scontent.fdac24-2.fna.fbcdn.net/v/t39.30808-6/838999906_3645233805627129_6461893128689858219_n.jpg?stp=dst-jpg_tt6&cstp=mx2048x1366&ctp=s2048x1366&_nc_cat=101&_nc_map=urlgen_bucketless&ccb=1-7&_nc_sid=aa7b47&_nc_ohc=iT-qUemyLM8Q7kNvwEEyL9y&_nc_oc=AdqxM78ip2iDmE4W6puTs-2NrXIIe94bS8DIpmxBBZxDq8KRSh78gHIE6WwSkD_2zao&_nc_zt=23&_nc_ht=scontent.fdac24-2.fna&_nc_gid=n-eQslc9_H1ddAe14hYE7Q&_nc_ss=7a2a8&oh=00_AQScHqRznZgjmCik_-phB_Tqpuk0VhAGKFrC8VTbRFWayQ&oe=6AF5EDD3",
+          "price": "৳3,500",
+          "title": "কক্সবাজার রিলাক্স ট্যুর View 4",
+          "caption": "কক্সবাজার রিলাক্স ট্যুর View 4",
+          "location": "Bangladesh",
+          "watermarkText": ""
+        },
+        {
+          "id": "img-1794120020742-4",
+          "slot": "grid_4",
+          "badge": "",
+          "image": "https://scontent.fdac24-1.fna.fbcdn.net/v/t39.99422-6/843450610_1121134893715042_2195844643683717493_n.png?stp=dst-jpg_tt6&cstp=mx720x960&ctp=s720x960&_nc_cat=101&_nc_map=urlgen_bucketless&ccb=1-7&_nc_sid=aa7b47&_nc_ohc=s2WBdcFUNdQQ7kNvwENmbWU&_nc_oc=AdprH9Z9zzBPJW5Ahdoe8dKGRNJdrSCJM60k55YboR2aWXyKpAumcxzWYf1cIcfeIEk&_nc_zt=14&_nc_ht=scontent.fdac24-1.fna&_nc_gid=MI6Z8iqBhqokuXaKUlZevA&_nc_ss=7b2a8&oh=00_AQRupEem6WG7uFG81exZrCi7etcCYrr2BB23TZel171jVA&oe=6AF5F833",
+          "price": "৳3,500",
+          "title": "কক্সবাজার রিলাক্স ট্যুর View 5",
+          "caption": "কক্সবাজার রিলাক্স ট্যুর View 5",
+          "location": "Bangladesh",
+          "watermarkText": ""
+        }
+      ],
+      "is_featured": true,
+      "status": "published"
+    },
+    {
+      "id": "tour-1794118742197",
+      "title": "ভোলাগঞ্জ ডে লং ট্যুর",
+      "slug": "bholagonj",
+      "destination_id": null,
+      "destination_slug": "bangladesh",
+      "destination_name": "Bangladesh",
+      "category": "group_tour",
+      "short_description": "",
+      "full_description": "",
+      "tour_plan": "",
+      "hero_image": "https://scontent.fdac24-5.fna.fbcdn.net/v/t39.99422-6/897511397_1800871304367952_31360188810955784_n.png?stp=dst-jpg_tt6&cstp=mx1600x1200&ctp=s590x590&_nc_cat=111&_nc_map=urlgen_bucketless&ccb=1-7&_nc_sid=aa7b47&_nc_ohc=xMWW_PFYd7MQ7kNvwG20oTy&_nc_oc=AdqgZxhi5yUcR3IhB3-DaWfX4EIUujeYTJqI1Id97l2GKSoEPJu1h5yaYJhNdWFRQGA&_nc_zt=14&_nc_ht=scontent.fdac24-5.fna&_nc_gid=R-Ip4js8xbQlILEwvdGUkA&_nc_ss=7b2a8&oh=00_AQRbGCfj8eAEp0JvWvP3ywPYKBaZIbwp4uc5-KqnJFuH-g&oe=6AF5FC00",
+      "duration_days": 1,
+      "duration_nights": 2,
+      "base_price": "1800",
+      "discount_type": "none",
+      "discount_value": "0",
+      "final_price": "1800",
+      "allow_partial_payment": true,
+      "advance_payment_percent": "28",
+      "advance_amount": "500",
+      "inclusions": [
+        "ননএসি চেয়ার কোচ বাস",
+        "২ বেলা খাবার",
+        "সকল লোকাল ট্রান্সপোর্ট"
+      ],
+      "exclusions": [
+        "যাত্রাবিরতির খাবার খরচ",
+        "আসার দিন রাতের খাবার",
+        "ব্যাক্তিগত খরচ"
+      ],
+      "accommodation_notes": "Standard hotel / resort",
+      "transportation_notes": "None Ac Chair Coach Bus",
+      "meals_notes": "Breakfast and Lunch Included",
+      "places_to_visit": [
+        "শাহ জালাল (র:) মাজার",
+        "মালিনীছড়া চা-বাগান",
+        "রাতারগুল সোয়াম্প ফরেস্ট",
+        "ভোলাগঞ্জ সাদাপাথর"
+      ],
+      "meeting_point": "নবীনগর",
+      "pickup_points": [],
+      "departure_schedule": "Every Thursday night",
+      "total_seats": 40,
+      "itinerary": [],
+      "departures": [],
+      "faqs": [],
+      "gallery": [
+        {
+          "id": "img-1794120291142-0",
+          "slot": "featured_main",
+          "badge": "",
+          "image": "https://scontent.fdac24-5.fna.fbcdn.net/v/t39.99422-6/897183108_1162527693018650_2943958740573270535_n.png?stp=dst-jpg_tt6&cstp=mx1536x2048&ctp=s590x590&_nc_cat=107&_nc_map=urlgen_bucketless&ccb=1-7&_nc_sid=833d8c&_nc_ohc=oBwfeQZ16mIQ7kNvwGoAUY0&_nc_oc=AdrPthaL3CMQHd9RCtt9lnQr-lDYO8QlquOBxw67lM4mwXur3dJeYMD1LMYGvQFAvVQ&_nc_zt=14&_nc_ht=scontent.fdac24-5.fna&_nc_gid=NW-x1s56c_9WoyY8aFuNEg&_nc_ss=7b2a8&oh=00_AQRnBpABIg1bDnS4wy_0Atmpo606FKelZ-MOMpO9ngX09Q&oe=6AF5E30C",
+          "price": "৳1,800",
+          "title": "ভোলাগঞ্জ ডে লং ট্যুর View 1",
+          "caption": "ভোলাগঞ্জ ডে লং ট্যুর View 1",
+          "location": "Bangladesh",
+          "watermarkText": ""
+        },
+        {
+          "id": "img-1794120291696-1",
+          "slot": "grid_1",
+          "badge": "",
+          "image": "https://scontent.fdac198-2.fna.fbcdn.net/v/t39.99422-6/893786467_1826718735338439_449313298665288912_n.png?stp=dst-jpg_tt6&cstp=mx960x1280&ctp=s960x1280&_nc_cat=111&_nc_map=urlgen_bucketless&ccb=1-7&_nc_sid=833d8c&_nc_ohc=iMJCNOIyrdIQ7kNvwF9Vaus&_nc_oc=AdpfLX3aAUEFxU1k4hAg8ABoXLm-vbmHiFqugH3wBVhlBrKV-epQavcr1wul2FkiQMY&_nc_zt=14&_nc_ht=scontent.fdac198-2.fna&_nc_gid=t81dEkSCoJwkiW0XtSeLFQ&_nc_ss=7b2a8&oh=00_AQQukLWbmQssLpXoNCFtDJphTETK9w7FdvbW_PC-4DPGew&oe=6AF5EC8C",
+          "price": "৳1,800",
+          "title": "ভোলাগঞ্জ ডে লং ট্যুর View 2",
+          "caption": "ভোলাগঞ্জ ডে লং ট্যুর View 2",
+          "location": "Bangladesh",
+          "watermarkText": ""
+        },
+        {
+          "id": "img-1794120294435-3",
+          "slot": "grid_3",
+          "badge": "",
+          "image": "https://scontent.fdac24-5.fna.fbcdn.net/v/t39.99422-6/892726211_1418597826673162_5225857159150014100_n.png?stp=dst-jpg_tt6&cstp=mx1600x1200&ctp=s1600x1200&_nc_cat=103&_nc_map=urlgen_bucketless&ccb=1-7&_nc_sid=833d8c&_nc_ohc=mvRTdzcuKckQ7kNvwF4W2Pi&_nc_oc=AdoCUDcagNPldfKv2DxcEIDAt40hSW400lUkrKScgNxF0qydjjGicPU4lbMnDw9-Ksk&_nc_zt=14&_nc_ht=scontent.fdac24-5.fna&_nc_gid=5Jik9ICjkDNnrn4Q_Cn7Nw&_nc_ss=7b2a8&oh=00_AQRFVtPgkq-ShSg5wQMIaZ53lBGJPofNFaCVtoUAup07-Q&oe=6AF5D71A",
+          "price": "৳1,800",
+          "title": "ভোলাগঞ্জ ডে লং ট্যুর View 4",
+          "caption": "ভোলাগঞ্জ ডে লং ট্যুর View 4",
+          "location": "Bangladesh",
+          "watermarkText": ""
+        },
+        {
+          "id": "img-1794120293350-2",
+          "slot": "grid_2",
+          "badge": "",
+          "image": "https://scontent.fdac24-2.fna.fbcdn.net/v/t39.99422-6/895151300_1171205892250648_5930372903185864818_n.png?stp=dst-jpg_tt6&cstp=mx960x1280&ctp=s960x1280&_nc_cat=101&_nc_map=urlgen_bucketless&ccb=1-7&_nc_sid=833d8c&_nc_ohc=xL2hGW3kwQIQ7kNvwF3XVGi&_nc_oc=Adr_sWMpQdRs0d_-HTWD1_4kIvSY1DWlCmhNupTuRgLokeWw-eYT6dR4LzPWtM7eCG0&_nc_zt=14&_nc_ht=scontent.fdac24-2.fna&_nc_gid=uDeGHPmvSiJp6K-jha6ggQ&_nc_ss=7b2a8&oh=00_AQQhAOKuEaCGzqVHrTFqqtto_XQbIv3XzLHvhonQ5yvClQ&oe=6AF5E267",
+          "price": "৳1,800",
+          "title": "ভোলাগঞ্জ ডে লং ট্যুর View 3",
+          "caption": "ভোলাগঞ্জ ডে লং ট্যুর View 3",
+          "location": "Bangladesh",
+          "watermarkText": ""
+        },
+        {
+          "id": "img-1794120295438-4",
+          "slot": "grid_4",
+          "badge": "",
+          "image": "https://scontent.fdac24-2.fna.fbcdn.net/v/t39.99422-6/893429387_1551214446768082_3818365825423405222_n.png?stp=dst-jpg_tt6&cstp=mx960x1280&ctp=s960x1280&_nc_cat=109&_nc_map=urlgen_bucketless&ccb=1-7&_nc_sid=833d8c&_nc_ohc=D1iRyxSSE_IQ7kNvwEUFPNB&_nc_oc=Adr-Y_Fy7SkjIOydEI3zPWhZMEUvWuBZeVFfS_LTzb1mkh9YO2SPib6cZ0X3S2xVnQQ&_nc_zt=14&_nc_ht=scontent.fdac24-2.fna&_nc_gid=F06w8gbN3XqGZmiW7AvrIg&_nc_ss=7b2a8&oh=00_AQQ1LlZ8M390CbV3TKN8-Hu4wiiZUxeOnMBQO5N-VLRvkQ&oe=6AF604C5",
+          "price": "৳1,800",
+          "title": "ভোলাগঞ্জ ডে লং ট্যুর View 5",
+          "caption": "ভোলাগঞ্জ ডে লং ট্যুর View 5",
+          "location": "Bangladesh",
+          "watermarkText": ""
+        },
+        {
+          "id": "img-1794120296238-5",
+          "slot": "panorama",
+          "badge": "",
+          "image": "https://scontent.fdac24-1.fna.fbcdn.net/v/t39.99422-6/897487958_1369561115095810_1685139041505665826_n.png?stp=dst-jpg_tt6&cstp=mx1200x1600&ctp=s1200x1600&_nc_cat=105&_nc_map=urlgen_bucketless&ccb=1-7&_nc_sid=833d8c&_nc_ohc=4889EbPs8cMQ7kNvwELilr2&_nc_oc=AdoeYSMQKEmcgInkC_3BHCiynpth-ETmigqhbqLatmxadoKC-lGDGgNxwb_HAfUFoKY&_nc_zt=14&_nc_ht=scontent.fdac24-1.fna&_nc_gid=2Mp7iWJh7KMLBu_0psaGSA&_nc_ss=7b2a8&oh=00_AQTmw7Q1hf_rOsa4JJrbKyAE6e2I5XeO61ETSWJAgJC8vg&oe=6AF5D1CB",
+          "price": "৳1,800",
+          "title": "ভোলাগঞ্জ ডে লং ট্যুর View 6",
+          "caption": "ভোলাগঞ্জ ডে লং ট্যুর View 6",
+          "location": "Bangladesh",
+          "watermarkText": ""
+        }
+      ],
       "is_featured": true,
       "status": "published"
     }
@@ -441,8 +569,30 @@
           {
             "bio": "Ten years guiding across the Chittagong Hill Tracts before building Savar Tour Lover's tour design team.",
             "name": "Shimul Hasan Prince ",
-            "role": "Co-founder & Head of Experience",
-            "scene": "sajek"
+            "role": "Founder & Head of Experience",
+            "scene": "sajek",
+            "image_url": "https://scontent.fdac24-5.fna.fbcdn.net/v/t39.99422-6/784251858_1076656198343857_641835457383240422_n.png?stp=dst-jpg_tt6&cstp=mx2045x2048&ctp=s2045x2048&_nc_cat=104&_nc_map=urlgen_bucketless&ccb=1-7&_nc_sid=a5f93a&_nc_ohc=BpoM2w-itkYQ7kNvwHI--Dh&_nc_oc=AdonZ-Hhxl1aSetLO97oUD7aL2Ep411UsQBxizyqs_2S3xSF3RxAgtVM4FPMkTtTGKQ&_nc_zt=14&_nc_ht=scontent.fdac24-5.fna&_nc_gid=P2ZVNOx4CYCb075XDewVpA&_nc_ss=7b2a8&oh=00_AQQ6CsV-UZHBwMQdqVN4A7drdI9ZN-BzMslm5e2b9A0rRw&oe=6AF5D52A"
+          },
+          {
+            "bio": "Experienced storyteller and expedition leader.",
+            "name": "Hasan Shawon",
+            "role": "Finance Admin",
+            "scene": "sajek",
+            "image_url": "https://scontent.fdac24-1.fna.fbcdn.net/v/t39.30808-6/722132527_4635837609986278_8193219719005108875_n.jpg?stp=dst-jpg_tt6&cstp=mx2048x2048&ctp=s2048x2048&_nc_cat=103&_nc_map=urlgen_bucketless&ccb=1-7&_nc_sid=6ee11a&_nc_ohc=RL-3psJTCCYQ7kNvwFrPdYD&_nc_oc=Adp7fXEtmhvw0cyht9VxP2ZuPlS_HMFMwbYY8xphilz7_wEz8-zSLI30XuIIL9El72w&_nc_zt=23&_nc_ht=scontent.fdac24-1.fna&_nc_gid=mYDOpOBwlbIajaoOA3zh2w&_nc_ss=7b2a8&oh=00_AQSdx8Cmoq_J9RSNR9arzecN7d0laOIsf6nxFsq03UJKxQ&oe=6AF5F529"
+          },
+          {
+            "bio": "Experienced storyteller and expedition leader.",
+            "name": "Muktadir Zaki",
+            "role": "Marketing Admin",
+            "scene": "sajek",
+            "image_url": "https://scontent.fdac24-2.fna.fbcdn.net/v/t39.30808-6/672229526_944143844876564_4535943021646671853_n.jpg?stp=cp6_dst-jpg_tt6&cstp=mx1536x2048&ctp=s1536x2048&_nc_cat=101&_nc_map=urlgen_bucketless&ccb=1-7&_nc_sid=833d8c&_nc_ohc=1PU7tsgcsOYQ7kNvwEW3wOY&_nc_oc=Adpr5NnOI-ZQJHmUWpSJ5SNK6aLgFgxHgAOIL-tvz1DQDaWbxPq4HRPazRpabalFqSk&_nc_zt=23&_nc_ht=scontent.fdac24-2.fna&_nc_gid=0jfBABc9Eb6PAKOGpEPu-g&_nc_ss=7b2a8&oh=00_AQTbXm-cbR91zj3dJ4HpIvYqQHShpMUoNQX_i7aEfxNyhw&oe=6AF5F3B9"
+          },
+          {
+            "bio": "Experienced storyteller and expedition leader.",
+            "name": "Tahsan Tawhid",
+            "role": "Marketing Admin",
+            "scene": "sajek",
+            "image_url": "https://scontent.fdac24-5.fna.fbcdn.net/v/t39.30808-6/896839321_1128475139590302_3062365973771277570_n.jpg?stp=dst-jpg_tt6&cstp=mx1600x1200&ctp=s1600x1200&_nc_cat=108&_nc_map=urlgen_bucketless&ccb=1-7&_nc_sid=833d8c&_nc_ohc=ej0cCJWy0RwQ7kNvwHDFD-J&_nc_oc=AdqvTHOE2LTVf_evBPTi_Ub1nn0jxDBMPmi_xrXoVDmiKje7b-07UOXjRrh5lts3R68&_nc_zt=23&_nc_ht=scontent.fdac24-5.fna&_nc_gid=VN5KVCqrtMlsPF0OeolpzQ&_nc_ss=7b2a8&oh=00_AQTBXalJJ2iLHbRIkKO4uQ5X7VTK6h-Mi72-maaeH8IUNw&oe=6AF5EE57"
           }
         ],
         "values": [
@@ -494,7 +644,7 @@
         "booking_description": "From your first search to your final confirmed payment, every step is designed to remove friction and ambiguity.",
         "payment_description": "Pay in full or pay a small advance through bKash, Nagad, Rocket, or card at booking. If you paid partially, the remaining balance is settled on the day of the tour — either online or in cash directly with your host. The moment it clears, both you and our team get a WhatsApp and email confirmation, so there's a clean record of what was paid, when, on both sides."
       },
-      "updated_at": "2026-11-07T17:12:39.713+00:00"
+      "updated_at": "2026-11-08T06:30:56.435+00:00"
     },
     {
       "id": "block-tour-categories",
@@ -673,24 +823,7 @@
   "bookings": [],
   "payments": [],
   "clearanceTickets": [],
-  "alerts": [
-    {
-      "id": "alt-del-cancel-1794085857427-822f",
-      "alert_type": "booking_cancelled",
-      "severity": "info",
-      "message": "Booking STL-2026-00001 cancelled and automatically deleted from database (Manually set to cancelled by admin). Seats released: None.",
-      "is_acknowledged": false,
-      "created_at": "2026-11-07T21:10:57.427Z"
-    },
-    {
-      "id": "alt-del-cancel-1794085851454-ac67",
-      "alert_type": "booking_cancelled",
-      "severity": "info",
-      "message": "Booking STL-2026-00003 cancelled and automatically deleted from database (bKash TrxID could not be verified in records). Seats released: B2.",
-      "is_acknowledged": false,
-      "created_at": "2026-11-07T21:10:51.454Z"
-    }
-  ],
+  "alerts": [],
   "expenses": [],
   "suppliers": [],
   "contactInquiries": [],
@@ -703,12 +836,7 @@
     "blogPosts": [],
     "homepageBlocks": [],
     "tourCategories": [],
-    "bookings": [
-      "book-1794085745832-a201b1898531ac67",
-      "STL-2026-00003",
-      "book-1794084650978-61a62e660273822f",
-      "STL-2026-00001"
-    ],
+    "bookings": [],
     "staffUsers": [],
     "customers": [],
     "contactInquiries": []

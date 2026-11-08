@@ -48,17 +48,6 @@ let adminClient: SupabaseClient | null = null;
 let cachedAdminUrl: string = "";
 let cachedAdminKey: string = "";
 
-const noCacheFetch = (input: RequestInfo | URL, init?: RequestInit) => {
-  return fetch(input, {
-    ...init,
-    cache: "no-store",
-    // Opt-out of Next.js fetch caching
-    ...(typeof init === "object" && init ? { ...init, cache: "no-store" } : {}),
-    // @ts-expect-error Next.js specific fetch extension
-    next: { revalidate: 0 },
-  });
-};
-
 /**
  * Public browser-safe Supabase client
  */
@@ -69,13 +58,10 @@ export function getSupabaseBrowserClient(): SupabaseClient {
   if (typeof window === "undefined") {
     return createClient(url || "http://127.0.0.1:9", key || "missing-key", {
       auth: { persistSession: false, autoRefreshToken: false },
-      global: { fetch: noCacheFetch },
     });
   }
   if (!browserClient) {
-    browserClient = createClient(url, key, {
-      global: { fetch: noCacheFetch },
-    });
+    browserClient = createClient(url, key);
   }
   return browserClient;
 }
@@ -101,7 +87,6 @@ export function getSupabaseAdminClient(): SupabaseClient {
     // Return dummy client without caching so when env becomes available, it works
     return createClient(url || "http://127.0.0.1:9", key || "supabase-not-configured", {
       auth: { persistSession: false, autoRefreshToken: false },
-      global: { fetch: noCacheFetch },
     });
   }
 
@@ -115,9 +100,6 @@ export function getSupabaseAdminClient(): SupabaseClient {
     auth: {
       persistSession: false,
       autoRefreshToken: false,
-    },
-    global: {
-      fetch: noCacheFetch,
     },
   });
   return adminClient;

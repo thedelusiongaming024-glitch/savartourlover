@@ -550,6 +550,7 @@ function StaffDashboardContent() {
     recent?: any[];
   } | null>(null);
   const [isSyncingDb, setIsSyncingDb] = useState(false);
+  const [isPurgingCache, setIsPurgingCache] = useState(false);
   const [isRefreshingTracking, setIsRefreshingTracking] = useState(false);
 
   // CRUD Data states
@@ -831,6 +832,28 @@ function StaffDashboardContent() {
       showNotification("error", e?.message || "Database sync failed.");
     } finally {
       setIsSyncingDb(false);
+    }
+  };
+
+  const handlePurgeCache = async () => {
+    setIsPurgingCache(true);
+    try {
+      const res = await staffFetch("/admin/cache/purge", { method: "POST" });
+      if (res.ok) {
+        await loadData();
+        showNotification(
+          "success",
+          isBn
+            ? "এজ ক্যাশ সফলভাবে ক্লিয়ার করা হয়েছে! সব পাবলিক পেজে নতুন ডাটা আপডেট হয়েছে।"
+            : "Edge cache successfully purged! All public pages are now serving live data."
+        );
+      } else {
+        showNotification("error", "Failed to purge edge cache.");
+      }
+    } catch (e: any) {
+      showNotification("error", e?.message || "Failed to purge edge cache.");
+    } finally {
+      setIsPurgingCache(false);
     }
   };
 
@@ -2417,7 +2440,7 @@ function StaffDashboardContent() {
                     </p>
                   </div>
                 </div>
-                <div className="flex items-center gap-2">
+                <div className="flex flex-wrap items-center gap-2">
                   <button
                     type="button"
                     onClick={handleTriggerDbSync}
@@ -2427,6 +2450,16 @@ function StaffDashboardContent() {
                   >
                     <span className={`h-2 w-2 rounded-full bg-emerald-600 ${isSyncingDb ? "animate-spin" : ""}`} />
                     {isSyncingDb ? (isBn ? "সিঙ্ক হচ্ছে..." : "Syncing...") : (isBn ? "ক্লাউড সিঙ্ক করুন" : "Sync Database")}
+                  </button>
+                  <button
+                    type="button"
+                    onClick={handlePurgeCache}
+                    disabled={isPurgingCache}
+                    className="rounded-lg border border-sky-300 bg-sky-50 px-3 py-1.5 text-xs font-semibold text-sky-800 hover:bg-sky-100 transition flex items-center gap-1.5 cursor-pointer disabled:opacity-50 shadow-2xs"
+                    title="Purge Edge Cache and force immediate regeneration of all public pages"
+                  >
+                    <span className={`h-2 w-2 rounded-full bg-sky-600 ${isPurgingCache ? "animate-spin" : ""}`} />
+                    {isPurgingCache ? (isBn ? "ক্যাশ ক্লিয়ার হচ্ছে..." : "Purging...") : (isBn ? "⚡ ক্যাশ ক্লিয়ার করুন" : "⚡ Purge Edge Cache")}
                   </button>
                   <span className="text-[10px] sm:text-[11px] text-slate-500 font-medium bg-slate-50 px-2.5 py-1 rounded-lg border border-slate-200">
                     {dict.overview.dualLayer}

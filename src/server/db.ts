@@ -717,16 +717,16 @@ let hydrationPromise: Promise<DatabaseSchema> | null = null;
 export async function ensureDbHydrated(): Promise<DatabaseSchema> {
   const now = Date.now();
 
-  // 1. Warm instance cache hit: return directly from RAM in microseconds
-  if (
-    memoryDb &&
-    lastSupabaseFetch > 0 &&
-    now - lastSupabaseFetch < SUPABASE_SYNC_INTERVAL_MS
-  ) {
+  // 1. Warm instance fast path: return directly from RAM in microseconds.
+  // If the sync interval has elapsed, trigger a non-blocking background refresh.
+  if (memoryDb) {
+    if (now - lastSupabaseFetch >= SUPABASE_SYNC_INTERVAL_MS && isSupabaseConfigured()) {
+      triggerBackgroundSupabaseSync();
+    }
     return memoryDb;
   }
 
-  // 2. Authoritative Supabase hydration when configured
+  // 2. Cold start: Authoritative Supabase hydration when configured
   if (isSupabaseConfigured()) {
     if (!hydrationPromise) {
       hydrationPromise = refreshFromSupabase()
@@ -742,9 +742,7 @@ export async function ensureDbHydrated(): Promise<DatabaseSchema> {
   }
 
   // 3. Fallback when Supabase is not configured (offline / local development)
-  if (!memoryDb) {
-    memoryDb = loadDb();
-  }
+  memoryDb = loadDb();
   return memoryDb;
 }
 

@@ -934,7 +934,7 @@ async function selectAllRows(
       if (orderColumn) query = query.order(orderColumn, { ascending });
 
       const timeoutPromise = new Promise<{ data: null; error: { message: string } }>((_, reject) =>
-        setTimeout(() => reject(new Error(`Timeout fetching table "${table}" after 15000ms`)), 15000)
+        setTimeout(() => reject(new Error(`Timeout fetching table "${table}" after 6000ms`)), 6000)
       );
 
       const result = (await Promise.race([

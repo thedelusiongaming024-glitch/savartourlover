@@ -5,9 +5,9 @@ import type { TourHeroSlide } from "@/components/TourHeroBackgroundSlider";
 import { fetchDestination, fetchTour } from "@/lib/api";
 import { getBanglaWatermark } from "@/lib/banglaNames";
 
-// Incremental Static Regeneration (ISR): serves instantly from Vercel Edge CDN cache (<50ms TTFB).
-// On-demand revalidation is triggered whenever an admin publishes edits via revalidatePublicContent().
-export const revalidate = 60;
+// Dynamic rendering: reads from in-memory RAM in sub-millisecond time.
+// Ensures real-time seat availability, live booking prices, and instant admin edits.
+export const dynamic = "force-dynamic";
 
 interface PageProps {
   params: Promise<{ slug: string }>;
