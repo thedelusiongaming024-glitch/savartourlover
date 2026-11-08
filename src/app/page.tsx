@@ -1,8 +1,8 @@
 import Link from "next/link";
 
-// Incremental Static Regeneration (ISR): serves instantly from Vercel Edge CDN cache (<50ms TTFB).
-// On-demand revalidation is triggered whenever an admin publishes edits via revalidatePublicContent().
-export const revalidate = 60;
+// Dynamic rendering: reads from in-memory RAM in sub-millisecond time.
+// Ensures admin edits reflect instantly across the entire site without stale cache mismatch.
+export const dynamic = "force-dynamic";
 import { Atmosphere } from "@/components/Atmosphere";
 import { HeroSlideshow } from "@/components/HeroSlideshow";
 import { Reveal } from "@/components/Reveal";
