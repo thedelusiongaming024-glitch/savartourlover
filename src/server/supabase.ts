@@ -926,14 +926,21 @@ async function selectAllRows(
       let query = supabase.from(table).select("*");
       if (orderColumn) query = query.order(orderColumn, { ascending });
 
-      const timeoutPromise = new Promise<{ data: null; error: { message: string } }>((_, reject) =>
-        setTimeout(() => reject(new Error(`Timeout fetching table "${table}" after 12000ms`)), 12000)
-      );
+      let timer: ReturnType<typeof setTimeout> | undefined;
+      let result: { data: any[] | null; error: any };
 
-      const result = (await Promise.race([
-        query.range(from, from + pageSize - 1),
-        timeoutPromise,
-      ])) as { data: any[] | null; error: any };
+      try {
+        const timeoutPromise = new Promise<{ data: null; error: { message: string } }>((_, reject) => {
+          timer = setTimeout(() => reject(new Error(`Timeout fetching table "${table}" after 12000ms`)), 12000);
+        });
+
+        result = (await Promise.race([
+          query.range(from, from + pageSize - 1),
+          timeoutPromise,
+        ])) as { data: any[] | null; error: any };
+      } finally {
+        if (timer) clearTimeout(timer);
+      }
 
       if (result.error) {
         console.warn(`[Supabase selectAllRows] Error on table "${table}":`, result.error.message || result.error);
