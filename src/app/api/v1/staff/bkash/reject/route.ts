@@ -3,7 +3,7 @@ import { ensureDbHydrated, rejectBkashVerification } from "@/server/db";
 
 export async function POST(request: Request) {
   try {
-    await ensureDbHydrated();
+    await ensureDbHydrated(true);
     const body = await request.json().catch(() => ({}));
     const { booking_id, reason } = body;
 

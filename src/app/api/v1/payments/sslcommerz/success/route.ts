@@ -10,7 +10,7 @@ import { verifyGatewayPayment } from "@/server/paymentVerification";
  * amount. (Previously a missing val_id skipped validation entirely and confirmed the payment.)
  */
 export async function POST(request: Request) {
-  await ensureDbHydrated();
+  await ensureDbHydrated(true);
   const host = request.headers.get("x-forwarded-host") || request.headers.get("host");
   const proto = request.headers.get("x-forwarded-proto") || "https";
   const origin =

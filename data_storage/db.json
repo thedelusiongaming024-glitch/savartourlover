@@ -1,52 +1,34 @@
 {
-  "destinations": [],
-  "tours": [
+  "destinations": [
     {
-      "id": "tour-1794164150867",
-      "title": "new tour",
-      "slug": "new-tour",
-      "destination_id": null,
-      "destination_slug": "bangladesh",
-      "destination_name": "Bangladesh",
-      "category": "group_tour",
-      "short_description": "",
-      "full_description": "",
-      "tour_plan": "",
-      "hero_image": null,
-      "duration_days": 3,
-      "duration_nights": 2,
-      "base_price": "25000",
-      "discount_type": "none",
-      "discount_value": "0",
-      "final_price": "25000",
-      "allow_partial_payment": true,
-      "advance_payment_percent": "20",
-      "advance_amount": "5000",
-      "inclusions": [
-        "AC Bus",
-        "Cottage stay",
-        "3 meals daily",
-        "Guide fee"
+      "id": "dest-1794202463784",
+      "name": "কক্সবাজার",
+      "slug": "-",
+      "division": "Chattogram",
+      "tagline": "বিশ্বের দীর্ঘতম প্রাকৃতিক সমুদ্রসৈকত!” 🌊💙",
+      "description": "বাংলাদেশের পর্যটন নগরী কক্সবাজার, যেখানে প্রকৃতি মেলে ধরেছে তার অপরূপ সৌন্দর্য। বিশ্বের দীর্ঘতম প্রাকৃতিক সমুদ্রসৈকতের বিশাল জলরাশি, সোনালি বালুকাবেলা, নীল আকাশ আর সমুদ্রের গর্জন—সব মিলিয়ে কক্সবাজার এক অনন্য অনুভূতির নাম।\nসূর্যোদয় থেকে সূর্যাস্ত, ঢেউয়ের সঙ্গে খেলা কিংবা সমুদ্রের পাড়ে প্রিয়জনদের নিয়ে কিছু আনন্দঘন মুহূর্ত কাটানো—প্রতিটি মুহূর্তই হয়ে উঠতে পারে স্মরণীয়।\nলাবণী পয়েন্ট, সুগন্ধা বিচ, কলাতলী, হিমছড়ি, ইনানী বিচ ও মেরিন ড্রাইভের মনোমুগ্ধকর সৌন্দর্য আপনাকে বারবার কক্সবাজারে ফিরে আসার আমন্ত্রণ জানাবে।",
+      "best_time_to_visit": "November to March",
+      "weather_notes": "Pleasant and breezy",
+      "popular_attractions": [
+        "লাবণী পয়েন্ট",
+        "সুগন্ধা বিচ",
+        "কলাতলী",
+        "হিমছড়ি",
+        "ইনানী বিচ ও মেরিন ড্রাইভ"
       ],
-      "exclusions": [
-        "Personal expenses",
-        "Tips"
-      ],
-      "accommodation_notes": "Standard hotel / resort",
-      "transportation_notes": "AC Bus / Private Jeep",
-      "meals_notes": "Breakfast included",
-      "places_to_visit": [],
-      "meeting_point": "Dhaka Sayedabad / Fakirapool",
-      "pickup_points": [],
-      "departure_schedule": "Every Thursday night",
-      "total_seats": 40,
-      "itinerary": [],
-      "departures": [],
-      "faqs": [],
+      "recommended_accommodation": "Eco Beach Resort",
+      "travel_tips": "",
+      "permits_required": "None",
+      "cover_image": "https://scontent.fdac198-1.fna.fbcdn.net/v/t39.30808-6/491779895_1031351535764023_2606677100898419823_n.jpg?stp=dst-jpg_tt6&cstp=mx720x960&ctp=s720x960&_nc_cat=105&_nc_map=urlgen_bucketless&ccb=1-7&_nc_sid=cc71e4&_nc_ohc=khRuTwLBG98Q7kNvwH_uokP&_nc_oc=Adpt2zxJZ_ebvJuslFJFL0nqZWxHb89YiM9ZgmS4KrKNUHMLc43hLcIKyE7LdeNhLwM&_nc_zt=23&_nc_ht=scontent.fdac198-1.fna&_nc_gid=TpJXpnSYNDrEEabBEg6R4Q&_nc_ss=7b2a8&oh=00_AQQWSs4JflutR1t2x4-di748o-HdiZoVuJ7vu-xhDpIrYQ&oe=6AF7273F",
+      "cover_video_url": null,
+      "seo_title": "আমার বাংলাদেশ Travel Guide | Savar Tour Lover",
+      "seo_description": null,
       "gallery": [],
       "is_featured": true,
       "status": "published"
-    },
+    }
+  ],
+  "tours": [
     {
       "id": "tour-1794073920255",
       "title": "কক্সবাজার রিলাক্স ট্যুর",
@@ -332,6 +314,18 @@
       "is_active": true,
       "description": "Single-day sightseeing and activities without overnight stay",
       "display_order": 7
+    },
+    {
+      "id": "cat---7742",
+      "icon": "🏷️",
+      "name": "চট্টগ্রাম",
+      "slug": "_",
+      "badge": "",
+      "is_active": true,
+      "created_at": "2026-11-09T07:53:07.742Z",
+      "updated_at": "2026-11-09T07:53:07.742Z",
+      "description": "",
+      "display_order": 6
     }
   ],
   "offers": [],
@@ -756,9 +750,21 @@
             "is_active": true,
             "description": "Single-day sightseeing and activities without overnight stay",
             "display_order": 7
+          },
+          {
+            "id": "cat---7742",
+            "icon": "🏷️",
+            "name": "চট্টগ্রাম",
+            "slug": "_",
+            "badge": "",
+            "is_active": true,
+            "created_at": "2026-11-09T07:53:07.742Z",
+            "updated_at": "2026-11-09T07:53:07.742Z",
+            "description": "",
+            "display_order": 6
           }
         ],
-        "updated_at": "2026-11-05T03:16:09.689Z"
+        "updated_at": "2026-11-09T07:53:07.743Z"
       },
       "updated_at": "2026-11-04T22:51:27.527601+00:00"
     },
@@ -777,7 +783,7 @@
     {
       "id": "usr-admin-1",
       "username": "admin",
-      "password_hash": "210000$de114e3ded15edb546d1266d0d34918b44908858e011fd962a38f1a0b986af67a631bb2f6c4919d37eea531f6be7375af019da6253783e322b595c7a4d77caa2",
+      "password_hash": "8e5067117177fb5bc6056d3d76ea336f31779c1d21e6aa416cc7b1b0a8e0b4eb7a67a80908c62751951736809a3d2f81f7762e9e6fc203d7715fe126786193d2",
       "salt": "8e4c1ce665ceb8419ff57a1aefb13252",
       "role": "super_admin",
       "phone_number": "+8801929582426",
@@ -795,25 +801,7 @@
       "created_at": "2026-11-07T20:50:50.704+00:00",
       "updated_at": "2026-11-07T20:50:50.704+00:00",
       "last_login_at": "2026-11-07T20:50:50.704+00:00",
-      "activities": [
-        {
-          "id": "act-1794084650983-170",
-          "customer_id": "cust-1794084650704-333",
-          "type": "booking_created",
-          "title": "Booked test",
-          "description": "Booking reference STL-2026-00001 created for 2 traveler(s) · Pick-up: Gabtoli Bus Terminal. Total: ৳50,000.",
-          "metadata": {
-            "tour_id": "tour-1794077046167",
-            "reference": "STL-2026-00001",
-            "booking_id": "book-1794084650978-61a62e660273822f",
-            "pickup_point": "Gabtoli Bus Terminal",
-            "payment_method": "Bkash payment",
-            "selected_seats": [],
-            "traveler_count": 2
-          },
-          "created_at": "2026-11-07T20:50:50.983+00:00"
-        }
-      ]
+      "activities": []
     },
     {
       "id": "cust-1794084651713-235",
@@ -823,25 +811,7 @@
       "created_at": "2026-11-07T20:50:51.713+00:00",
       "updated_at": "2026-11-07T20:50:51.713+00:00",
       "last_login_at": "2026-11-07T20:50:51.713+00:00",
-      "activities": [
-        {
-          "id": "act-1794084651908-480",
-          "customer_id": "cust-1794084651713-235",
-          "type": "booking_created",
-          "title": "Booked test",
-          "description": "Booking reference STL-2026-00002 created for 1 traveler(s) · Pick-up: Dhaka Sayedabad / Fakirapool. Total: ৳25,000.",
-          "metadata": {
-            "tour_id": "tour-1794077046167",
-            "reference": "STL-2026-00002",
-            "booking_id": "book-1794084651906-025b4771d1829aed",
-            "pickup_point": "Dhaka Sayedabad / Fakirapool",
-            "payment_method": "Bkash payment",
-            "selected_seats": [],
-            "traveler_count": 1
-          },
-          "created_at": "2026-11-07T20:50:51.908+00:00"
-        }
-      ]
+      "activities": []
     },
     {
       "id": "cust-1794085745612-256",
@@ -851,28 +821,7 @@
       "created_at": "2026-11-07T21:09:05.612+00:00",
       "updated_at": "2026-11-07T21:09:05.612+00:00",
       "last_login_at": "2026-11-07T21:09:05.612+00:00",
-      "activities": [
-        {
-          "id": "act-1794085745836-161",
-          "customer_id": "cust-1794085745612-256",
-          "type": "booking_created",
-          "title": "Booked কক্সবাজার রিলাক্স ট্যুর",
-          "description": "Booking reference STL-2026-00003 created for 1 traveler(s) · Seats: B2 · Pick-up: Savar Thana Stand (09:00 PM). Total: ৳3,500.",
-          "metadata": {
-            "tour_id": "tour-1794073920255",
-            "reference": "STL-2026-00003",
-            "booking_id": "book-1794085745832-a201b1898531ac67",
-            "pickup_point": "Savar Thana Stand (09:00 PM)",
-            "departure_date": "2026-11-13",
-            "payment_method": "Bkash payment",
-            "selected_seats": [
-              "B2"
-            ],
-            "traveler_count": 1
-          },
-          "created_at": "2026-11-07T21:09:05.836+00:00"
-        }
-      ]
+      "activities": []
     }
   ],
   "bookings": [],

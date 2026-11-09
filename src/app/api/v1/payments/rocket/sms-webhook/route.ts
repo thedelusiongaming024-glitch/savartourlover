@@ -14,7 +14,7 @@ export async function GET() {
 
 export async function POST(request: Request) {
   try {
-    await ensureDbHydrated();
+    await ensureDbHydrated(true);
     const expectedSecret = (process.env.ROCKET_SMS_SECRET || "rkt_sms_sec_99238475201").trim();
     const url = new URL(request.url);
 

@@ -3,7 +3,7 @@ import { ensureDbHydrated, verifyRocketTrxHybrid } from "@/server/db";
 
 export async function POST(request: Request) {
   try {
-    await ensureDbHydrated();
+    await ensureDbHydrated(true);
     const body = await request.json().catch(() => ({}));
     const { tran_id, payment_id, trx_id, sender_phone, amount } = body;
 

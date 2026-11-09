@@ -3,7 +3,7 @@ import { approveRocketVerification, ensureDbHydrated } from "@/server/db";
 
 export async function POST(request: Request) {
   try {
-    await ensureDbHydrated();
+    await ensureDbHydrated(true);
     const body = await request.json().catch(() => ({}));
     const { booking_id, admin_name, trx_id } = body;
 
