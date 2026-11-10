@@ -1,25 +1,21 @@
 {
   "destinations": [
     {
-      "id": "dest-1794202463784",
-      "name": "কক্সবাজার",
+      "id": "dest-1794221764232",
+      "name": "আমার বাংলাদেশ",
       "slug": "-",
       "division": "Chattogram",
-      "tagline": "বিশ্বের দীর্ঘতম প্রাকৃতিক সমুদ্রসৈকত!” 🌊💙",
-      "description": "বাংলাদেশের পর্যটন নগরী কক্সবাজার, যেখানে প্রকৃতি মেলে ধরেছে তার অপরূপ সৌন্দর্য। বিশ্বের দীর্ঘতম প্রাকৃতিক সমুদ্রসৈকতের বিশাল জলরাশি, সোনালি বালুকাবেলা, নীল আকাশ আর সমুদ্রের গর্জন—সব মিলিয়ে কক্সবাজার এক অনন্য অনুভূতির নাম।\nসূর্যোদয় থেকে সূর্যাস্ত, ঢেউয়ের সঙ্গে খেলা কিংবা সমুদ্রের পাড়ে প্রিয়জনদের নিয়ে কিছু আনন্দঘন মুহূর্ত কাটানো—প্রতিটি মুহূর্তই হয়ে উঠতে পারে স্মরণীয়।\nলাবণী পয়েন্ট, সুগন্ধা বিচ, কলাতলী, হিমছড়ি, ইনানী বিচ ও মেরিন ড্রাইভের মনোমুগ্ধকর সৌন্দর্য আপনাকে বারবার কক্সবাজারে ফিরে আসার আমন্ত্রণ জানাবে।",
+      "tagline": "আমার বাংলাদেশ — পাহাড়, নদী আর সবুজের এক অপার গল্প।",
+      "description": "বাংলাদেশ শুধু একটি দেশের নাম নয়, এটি হাজারো সৌন্দর্য, ঐতিহ্য, সংস্কৃতি ও ভালোবাসার এক অপরূপ গল্প।\nপাহাড়ের সবুজ হাতছানি, নদীর বয়ে চলা স্রোত, সমুদ্রের বিশালতা, চা-বাগানের মুগ্ধতা কিংবা গ্রামের মেঠোপথ—প্রতিটি জায়গায় লুকিয়ে আছে নতুন কোনো সৌন্দর্য, নতুন কোনো অভিজ্ঞতা।",
       "best_time_to_visit": "November to March",
       "weather_notes": "Pleasant and breezy",
       "popular_attractions": [
-        "লাবণী পয়েন্ট",
-        "সুগন্ধা বিচ",
-        "কলাতলী",
-        "হিমছড়ি",
-        "ইনানী বিচ ও মেরিন ড্রাইভ"
+        "১. কক্সবাজার  ২. সেন্টমার্টিন  ৩. সাজেক ভ্যালি  ৪. বান্দরবান  ৫. সিলেট  ৬. সুন্দরবন  ৭. টাঙ্গুয়ার হাওর  ৮. শ্রীমঙ্গল  ৯. রাঙামাটি  ১০. ভোলাগঞ্জ সাদাপাথর"
       ],
       "recommended_accommodation": "Eco Beach Resort",
       "travel_tips": "",
       "permits_required": "None",
-      "cover_image": "https://scontent.fdac198-1.fna.fbcdn.net/v/t39.30808-6/491779895_1031351535764023_2606677100898419823_n.jpg?stp=dst-jpg_tt6&cstp=mx720x960&ctp=s720x960&_nc_cat=105&_nc_map=urlgen_bucketless&ccb=1-7&_nc_sid=cc71e4&_nc_ohc=khRuTwLBG98Q7kNvwH_uokP&_nc_oc=Adpt2zxJZ_ebvJuslFJFL0nqZWxHb89YiM9ZgmS4KrKNUHMLc43hLcIKyE7LdeNhLwM&_nc_zt=23&_nc_ht=scontent.fdac198-1.fna&_nc_gid=TpJXpnSYNDrEEabBEg6R4Q&_nc_ss=7b2a8&oh=00_AQQWSs4JflutR1t2x4-di748o-HdiZoVuJ7vu-xhDpIrYQ&oe=6AF7273F",
+      "cover_image": "https://scontent.fdac174-1.fna.fbcdn.net/v/t39.30808-6/886190965_10165844511753134_3478337516350528084_n.jpg?stp=dst-jpg_tt6&cstp=mx1600x900&ctp=s1600x900&_nc_cat=108&_nc_map=urlgen_bucketless&ccb=1-7&_nc_sid=833d8c&_nc_ohc=PgixUYKBO14Q7kNvwFs4EUb&_nc_oc=AdqZSP0VkTzATm71nG5D-bsZiI1Hlqid0wk5VF7ApWEET8URVlvlWjlAwWoKdAndwSQ&_nc_zt=23&_nc_ht=scontent.fdac174-1.fna&_nc_gid=yeCdeDj7wj7uLMs11tpH2Q&_nc_ss=7b2a8&oh=00_AQStsQLs35WSNL92DBbsiMW3f_5lV_laj6b1I8sKeazQrg&oe=6AF76477",
       "cover_video_url": null,
       "seo_title": "আমার বাংলাদেশ Travel Guide | Savar Tour Lover",
       "seo_description": null,
@@ -262,6 +258,115 @@
       ],
       "is_featured": true,
       "status": "published"
+    },
+    {
+      "id": "tour-1794228995326",
+      "title": "রাঙ্গামাটি ডে লং ট্যুর",
+      "slug": "-",
+      "destination_id": "dest-1794221764232",
+      "destination_slug": "-",
+      "destination_name": "আমার বাংলাদেশ",
+      "category": "group_tour",
+      "short_description": "🌿 রাঙামাটি ট্যুর — আমাদের ভ্রমণ পরিকল্পনা\nরাঙামাটি পৌঁছে শহীদ মিনার ঘুরে ছবি তুলে বোর্ডে করে সকালের নাস্তার জন্য হোটেলে যাবো।\nনাস্তা শেষে চাকমা আদিবাসী গ্রাম ও বাজার, বৌদ্ধ মন্দির ঘুরে বোর্ডে করে যাবো শুভলং ঝর্ণায়। সেখানে নির্ধারিত সময় পর্যন্ত ঘোরাঘুরি, গোসল ও আনন্দ-উল্লাস করবো।\nএরপর দুপুরের খাবার শেষে ঝুলন্ত ব্রিজ ঘুরে পলওয়েল পার্কে যাবো।\nসবশেষে নির্ধারিত সময়ে শহীদ মিনারে ফিরে এসে বাসে উঠে ঢাকার উদ্দেশ্যে রওনা হবো। 🌿🚌✨",
+      "full_description": "🌿 রাঙামাটি ট্যুর — আমাদের ভ্রমণ পরিকল্পনা\nরাঙামাটি পৌঁছে শহীদ মিনার ঘুরে ছবি তুলে বোর্ডে করে সকালের নাস্তার জন্য হোটেলে যাবো।\nনাস্তা শেষে চাকমা আদিবাসী গ্রাম ও বাজার, বৌদ্ধ মন্দির ঘুরে বোর্ডে করে যাবো শুভলং ঝর্ণায়। সেখানে নির্ধারিত সময় পর্যন্ত ঘোরাঘুরি, গোসল ও আনন্দ-উল্লাস করবো।\nএরপর দুপুরের খাবার শেষে ঝুলন্ত ব্রিজ ঘুরে পলওয়েল পার্কে যাবো।\nসবশেষে নির্ধারিত সময়ে শহীদ মিনারে ফিরে এসে বাসে উঠে ঢাকার উদ্দেশ্যে রওনা হবো। 🌿🚌✨",
+      "tour_plan": "🌿 রাঙামাটি ট্যুর — আমাদের ভ্রমণ পরিকল্পনা\nরাঙামাটি পৌঁছে শহীদ মিনার ঘুরে ছবি তুলে বোর্ডে করে সকালের নাস্তার জন্য হোটেলে যাবো।\nনাস্তা শেষে চাকমা আদিবাসী গ্রাম ও বাজার, বৌদ্ধ মন্দির ঘুরে বোর্ডে করে যাবো শুভলং ঝর্ণায়। সেখানে নির্ধারিত সময় পর্যন্ত ঘোরাঘুরি, গোসল ও আনন্দ-উল্লাস করবো।\nএরপর দুপুরের খাবার শেষে ঝুলন্ত ব্রিজ ঘুরে পলওয়েল পার্কে যাবো।\nসবশেষে নির্ধারিত সময়ে শহীদ মিনারে ফিরে এসে বাসে উঠে ঢাকার উদ্দেশ্যে রওনা হবো। 🌿🚌✨",
+      "hero_image": "https://scontent.fdac174-1.fna.fbcdn.net/v/t39.99422-6/855294487_2335454950614277_3649313910959292825_n.png?stp=dst-jpg_tt6&cstp=mx1200x1600&ctp=p526x296&_nc_cat=103&_nc_map=urlgen_bucketless&ccb=1-7&_nc_sid=833d8c&_nc_ohc=EmTIAwljVfMQ7kNvwG4MNpU&_nc_oc=AdqVzBVnd17clxWPJ3inm7Qm_Dv7lQ6wT9Jz-dBS8z-2ipUHeD9wbrhhcYd5fO3fk0o&_nc_zt=14&_nc_ht=scontent.fdac174-1.fna&_nc_gid=2O5XWj5rNsl-Bb98emlDCQ&_nc_ss=7b2a8&oh=00_AQRMh62e3clJZGnLnWFLznAnBagQdo6WilN8CUx6FZ0dcg&oe=6AF798CB",
+      "duration_days": 1,
+      "duration_nights": 2,
+      "base_price": "1900",
+      "discount_type": "none",
+      "discount_value": "0",
+      "final_price": "1900",
+      "allow_partial_payment": true,
+      "advance_payment_percent": "26",
+      "advance_amount": "500",
+      "inclusions": [
+        "ননএসি চেয়ার কোচ বাস",
+        "২ বেলা খাবার",
+        "সকল লোকাল ট্রান্সপোর্ট"
+      ],
+      "exclusions": [
+        "যাত্রাবিরতির খাবার খরচ",
+        "আসার দিন রাতের খাবার",
+        "ব্যাক্তিগত খরচ"
+      ],
+      "accommodation_notes": "Standard hotel / resort",
+      "transportation_notes": "None Ac Chair Coach Bus",
+      "meals_notes": "সকাল: ডিম খিচুড়ি \nদুপুরে: ভাত,ডাল,মুরগী, সবজি/ভর্তা",
+      "places_to_visit": [
+        "শহীদ মিনার",
+        "আদিবাসী গ্রাম",
+        "আদিবাসী বাজার",
+        "শুভলং ঝর্ণা",
+        "ঝুলন্ত ব্রীজ",
+        "পলওয়েল পার্ক"
+      ],
+      "meeting_point": "নবীনগর",
+      "pickup_points": [],
+      "departure_schedule": "Every Thursday night",
+      "total_seats": 45,
+      "itinerary": [],
+      "departures": [],
+      "faqs": [],
+      "gallery": [
+        {
+          "id": "img-1794229028858-0",
+          "slot": "featured_main",
+          "badge": "",
+          "image": "https://scontent.fdac174-1.fna.fbcdn.net/v/t39.99422-6/849910740_1813928033252509_4227489662762740555_n.png?stp=dst-jpg_tt6&cstp=mx1080x1080&ctp=s590x590&_nc_cat=108&_nc_map=urlgen_bucketless&ccb=1-7&_nc_sid=833d8c&_nc_ohc=8J0zWF1i80IQ7kNvwEyRIUn&_nc_oc=AdpvJqlT8yEkNdZxnv37h3r8HnIsrktJOU1rmCdOp-vz6tMFZg_Hvl4YcX8LXBG3SL0&_nc_zt=14&_nc_ht=scontent.fdac174-1.fna&_nc_gid=2O5XWj5rNsl-Bb98emlDCQ&_nc_ss=7b2a8&oh=00_AQSGm9Q8q_9Me2ynr6WL7XuZPdOFVOCsR2-7KT8ugcKPUA&oe=6AF77CD1",
+          "price": "৳1,900",
+          "title": "রাঙ্গামাটি ডে লং ট্যুর View 1",
+          "caption": "রাঙ্গামাটি ডে লং ট্যুর View 1",
+          "location": "আমার বাংলাদেশ",
+          "watermarkText": ""
+        },
+        {
+          "id": "img-1794229045715-1",
+          "slot": "grid_1",
+          "badge": "",
+          "image": "https://scontent.fdac174-1.fna.fbcdn.net/v/t39.99422-6/847909231_2399087057600148_7498148091154493906_n.png?stp=dst-jpg_tt6&cstp=mx1080x1421&ctp=s1080x1421&_nc_cat=105&_nc_map=urlgen_bucketless&ccb=1-7&_nc_sid=833d8c&_nc_ohc=nXhfoPP1SvMQ7kNvwFpQSB5&_nc_oc=AdpRJ2bDpib94nhDej8Yfa4N0nYJopT3Av8tRS0hV5DVGEZiZnAFClHlU3BIHWFWdao&_nc_zt=14&_nc_ht=scontent.fdac174-1.fna&_nc_gid=oIAW4YFLqpLS48Pl0pF09A&_nc_ss=7b2a8&oh=00_AQSHpDVn6yOsztoCaa8XlRN5Z7gBwTntHWHLn7HOQks9iA&oe=6AF79689",
+          "price": "৳1,900",
+          "title": "রাঙ্গামাটি ডে লং ট্যুর View 2",
+          "caption": "রাঙ্গামাটি ডে লং ট্যুর View 2",
+          "location": "আমার বাংলাদেশ",
+          "watermarkText": ""
+        },
+        {
+          "id": "img-1794229055936-2",
+          "slot": "grid_2",
+          "badge": "",
+          "image": "https://scontent.fdac174-1.fna.fbcdn.net/v/t39.30808-6/897087757_1652603626559382_8755415786082024694_n.jpg?stp=dst-jpg_tt6&cstp=mx1536x2048&ctp=s590x590&_nc_cat=102&_nc_map=urlgen_bucketless&ccb=1-7&_nc_sid=aa7b47&_nc_ohc=NOHNG35mT_AQ7kNvwFU473Y&_nc_oc=Adqex9jgdZy6JVPR0-vlJKBivi5oGypvpqMr190dlysMzUIS8s5zUwPdLdKABHfjw5U&_nc_zt=23&_nc_ht=scontent.fdac174-1.fna&_nc_gid=csvMcVkLRbWX3c_RHpRgkg&_nc_ss=7b2a8&oh=00_AQRcGP4tBm04ZlW4WEZUE-5_-KJFfYoLU5e71Vndoa40mA&oe=6AF77F76",
+          "price": "৳1,900",
+          "title": "রাঙ্গামাটি ডে লং ট্যুর View 3",
+          "caption": "রাঙ্গামাটি ডে লং ট্যুর View 3",
+          "location": "আমার বাংলাদেশ",
+          "watermarkText": ""
+        },
+        {
+          "id": "img-1794229056417-3",
+          "slot": "grid_3",
+          "badge": "",
+          "image": "https://scontent.fdac174-1.fna.fbcdn.net/v/t39.30808-6/701915372_982116791237639_6477478589735783221_n.jpg?stp=dst-jpg_tt6&cstp=mx1440x1920&ctp=s590x590&_nc_cat=106&_nc_map=urlgen_bucketless&ccb=1-7&_nc_sid=833d8c&_nc_ohc=m7YdEH5QGUwQ7kNvwH27EFh&_nc_oc=Adqb-RI3EV755Zn7PHgccF6VTmWaoCy76PbQdeHFT4tOF6pf1hjQPxC-z6anIke8NAM&_nc_zt=23&_nc_ht=scontent.fdac174-1.fna&_nc_gid=fD0lI4e9QP01ltUIKOz0AQ&_nc_ss=7b2a8&oh=00_AQRoj71hDQGIqadE24MOF1w2N04NhKpRyuQslDYwVrmjtw&oe=6AF79CC7",
+          "price": "৳1,900",
+          "title": "রাঙ্গামাটি ডে লং ট্যুর View 4",
+          "caption": "রাঙ্গামাটি ডে লং ট্যুর View 4",
+          "location": "আমার বাংলাদেশ",
+          "watermarkText": ""
+        },
+        {
+          "id": "img-1794229057040-4",
+          "slot": "grid_4",
+          "badge": "",
+          "image": "https://scontent.fdac174-1.fna.fbcdn.net/v/t39.30808-6/702539435_982116661237652_8954509121305823225_n.jpg?stp=dst-jpg_tt6&cstp=mx1080x1350&ctp=s1080x1350&_nc_cat=100&_nc_map=urlgen_bucketless&ccb=1-7&_nc_sid=833d8c&_nc_ohc=-HINwdu-X84Q7kNvwHI5BqP&_nc_oc=Adr4fiBZAVOtqG8xx-ICAZvfEgKO_YPa1Zh7v-FH1p6Gj3TYPqzdzmtGWveLNjuoxd4&_nc_zt=23&_nc_ht=scontent.fdac174-1.fna&_nc_gid=VMAxUxbkmI98k6uV_8PPvA&_nc_ss=7b2a8&oh=00_AQSbG2cHHLV5UQd1NnQxLwKn325SxHVutNdBq-36VFs8cw&oe=6AF77CEA",
+          "price": "৳1,900",
+          "title": "রাঙ্গামাটি ডে লং ট্যুর View 5",
+          "caption": "রাঙ্গামাটি ডে লং ট্যুর View 5",
+          "location": "আমার বাংলাদেশ",
+          "watermarkText": ""
+        }
+      ],
+      "is_featured": true,
+      "status": "published"
     }
   ],
   "tourCategories": [
@@ -314,18 +419,6 @@
       "is_active": true,
       "description": "Single-day sightseeing and activities without overnight stay",
       "display_order": 7
-    },
-    {
-      "id": "cat---7742",
-      "icon": "🏷️",
-      "name": "চট্টগ্রাম",
-      "slug": "_",
-      "badge": "",
-      "is_active": true,
-      "created_at": "2026-11-09T07:53:07.742Z",
-      "updated_at": "2026-11-09T07:53:07.742Z",
-      "description": "",
-      "display_order": 6
     }
   ],
   "offers": [],
@@ -750,21 +843,9 @@
             "is_active": true,
             "description": "Single-day sightseeing and activities without overnight stay",
             "display_order": 7
-          },
-          {
-            "id": "cat---7742",
-            "icon": "🏷️",
-            "name": "চট্টগ্রাম",
-            "slug": "_",
-            "badge": "",
-            "is_active": true,
-            "created_at": "2026-11-09T07:53:07.742Z",
-            "updated_at": "2026-11-09T07:53:07.742Z",
-            "description": "",
-            "display_order": 6
           }
         ],
-        "updated_at": "2026-11-09T07:53:07.743Z"
+        "updated_at": "2026-11-09T12:47:40.783Z"
       },
       "updated_at": "2026-11-04T22:51:27.527601+00:00"
     },
@@ -792,39 +873,58 @@
       "last_name": "Admin"
     }
   ],
-  "customers": [
+  "customers": [],
+  "bookings": [
     {
-      "id": "cust-1794084650704-333",
-      "phone_number": "+8801711223344",
-      "full_name": "Test Traveler",
-      "email": "traveler@example.com",
-      "created_at": "2026-11-07T20:50:50.704+00:00",
-      "updated_at": "2026-11-07T20:50:50.704+00:00",
-      "last_login_at": "2026-11-07T20:50:50.704+00:00",
-      "activities": []
-    },
-    {
-      "id": "cust-1794084651713-235",
-      "phone_number": "+8801999887766",
-      "full_name": "Rocket User",
-      "email": "rocket@example.com",
-      "created_at": "2026-11-07T20:50:51.713+00:00",
-      "updated_at": "2026-11-07T20:50:51.713+00:00",
-      "last_login_at": "2026-11-07T20:50:51.713+00:00",
-      "activities": []
-    },
-    {
-      "id": "cust-1794085745612-256",
-      "phone_number": "+8801826483915",
-      "full_name": "Minhazul Islam",
-      "email": "arkohassan118@gmail.com",
-      "created_at": "2026-11-07T21:09:05.612+00:00",
-      "updated_at": "2026-11-07T21:09:05.612+00:00",
-      "last_login_at": "2026-11-07T21:09:05.612+00:00",
-      "activities": []
+      "id": "book-1794290284128-15b8f6330e36aeb0",
+      "reference": "STL-2026-00001",
+      "tour_id": "tour-1794073920255",
+      "tour_title": "কক্সবাজার রিলাক্স ট্যুর",
+      "tour_slug": "cox'sbazar-tour",
+      "destination_slug": "cox'sbazar-tour",
+      "departure_date": "2026-11-13",
+      "traveler_count": 2,
+      "selected_seats": [
+        "A1",
+        "A2"
+      ],
+      "unit_price": "3000",
+      "total_price": "6000",
+      "final_price": "6000",
+      "discount_amount": "0",
+      "payment_plan": "partial",
+      "advance_required_percent": "40",
+      "advance_amount": "2000",
+      "amount_paid": "2000",
+      "amount_due": "4000",
+      "due_date": "2026-11-13",
+      "status": "confirmed_advance_paid",
+      "payment_method": "Bkash payment",
+      "advance_payment_method": "Bkash payment",
+      "customer_id": "cust-1794085745612-256",
+      "customer_full_name": "Tonuza Khanam",
+      "customer_phone_number": "+8801826483915",
+      "customer_email": "arkohassan118@gmail.com",
+      "pickup_point": "Savar Thana Stand (09:00 PM)",
+      "special_requests": "",
+      "travelers": [
+        {
+          "id": "trav-book-1794290284128-15b8f6330e36aeb0-1",
+          "full_name": "Tonuza Khanam",
+          "seat_number": "A1",
+          "is_lead_traveler": true
+        },
+        {
+          "id": "trav-book-1794290284128-15b8f6330e36aeb0-2",
+          "full_name": "Traveler 2",
+          "seat_number": "A2",
+          "is_lead_traveler": false
+        }
+      ],
+      "created_at": "2026-11-10T05:58:07.42461+00:00",
+      "updated_at": "2026-11-10T06:00:43.326+00:00"
     }
   ],
-  "bookings": [],
   "payments": [],
   "clearanceTickets": [],
   "alerts": [],

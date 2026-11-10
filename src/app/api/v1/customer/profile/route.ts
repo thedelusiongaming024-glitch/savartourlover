@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { ensureDbHydrated, getCustomerById, getCustomerByPhone, getCustomerBookings, updateCustomer } from "@/server/db";
+import { ensureDbHydrated, getCustomerById, getCustomerByPhone, getCustomerBookingsAsync, updateCustomer } from "@/server/db";
 import { getCustomerFromRequest } from "@/server/auth";
 
 function resolveCustomer(request: Request) {
@@ -22,7 +22,7 @@ export async function GET(request: Request) {
       );
     }
 
-    const bookings = getCustomerBookings(customer.phone_number, customer.id);
+    const bookings = await getCustomerBookingsAsync(customer.phone_number, customer.id);
 
     return NextResponse.json({
       customer,

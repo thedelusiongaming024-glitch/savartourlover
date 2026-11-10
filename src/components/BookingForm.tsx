@@ -85,9 +85,42 @@ export function BookingForm({ tour, finalPrice, advanceAmount }: BookingFormProp
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
   const [email, setEmail] = useState("");
+  const [departuresList, setDeparturesList] = useState(tour.departures || []);
   const [departureId, setDepartureId] = useState(tour.departures?.[0]?.id ?? "");
   const [isCalendarOpen, setIsCalendarOpen] = useState(false);
   const calendarContainerRef = useRef<HTMLDivElement>(null);
+
+  // Real-time seat synchronization: fetch live departure seats from API on mount, on interval, and on tab focus
+  useEffect(() => {
+    let active = true;
+    async function refreshSeats() {
+      try {
+        const res = await fetch(`${API_BASE}/tours/${tour.slug}`, { cache: "no-store" });
+        if (!res.ok) return;
+        const data = await res.json();
+        if (active && Array.isArray(data.departures) && data.departures.length > 0) {
+          setDeparturesList(
+            data.departures.map((d: any) => ({
+              id: d.id,
+              date: d.departure_date,
+              totalSeats: Number(d.total_seats) || 40,
+              seatsRemaining: Number(d.seats_remaining) ?? 40,
+              bookedSeats: Array.isArray(d.booked_seats) ? d.booked_seats : [],
+            }))
+          );
+        }
+      } catch {}
+    }
+
+    refreshSeats();
+    const interval = setInterval(refreshSeats, 5000);
+    window.addEventListener("focus", refreshSeats);
+    return () => {
+      active = false;
+      clearInterval(interval);
+      window.removeEventListener("focus", refreshSeats);
+    };
+  }, [tour.slug]);
 
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
@@ -144,6 +177,39 @@ export function BookingForm({ tour, finalPrice, advanceAmount }: BookingFormProp
     bookingId: string;
   } | null>(null);
 
+  // Real-time cash approval detection: polls clearance/tickets state every 3 seconds.
+  // The moment staff approves physical cash payment in the admin panel, the customer
+  // is immediately and automatically redirected to their verified digital ticket.
+  useEffect(() => {
+    if (step !== "cash_confirmed" || !cashBookingData?.bookingId) return;
+
+    let active = true;
+    const interval = setInterval(async () => {
+      try {
+        const res = await fetch(`${API_BASE}/clearance/${cashBookingData.bookingId}`);
+        if (!res.ok) return;
+        const data = await res.json();
+        const b = data?.booking;
+        const isApproved =
+          b?.status === "confirmed" ||
+          b?.status === "confirmed_advance_paid" ||
+          b?.status === "confirmed_fully_paid" ||
+          b?.status === "cleared_on_tour_day" ||
+          data?.is_cleared === true ||
+          (b?.amount_paid && parseFloat(b.amount_paid) > 0);
+
+        if (active && isApproved) {
+          window.location.href = `/tickets/${cashBookingData.bookingId}`;
+        }
+      } catch {}
+    }, 3000);
+
+    return () => {
+      active = false;
+      clearInterval(interval);
+    };
+  }, [step, cashBookingData?.bookingId]);
+
   // Promo code states
   const [promoInput, setPromoInput] = useState("");
   const [appliedPromo, setAppliedPromo] = useState<AppliedPromo | null>(null);
@@ -152,7 +218,10 @@ export function BookingForm({ tour, finalPrice, advanceAmount }: BookingFormProp
   const [promoSuccess, setPromoSuccess] = useState("");
 
   const selectedDeparture =
-    tour.departures?.find((d) => d.id === departureId) || tour.departures?.[0];
+    departuresList.find((d) => d.id === departureId) ||
+    departuresList[0] ||
+    tour.departures?.find((d) => d.id === departureId) ||
+    tour.departures?.[0];
   const departureTotalSeats =
     selectedDeparture?.totalSeats ||
     tour.total_seats ||
@@ -160,6 +229,18 @@ export function BookingForm({ tour, finalPrice, advanceAmount }: BookingFormProp
     tour.capacity ||
     40;
   const departureBookedSeats = selectedDeparture?.bookedSeats || [];
+
+  // Auto-deselect any seat that is already booked by another traveler
+  useEffect(() => {
+    if (selectedSeats.length > 0 && departureBookedSeats.length > 0) {
+      const bookedSet = new Set(departureBookedSeats.map((s) => s.toUpperCase()));
+      const valid = selectedSeats.filter((s) => !bookedSet.has(s.toUpperCase()));
+      if (valid.length !== selectedSeats.length) {
+        setSelectedSeats(valid);
+        setError("One or more of your previously selected seats were already booked. Please choose another seat.");
+      }
+    }
+  }, [departureBookedSeats, selectedSeats]);
 
   const travelerCount = selectedSeats.length > 0 ? selectedSeats.length : 1;
   const rawTotalPrice = finalPrice * travelerCount;
@@ -508,7 +589,7 @@ export function BookingForm({ tour, finalPrice, advanceAmount }: BookingFormProp
           {isCalendarOpen && (
             <div className="mt-1 rounded-2xl border border-slate-200/90 bg-white shadow-xl p-1 z-20 animate-in fade-in zoom-in-95 duration-150">
               <TourDepartureCalendar
-                departures={tour.departures}
+                departures={departuresList}
                 selectedDepartureId={departureId}
                 onSelectDeparture={(depId) => {
                   handleDepartureChange(depId);

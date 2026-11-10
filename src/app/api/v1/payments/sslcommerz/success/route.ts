@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { confirmPaymentSuccess, ensureDbHydrated, getPaymentByTranId, getBookingById } from "@/server/db";
+import { confirmPaymentSuccess, ensureDbHydrated, getPaymentByTranId, getBookingByIdAsync } from "@/server/db";
 import { verifyGatewayPayment } from "@/server/paymentVerification";
 
 /**
@@ -41,7 +41,7 @@ export async function POST(request: Request) {
     }
 
     const payment = getPaymentByTranId(tran_id);
-    const booking = payment ? getBookingById(payment.booking_id) : null;
+    const booking = payment ? await getBookingByIdAsync(payment.booking_id) : (value_b ? await getBookingByIdAsync(value_b) : null);
     let reference = booking?.reference || value_b || "";
 
     // Already confirmed (e.g. by the IPN): just show the result.

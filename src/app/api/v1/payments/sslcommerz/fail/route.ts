@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { getPaymentByTranId, getBookingById, deleteIncompleteBooking } from "@/server/db";
+import { getPaymentByTranId, getBookingByIdAsync, deleteIncompleteBooking } from "@/server/db";
 
 export async function POST(request: Request) {
   const host = request.headers.get("x-forwarded-host") || request.headers.get("host");
@@ -26,7 +26,7 @@ export async function POST(request: Request) {
 
     if (tran_id) {
       const payment = getPaymentByTranId(tran_id);
-      const booking = payment ? getBookingById(payment.booking_id) : null;
+      const booking = payment ? await getBookingByIdAsync(payment.booking_id) : (value_b ? await getBookingByIdAsync(value_b) : null);
       const reference = booking?.reference || value_b || "";
       if (booking && (booking.status === "pending_payment" || parseFloat(booking.amount_paid || "0") === 0)) {
         await deleteIncompleteBooking(booking.id, "Payment failed");

@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { createPayment, ensureDbHydrated, getBookingById, loadDb, saveDb } from "@/server/db";
+import { createPayment, ensureDbHydrated, getBookingByIdAsync, loadDb, saveDb } from "@/server/db";
 import { initiateBKashPayment, isBKashConfigured } from "@/lib/bkash";
 import { initiateRocketPayment, isRocketConfigured } from "@/lib/rocket";
 import { isPaymentSimulatorEnabled } from "@/lib/paymentMode";
@@ -18,7 +18,7 @@ export async function POST(request: Request) {
       return NextResponse.json({ detail: "booking_id is required." }, { status: 400 });
     }
 
-    const booking = getBookingById(booking_id);
+    const booking = await getBookingByIdAsync(booking_id);
     if (!booking) {
       return NextResponse.json({ detail: "Booking not found." }, { status: 404 });
     }

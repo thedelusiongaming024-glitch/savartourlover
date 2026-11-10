@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { ensureDbHydrated, getBookingById, getClearanceTicket } from "@/server/db";
+import { ensureDbHydrated, getBookingByIdAsync, getClearanceTicketAsync } from "@/server/db";
 import { resolveBookingAccess } from "@/server/access";
 import { isTicketVisible, getTicketVisibilityStatus, TICKET_COMPANY_INFO } from "@/lib/ticketUtils";
 
@@ -10,14 +10,14 @@ export async function GET(
   try {
     await ensureDbHydrated();
     const { bookingId } = await props.params;
-    const booking = getBookingById(bookingId);
+    const booking = await getBookingByIdAsync(bookingId);
 
     // Same response for "missing" and "not yours" so ids cannot be probed.
     if (!booking) {
       return NextResponse.json({ error: "Booking not found" }, { status: 404 });
     }
 
-    const ticket = getClearanceTicket(bookingId);
+    const ticket = await getClearanceTicketAsync(bookingId);
     const token = new URL(request.url).searchParams.get("token");
     const access = resolveBookingAccess(request, booking, token, ticket?.token_expires_at);
     if (!access) {

@@ -6,8 +6,8 @@ import { revalidatePublicContent } from "@/server/revalidatePublicContent";
 
 export async function POST(request: Request) {
   const user = getAuthUserFromHeader(request.headers.get("Authorization"));
-  if (!user || user.role !== "super_admin") {
-    return NextResponse.json({ detail: "Super Admin privileges required." }, { status: 403 });
+  if (!user || (user.role !== "super_admin" && user.role !== "admin")) {
+    return NextResponse.json({ detail: "Staff/Admin privileges required." }, { status: 403 });
   }
 
   try {

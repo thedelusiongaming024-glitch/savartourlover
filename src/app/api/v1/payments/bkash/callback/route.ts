@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { executeBKashPayment } from "@/lib/bkash";
-import { confirmPaymentSuccess, getPaymentByTranId, getBookingById, loadDb, cancelBookingDirectly, deleteIncompleteBooking, ensureDbHydrated } from "@/server/db";
+import { confirmPaymentSuccess, getPaymentByTranId, getBookingByIdAsync, loadDb, cancelBookingDirectly, deleteIncompleteBooking, ensureDbHydrated } from "@/server/db";
 
 function isAdvanceBooking(booking: any, payment: any): boolean {
   if (!booking) return true;
@@ -59,10 +59,9 @@ async function handleCallback(request: Request) {
     payment = db.payments.find((p: any) => p.val_id === paymentID || p.gateway_session_key === paymentID) || null;
   }
 
-  let booking = payment ? getBookingById(payment.booking_id) : null;
+  let booking = payment ? await getBookingByIdAsync(payment.booking_id) : null;
   if (!booking && reference) {
-    const db = loadDb();
-    booking = db.bookings.find((b: any) => b.reference === reference) || null;
+    booking = await getBookingByIdAsync(reference);
   }
   if (booking && !reference) {
     reference = booking.reference;

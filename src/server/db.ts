@@ -42,7 +42,9 @@ import {
   registerDeletedEntity,
   unregisterDeletedEntity,
   knownDeletedEntities,
+  mapSupabaseBooking,
 } from "./supabase";
+import { revalidatePublicContent } from "./revalidatePublicContent";
 import { normalizeImageUrl } from "@/lib/media";
 import { parseRocketSms, type ParsedRocketSms } from "./rocketSmsParser";
 import { parseBkashSms, type ParsedBkashSms } from "./bkashSmsParser";
@@ -307,6 +309,10 @@ export async function deleteIncompleteBooking(
 
   // 6. Persist the updated database and sync snapshot mirror to Supabase Storage
   await saveDb(db, true);
+
+  try {
+    revalidatePublicContent();
+  } catch {}
 
   return { success: true, seatsReleased, reference };
 }
@@ -1088,13 +1094,24 @@ function bookingsForDeparture(
   departureDate?: string
 ): DbBooking[] {
   const nowMs = Date.now();
-  return db.bookings.filter((b) => {
+  return (db.bookings || []).filter((b) => {
     if (!isSeatHoldingBooking(b, nowMs)) return false;
-    if (b.tour_id !== tourId && b.tour_slug !== tourId) return false;
 
-    const matchDepId = Boolean(departureId) && b.departure_id === departureId;
-    const matchDepDate =
-      Boolean(departureDate) && Boolean(b.departure_date) && b.departure_date!.slice(0, 10) === departureDate!.slice(0, 10);
+    // Tour ID or slug matching: tolerant to ID, slug, and case differences
+    const normTourId = (tourId || "").trim().toLowerCase();
+    const matchTour =
+      !tourId ||
+      b.tour_id === tourId ||
+      b.tour_slug === tourId ||
+      (b.tour_id && b.tour_id.toLowerCase() === normTourId) ||
+      (b.tour_slug && b.tour_slug.toLowerCase() === normTourId);
+    if (!matchTour) return false;
+
+    // Departure matching: match by specific departure_id, or by calendar date (YYYY-MM-DD)
+    const bDate = (b.departure_date || "").slice(0, 10);
+    const targetDate = (departureDate || "").slice(0, 10);
+    const matchDepId = Boolean(departureId) && Boolean(b.departure_id) && b.departure_id === departureId;
+    const matchDepDate = Boolean(targetDate) && Boolean(bDate) && bDate === targetDate;
 
     return matchDepId || matchDepDate || (!departureId && !departureDate);
   });
@@ -1112,6 +1129,23 @@ export function getBookedSeatsForDeparture(
     if (Array.isArray(b.selected_seats)) {
       for (const seat of b.selected_seats) {
         if (seat && typeof seat === "string") bookedSet.add(seat.trim().toUpperCase());
+      }
+    } else if (typeof (b as any).selected_seats === "string" && (b as any).selected_seats.trim()) {
+      try {
+        const parsed = JSON.parse((b as any).selected_seats);
+        if (Array.isArray(parsed)) {
+          for (const s of parsed) if (s) bookedSet.add(String(s).trim().toUpperCase());
+        }
+      } catch {
+        const cleaned = (b as any).selected_seats.replace(/^\{|\}$/g, "");
+        for (const s of cleaned.split(",")) if (s.trim()) bookedSet.add(s.trim().toUpperCase());
+      }
+    }
+    if (Array.isArray(b.travelers)) {
+      for (const t of b.travelers) {
+        if (t && typeof t.seat_number === "string" && t.seat_number.trim()) {
+          bookedSet.add(t.seat_number.trim().toUpperCase());
+        }
       }
     }
   }
@@ -2031,6 +2065,51 @@ export function getCustomerBookings(phone: string, customerId?: string): DbBooki
   });
 }
 
+/**
+ * Real-time cloud sync: fetches customer bookings from Supabase PostgreSQL,
+ * merges into memoryDb, and returns authoritative bookings across serverless instances.
+ */
+export async function getCustomerBookingsAsync(phone: string, customerId?: string): Promise<DbBooking[]> {
+  const localBookings = getCustomerBookings(phone, customerId);
+
+  try {
+    const supabase = getSupabaseAdminClient();
+    const filters: string[] = [];
+    if (customerId) filters.push(`customer_id.eq.${customerId}`);
+    const normalized = normalizePhoneNumber(phone);
+    if (normalized) {
+      filters.push(`customer_phone.eq.${normalized}`);
+      filters.push(`customer_phone.eq.${phone.trim()}`);
+    }
+
+    if (filters.length > 0) {
+      const { data: remoteRows } = await supabase
+        .from("bookings")
+        .select("*")
+        .or(filters.join(","))
+        .neq("status", "cancelled");
+
+      if (Array.isArray(remoteRows) && remoteRows.length > 0) {
+        const db = loadDb();
+        for (const row of remoteRows) {
+          const mapped = mapSupabaseBooking(row, db.payments || []);
+          const idx = db.bookings.findIndex((b) => b.id === mapped.id);
+          if (idx !== -1) {
+            db.bookings[idx] = mapped;
+          } else {
+            db.bookings.unshift(mapped);
+          }
+        }
+        return getCustomerBookings(phone, customerId);
+      }
+    }
+  } catch (err) {
+    console.warn("[getCustomerBookingsAsync] Supabase query warning:", err);
+  }
+
+  return localBookings;
+}
+
 export interface CustomerWithDetails extends DbCustomerUser {
   bookings_count: number;
   total_spent: number;
@@ -2394,12 +2473,54 @@ export async function createBooking(input: {
   if (pendingCashPay) {
     await syncPaymentToSupabase(pendingCashPay);
   }
+
+  try {
+    revalidatePublicContent([`/tours/${tour.slug}`]);
+  } catch {}
+
   return { booking: newBooking, customer };
 }
 
 export function getBookingById(id: string): DbBooking | null {
   const db = loadDb();
   return db.bookings.find((b) => b.id === id) || null;
+}
+
+/**
+ * Real-time cloud sync: looks up booking locally first. If missing (e.g. created
+ * on another Vercel Serverless container), directly queries Supabase PostgreSQL,
+ * maps the record, caches it into memoryDb, and returns it.
+ */
+export async function getBookingByIdAsync(id: string): Promise<DbBooking | null> {
+  const local = getBookingById(id);
+  if (local) return local;
+
+  const db = loadDb();
+  const byRef = db.bookings.find((b) => b.reference === id || b.id === id);
+  if (byRef) return byRef;
+
+  try {
+    const supabase = getSupabaseAdminClient();
+    const { data: remoteB } = await supabase
+      .from("bookings")
+      .select("*")
+      .or(`id.eq.${id},reference.eq.${id}`)
+      .maybeSingle();
+
+    if (!remoteB) return null;
+
+    const recovered = mapSupabaseBooking(remoteB, db.payments || []);
+    const existingIdx = db.bookings.findIndex((b) => b.id === recovered.id);
+    if (existingIdx !== -1) {
+      db.bookings[existingIdx] = recovered;
+    } else {
+      db.bookings.unshift(recovered);
+    }
+    return recovered;
+  } catch (err) {
+    console.error("[getBookingByIdAsync] Failed to fetch booking from Supabase:", err);
+    return null;
+  }
 }
 
 export async function updateBooking(id: string, update: Partial<DbBooking>): Promise<DbBooking | null> {
@@ -2502,53 +2623,8 @@ async function resolveBookingForPayment(
   const local = db.bookings.find((b) => b.id === bookingId);
   if (local) return local;
 
-  // The booking may have been created on another server instance: load the real row from Supabase.
-  try {
-    const supabase = getSupabaseAdminClient();
-    const { data: remoteB } = await supabase.from("bookings").select("*").eq("id", bookingId).maybeSingle();
-    if (!remoteB) return undefined;
-
-    const recovered: DbBooking = {
-      id: remoteB.id,
-      reference: remoteB.reference || bookingRef || `STL-${String(remoteB.id).slice(-6).toUpperCase()}`,
-      tour_id: remoteB.tour_id,
-      tour_title: remoteB.tour_title,
-      tour_slug: remoteB.tour_slug,
-      destination_slug: (() => {
-        if (remoteB.destination_slug && remoteB.destination_slug !== remoteB.tour_slug) {
-          return remoteB.destination_slug;
-        }
-        const matchedTour = memoryDb?.tours?.find((t) => t.id === remoteB.tour_id || t.slug === remoteB.tour_slug);
-        return matchedTour?.destination_slug || remoteB.destination_slug || remoteB.tour_slug || "bangladesh";
-      })(),
-      departure_date: remoteB.departure_date,
-      traveler_count: Number(remoteB.traveler_count || 1),
-      selected_seats: Array.isArray(remoteB.selected_seats) ? remoteB.selected_seats : [],
-      unit_price: String(remoteB.unit_price || 0),
-      total_price: String(remoteB.total_price || 0),
-      final_price: String(remoteB.total_price || 0),
-      payment_plan: Number(remoteB.due_on_tour_day || 0) > 0 ? "partial" : "full",
-      advance_required_percent: "40",
-      advance_amount: String(remoteB.advance_amount || 0),
-      amount_paid: String(remoteB.amount_paid || 0),
-      amount_due: String(remoteB.due_on_tour_day ?? remoteB.total_price ?? 0),
-      due_date: remoteB.departure_date || new Date().toISOString().slice(0, 10),
-      status: remoteB.status || "pending_payment",
-      customer_id: remoteB.customer_id || undefined,
-      customer_full_name: remoteB.customer_name || "Customer",
-      customer_phone_number: remoteB.customer_phone || "",
-      customer_email: remoteB.customer_email || "",
-      special_requests: remoteB.special_requests || "",
-      travelers: Array.isArray(remoteB.travelers) ? remoteB.travelers : [],
-      created_at: remoteB.created_at || new Date().toISOString(),
-      updated_at: new Date().toISOString(),
-    };
-    db.bookings.unshift(recovered);
-    return recovered;
-  } catch (err) {
-    console.error("[Payments] Failed to recover booking from Supabase:", err);
-    return undefined;
-  }
+  const resolved = (await getBookingByIdAsync(bookingId)) || (bookingRef ? await getBookingByIdAsync(bookingRef) : null);
+  return resolved || undefined;
 }
 
 async function confirmPaymentSuccessInner(
@@ -2830,6 +2906,11 @@ async function confirmPaymentSuccessInner(
     await syncClearanceTicketToSupabase(ticket);
   }
   await syncAlertToSupabase(payAlert);
+
+  try {
+    if (booking.tour_slug) revalidatePublicContent([`/tours/${booking.tour_slug}`]);
+  } catch {}
+
   return { payment, booking, ticket };
 }
 
@@ -2860,6 +2941,60 @@ export function getClearanceTicket(bookingId: string): DbClearanceTicket | null 
     };
     db.clearanceTickets.unshift(ticket);
     void saveDb(db);
+  }
+  return ticket;
+}
+
+/**
+ * Real-time cloud sync: retrieves clearance ticket locally or fetches from
+ * Supabase PostgreSQL. If ticket was generated on another serverless container,
+ * this hydrates memoryDb from Supabase and ensures QR tokens and verification status match.
+ */
+export async function getClearanceTicketAsync(bookingId: string): Promise<DbClearanceTicket | null> {
+  const local = getClearanceTicket(bookingId);
+  if (local) return local;
+
+  // 1. Query Supabase clearance_tickets table
+  try {
+    const supabase = getSupabaseAdminClient();
+    const { data: remoteT } = await supabase
+      .from("clearance_tickets")
+      .select("*")
+      .eq("booking_id", bookingId)
+      .maybeSingle();
+
+    if (remoteT) {
+      const db = loadDb();
+      const recovered: DbClearanceTicket = {
+        id: remoteT.id,
+        booking_id: remoteT.booking_id,
+        token: remoteT.signed_token || remoteT.token || generateClearanceToken(remoteT.booking_id),
+        token_expires_at: remoteT.token_expires_at || new Date(Date.now() + 14 * 24 * 3600 * 1000).toISOString(),
+        is_cleared: Boolean(remoteT.is_verified || remoteT.is_cleared),
+        cleared_at: remoteT.verified_at || remoteT.cleared_at || undefined,
+        clearance_method: remoteT.cleared_by_host || remoteT.clearance_method || undefined,
+        created_at: remoteT.created_at || new Date().toISOString(),
+      };
+      const existingIdx = db.clearanceTickets.findIndex((t) => t.booking_id === bookingId);
+      if (existingIdx !== -1) {
+        db.clearanceTickets[existingIdx] = recovered;
+      } else {
+        db.clearanceTickets.unshift(recovered);
+      }
+      return recovered;
+    }
+  } catch (err) {
+    console.warn("[getClearanceTicketAsync] Supabase query warning:", err);
+  }
+
+  // 2. If not found in Supabase clearance_tickets, ensure booking is loaded from Supabase
+  const booking = await getBookingByIdAsync(bookingId);
+  if (!booking) return null;
+
+  // 3. Now that booking is guaranteed in memory, generate clearance ticket
+  const ticket = getClearanceTicket(booking.id);
+  if (ticket) {
+    void syncClearanceTicketToSupabase(ticket);
   }
   return ticket;
 }
@@ -3230,6 +3365,10 @@ export async function approveCashPayment(
   await syncPaymentToSupabase(payment);
   await syncBookingToSupabase(booking);
   if (ticket) await syncClearanceTicketToSupabase(ticket);
+
+  try {
+    if (booking.tour_slug) revalidatePublicContent([`/tours/${booking.tour_slug}`]);
+  } catch {}
 
   return { booking, payment, ticket: ticket || getClearanceTicket(booking.id)! };
 }

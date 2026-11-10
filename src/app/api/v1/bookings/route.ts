@@ -103,8 +103,8 @@ export async function DELETE(request: Request) {
       return NextResponse.json({ detail: "booking_id is required." }, { status: 400 });
     }
 
-    const { deleteIncompleteBooking, getBookingById } = await import("@/server/db");
-    const booking = getBookingById(booking_id);
+    const { deleteIncompleteBooking, getBookingByIdAsync } = await import("@/server/db");
+    const booking = await getBookingByIdAsync(booking_id);
     if (!booking) {
       return NextResponse.json({ success: true, message: "Booking already deleted or not found." });
     }

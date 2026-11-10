@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { verifyClearanceToken } from "@/server/clearance";
-import { createPayment, ensureDbHydrated, getBookingById, getClearanceTicket, completeDuePayment, loadDb, saveDb } from "@/server/db";
+import { createPayment, ensureDbHydrated, getBookingByIdAsync, getClearanceTicketAsync, completeDuePayment, loadDb, saveDb } from "@/server/db";
 import { getAuthUserFromHeader } from "@/server/auth";
 import { resolveBookingAccess } from "@/server/access";
 import { isPaymentSimulatorEnabled } from "@/lib/paymentMode";
@@ -22,7 +22,7 @@ export async function POST(
     const token = body.token || new URL(request.url).searchParams.get("token");
     const method = body.method || "customer_self_pay";
 
-    const ticket = getClearanceTicket(bookingId);
+    const ticket = await getClearanceTicketAsync(bookingId);
     if (!ticket) {
       return NextResponse.json({ detail: "No clearance ticket found for this booking." }, { status: 404 });
     }
@@ -37,7 +37,7 @@ export async function POST(
       }
     }
 
-    const booking = getBookingById(bookingId);
+    const booking = await getBookingByIdAsync(bookingId);
     if (!booking) {
       return NextResponse.json({ detail: "Booking not found." }, { status: 404 });
     }

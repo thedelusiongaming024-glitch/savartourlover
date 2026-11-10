@@ -956,6 +956,111 @@ async function selectAllRows(
   }
 }
 
+export function mapSupabaseBooking(b: any, payments: DbPayment[] = []): DbBooking {
+  let selected_seats: string[] = [];
+  if (Array.isArray(b.selected_seats) && b.selected_seats.length > 0) {
+    selected_seats = b.selected_seats.map((s: any) => String(s).trim().toUpperCase()).filter(Boolean);
+  } else if (typeof b.selected_seats === "string" && b.selected_seats.trim()) {
+    try {
+      const parsed = JSON.parse(b.selected_seats);
+      if (Array.isArray(parsed)) {
+        selected_seats = parsed.map((s: any) => String(s).trim().toUpperCase()).filter(Boolean);
+      }
+    } catch {
+      const cleaned = b.selected_seats.replace(/^\{|\}$/g, "");
+      selected_seats = cleaned.split(",").map((s: string) => s.trim().toUpperCase()).filter(Boolean);
+    }
+  } else if (b.pickup_point && typeof b.pickup_point === "string" && b.pickup_point.includes("Seats: ")) {
+    const match = b.pickup_point.match(/Seats:\s*([A-Za-z0-9,\s]+)/);
+    if (match) {
+      selected_seats = match[1].split(",").map((s: string) => s.trim().toUpperCase()).filter(Boolean);
+    }
+  } else if (b.special_requests && typeof b.special_requests === "string" && b.special_requests.includes("[Seats: ")) {
+    const match = b.special_requests.match(/\[Seats:\s*([A-Za-z0-9,\s]+)\]/);
+    if (match) {
+      selected_seats = match[1].split(",").map((s: string) => s.trim().toUpperCase()).filter(Boolean);
+    }
+  }
+
+  const travelers = (Array.isArray(b.travelers) && b.travelers.length > 0)
+    ? b.travelers
+    : (selected_seats.length > 0
+      ? selected_seats.map((seat, idx) => ({
+          id: `trav-${b.id}-${idx + 1}`,
+          full_name: idx === 0 ? (b.customer_name || b.customer_full_name) : `Traveler ${idx + 1}`,
+          seat_number: seat,
+          is_lead_traveler: idx === 0,
+        }))
+      : [{ id: `trav-${b.id}-1`, full_name: b.customer_name || b.customer_full_name, is_lead_traveler: true }]);
+
+  // Promo code extraction from direct columns or special_requests fallback
+  let promo_code = b.promo_code || undefined;
+  let discount_amount = b.discount_amount !== undefined && b.discount_amount !== null ? String(b.discount_amount) : undefined;
+  if (!promo_code && b.special_requests && typeof b.special_requests === "string" && b.special_requests.includes("[Promo: ")) {
+    const promoMatch = b.special_requests.match(/\[Promo:\s*([A-Za-z0-9_\-]+)\s*\(-৳?([0-9,.]+)\)\]/);
+    if (promoMatch) {
+      promo_code = promoMatch[1].trim();
+      discount_amount = discount_amount || promoMatch[2].trim().replace(/,/g, "");
+    }
+  }
+
+  // Link payment methods from mapped payments
+  const bookingPayments = payments.filter((p) => p.booking_id === b.id);
+  const advancePayment = bookingPayments.find((p) => p.payment_type === "advance" || p.payment_type === "full");
+  const duePayment = bookingPayments.find((p) => p.payment_type === "final" || p.payment_type === "due");
+
+  const advance_payment_method = advancePayment?.payment_method ||
+    (b.advance_payment_method ? b.advance_payment_method : undefined) ||
+    (b.payment_method === "cash_on_hand" || b.payment_method === "cash" ? "cash_on_hand" : undefined) ||
+    (b.special_requests?.includes("Pay Cash by Hand") || b.special_requests?.includes("Cash on Hand") ? "cash_on_hand" : "Bkash payment");
+
+  const due_payment_method = duePayment?.payment_method ||
+    (b.due_payment_method ? b.due_payment_method : undefined) ||
+    (b.special_requests?.includes("Due Cash") || b.special_requests?.includes("Due: Cash") ? "cash_on_hand" : undefined);
+
+  return {
+    id: b.id,
+    reference: b.reference || (b.id ? `STL-${b.id.slice(-6).toUpperCase()}` : `STL-${Date.now().toString().slice(-6)}`),
+    tour_id: b.tour_id,
+    tour_title: b.tour_title,
+    tour_slug: b.tour_slug,
+    destination_slug: b.destination_slug || b.tour_slug || "bangladesh",
+    departure_date: b.departure_date,
+    traveler_count: Number(b.traveler_count || (selected_seats.length > 0 ? selected_seats.length : 1)),
+    selected_seats,
+    unit_price: String(b.unit_price || Math.round(Number(b.total_price || 0) / Math.max(1, Number(b.traveler_count || 1)))),
+    total_price: String(b.total_price || 0),
+    final_price: String(b.total_price || 0),
+    promo_code,
+    discount_amount,
+    payment_plan: Number(b.due_on_tour_day || 0) > 0 ? "partial" : "full",
+    advance_required_percent: "40",
+    advance_amount: String(b.advance_amount || 0),
+    amount_paid: String(b.amount_paid || 0),
+    amount_due: String(b.due_on_tour_day || 0),
+    due_date: b.departure_date || new Date().toISOString().slice(0, 10),
+    status: b.status || "pending_payment",
+    payment_method: advance_payment_method || b.payment_method || "Bkash payment",
+    advance_payment_method,
+    due_payment_method,
+    cash_approval_expires_at: b.cash_approval_expires_at || undefined,
+    cash_approved_by: b.cash_approved_by || undefined,
+    cash_approved_at: b.cash_approved_at || undefined,
+    due_cash_approval_expires_at: b.due_cash_approval_expires_at || undefined,
+    due_cash_approved_by: b.due_cash_approved_by || undefined,
+    due_cash_approved_at: b.due_cash_approved_at || undefined,
+    customer_id: b.customer_id || undefined,
+    customer_full_name: b.customer_name || b.customer_full_name || "Customer",
+    customer_phone_number: b.customer_phone || b.customer_phone_number || "",
+    customer_email: b.customer_email || "",
+    pickup_point: b.pickup_point || undefined,
+    special_requests: (b.special_requests || "").replace(/\[\s*Seats\s*:[^\]]*\]?/gi, "").trim(),
+    travelers,
+    created_at: b.created_at || new Date().toISOString(),
+    updated_at: b.updated_at || new Date().toISOString(),
+  };
+}
+
 // =============================================================================
 // Full PostgreSQL Hydration from Supabase (Resilient Against Network Blips)
 // =============================================================================
@@ -969,6 +1074,7 @@ export async function fetchDatabaseFromSupabase(
     const catalogQueries = [
       selectAllRows(supabase, "destinations", "name"),
       selectAllRows(supabase, "tours", "title"),
+      selectAllRows(supabase, "bookings", "created_at", false),
       selectAllRows(supabase, "offers"),
       selectAllRows(supabase, "testimonials"),
       selectAllRows(supabase, "blog_posts"),
@@ -979,7 +1085,6 @@ export async function fetchDatabaseFromSupabase(
       ? [
           selectAllRows(supabase, "staff_users"),
           selectAllRows(supabase, "customers"),
-          selectAllRows(supabase, "bookings", "created_at", false),
           selectAllRows(supabase, "customer_activities", "created_at", false),
           selectAllRows(supabase, "payments", "created_at", false),
           selectAllRows(supabase, "contact_inquiries", "created_at", false),
@@ -991,13 +1096,13 @@ export async function fetchDatabaseFromSupabase(
     const [
       destsRes,
       toursRes,
+      bookingsRes,
       offersRes,
       testsRes,
       blogsRes,
       blocksRes,
       staffRes = { data: null, error: null },
       custsRes = { data: null, error: null },
-      bookingsRes = { data: null, error: null },
       actsRes = { data: null, error: null },
       paymentsRes = { data: null, error: null },
       inqsRes = { data: null, error: null },
@@ -1031,15 +1136,17 @@ export async function fetchDatabaseFromSupabase(
       // Fallback: try reading catalog tables via browser/publishable client before giving up
       try {
         const fallbackClient = getSupabaseBrowserClient();
-        const [fDests, fTours, fOffers, fBlocks] = await Promise.all([
+        const [fDests, fTours, fBookings, fOffers, fBlocks] = await Promise.all([
           selectAllRows(fallbackClient, "destinations", "name"),
           selectAllRows(fallbackClient, "tours", "title"),
+          selectAllRows(fallbackClient, "bookings", "created_at", false),
           selectAllRows(fallbackClient, "offers"),
           selectAllRows(fallbackClient, "homepage_blocks", "display_order"),
         ]);
         if (!fDests.error || !fTours.error) {
           destsData = fDests.data ?? destsData;
           toursData = fTours.data ?? toursData;
+          bookingsData = fBookings.data ?? bookingsData;
           offersData = fOffers.data ?? offersData;
           blocksData = fBlocks.data ?? blocksData;
         }
@@ -1317,111 +1424,8 @@ export async function fetchDatabaseFromSupabase(
     const mappedBookings: DbBooking[] = bookingsData !== null
       ? bookingsData
           .filter((b: any) => b.status !== "cancelled" && !knownDeletedEntities.bookings.has(b.id) && !knownDeletedEntities.bookings.has(b.reference))
-          .map((b: any) => {
-      let selected_seats: string[] = [];
-      if (Array.isArray(b.selected_seats) && b.selected_seats.length > 0) {
-        selected_seats = b.selected_seats.map((s: any) => String(s).trim().toUpperCase()).filter(Boolean);
-      } else if (typeof b.selected_seats === "string" && b.selected_seats.trim()) {
-        try {
-          const parsed = JSON.parse(b.selected_seats);
-          if (Array.isArray(parsed)) {
-            selected_seats = parsed.map((s: any) => String(s).trim().toUpperCase()).filter(Boolean);
-          }
-        } catch {
-          const cleaned = b.selected_seats.replace(/^\{|\}$/g, "");
-          selected_seats = cleaned.split(",").map((s: string) => s.trim().toUpperCase()).filter(Boolean);
-        }
-      } else if (b.pickup_point && typeof b.pickup_point === "string" && b.pickup_point.includes("Seats: ")) {
-        const match = b.pickup_point.match(/Seats:\s*([A-Za-z0-9,\s]+)/);
-        if (match) {
-          selected_seats = match[1].split(",").map((s: string) => s.trim().toUpperCase()).filter(Boolean);
-        }
-      } else if (b.special_requests && typeof b.special_requests === "string" && b.special_requests.includes("[Seats: ")) {
-        const match = b.special_requests.match(/\[Seats:\s*([A-Za-z0-9,\s]+)\]/);
-        if (match) {
-          selected_seats = match[1].split(",").map((s: string) => s.trim().toUpperCase()).filter(Boolean);
-        }
-      }
-
-      const travelers = (Array.isArray(b.travelers) && b.travelers.length > 0)
-        ? b.travelers
-        : (selected_seats.length > 0
-          ? selected_seats.map((seat, idx) => ({
-              id: `trav-${b.id}-${idx + 1}`,
-              full_name: idx === 0 ? b.customer_name : `Traveler ${idx + 1}`,
-              seat_number: seat,
-              is_lead_traveler: idx === 0,
-            }))
-          : [{ id: `trav-${b.id}-1`, full_name: b.customer_name, is_lead_traveler: true }]);
-
-      // Promo code extraction from direct columns or special_requests fallback
-      let promo_code = b.promo_code || undefined;
-      let discount_amount = b.discount_amount !== undefined && b.discount_amount !== null ? String(b.discount_amount) : undefined;
-      if (!promo_code && b.special_requests && typeof b.special_requests === "string" && b.special_requests.includes("[Promo: ")) {
-        const promoMatch = b.special_requests.match(/\[Promo:\s*([A-Za-z0-9_\-]+)\s*\(-৳?([0-9,.]+)\)\]/);
-        if (promoMatch) {
-          promo_code = promoMatch[1].trim();
-          discount_amount = discount_amount || promoMatch[2].trim().replace(/,/g, "");
-        }
-      }
-
-      // Link payment methods from mapped payments
-      const bookingPayments = mappedPayments.filter((p) => p.booking_id === b.id);
-      const advancePayment = bookingPayments.find((p) => p.payment_type === "advance" || p.payment_type === "full");
-      const duePayment = bookingPayments.find((p) => p.payment_type === "final" || p.payment_type === "due");
-
-      const advance_payment_method = advancePayment?.payment_method ||
-        (b.advance_payment_method ? b.advance_payment_method : undefined) ||
-        (b.payment_method === "cash_on_hand" || b.payment_method === "cash" ? "cash_on_hand" : undefined) ||
-        (b.special_requests?.includes("Pay Cash by Hand") || b.special_requests?.includes("Cash on Hand") ? "cash_on_hand" : "Bkash payment");
-
-      const due_payment_method = duePayment?.payment_method ||
-        (b.due_payment_method ? b.due_payment_method : undefined) ||
-        (b.special_requests?.includes("Due Cash") || b.special_requests?.includes("Due: Cash") ? "cash_on_hand" : undefined);
-
-      return {
-        id: b.id,
-        reference: b.reference || (b.id ? `STL-${b.id.slice(-6).toUpperCase()}` : `STL-${Date.now().toString().slice(-6)}`),
-        tour_id: b.tour_id,
-        tour_title: b.tour_title,
-        tour_slug: b.tour_slug,
-        destination_slug: b.destination_slug || b.tour_slug || "bangladesh",
-        departure_date: b.departure_date,
-        traveler_count: Number(b.traveler_count || (selected_seats.length > 0 ? selected_seats.length : 1)),
-        selected_seats,
-        unit_price: String(b.unit_price || Math.round(Number(b.total_price || 0) / Math.max(1, Number(b.traveler_count || 1)))),
-        total_price: String(b.total_price || 0),
-        final_price: String(b.total_price || 0),
-        promo_code,
-        discount_amount,
-        payment_plan: Number(b.due_on_tour_day || 0) > 0 ? "partial" : "full",
-        advance_required_percent: "40",
-        advance_amount: String(b.advance_amount || 0),
-        amount_paid: String(b.amount_paid || 0),
-        amount_due: String(b.due_on_tour_day || 0),
-        due_date: b.departure_date || new Date().toISOString().slice(0, 10),
-        status: b.status || "pending_payment",
-        payment_method: advance_payment_method || b.payment_method || "Bkash payment",
-        advance_payment_method,
-        due_payment_method,
-        cash_approval_expires_at: b.cash_approval_expires_at || undefined,
-        cash_approved_by: b.cash_approved_by || undefined,
-        cash_approved_at: b.cash_approved_at || undefined,
-        due_cash_approval_expires_at: b.due_cash_approval_expires_at || undefined,
-        due_cash_approved_by: b.due_cash_approved_by || undefined,
-        due_cash_approved_at: b.due_cash_approved_at || undefined,
-        customer_id: b.customer_id || undefined,
-        customer_full_name: b.customer_name,
-        customer_phone_number: b.customer_phone,
-        customer_email: b.customer_email || "",
-        pickup_point: b.pickup_point || undefined,
-        special_requests: (b.special_requests || "").replace(/\[\s*Seats\s*:[^\]]*\]?/gi, "").trim(),
-        travelers,
-        created_at: b.created_at || new Date().toISOString(),
-        updated_at: b.updated_at || new Date().toISOString(),
-      };
-    })
-  : (currentDb?.bookings || []);
+          .map((b: any) => mapSupabaseBooking(b, mappedPayments))
+      : (currentDb?.bookings || []);
 
     // Map contact inquiries from Postgres table if present
     const mappedInquiries: DbContactInquiry[] = inqsData !== null

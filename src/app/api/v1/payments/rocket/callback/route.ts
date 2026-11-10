@@ -3,7 +3,7 @@ import { executeRocketPayment } from "@/lib/rocket";
 import {
   confirmPaymentSuccess,
   getPaymentByTranId,
-  getBookingById,
+  getBookingByIdAsync,
   loadDb,
   cancelBookingDirectly,
   deleteIncompleteBooking,
@@ -83,10 +83,9 @@ async function handleCallback(request: Request) {
       ) || null;
   }
 
-  let booking = payment ? getBookingById(payment.booking_id) : null;
+  let booking = payment ? await getBookingByIdAsync(payment.booking_id) : null;
   if (!booking && reference) {
-    const db = loadDb();
-    booking = db.bookings.find((b: any) => b.reference === reference) || null;
+    booking = await getBookingByIdAsync(reference);
   }
   if (booking && !reference) {
     reference = booking.reference;

@@ -136,18 +136,19 @@ export function BusSeatSelector({
                             key={seatCode}
                             type="button"
                             disabled
-                            title={`Seat ${seatCode} (Unavailable)`}
-                            aria-label={`Seat ${seatCode} unavailable`}
-                            className="w-8 h-8 sm:w-10 sm:h-10 rounded-md bg-slate-200 text-slate-400 flex items-center justify-center font-medium cursor-not-allowed transition-all"
+                            title={`Seat ${seatCode} (Booked / Unavailable)`}
+                            aria-label={`Seat ${seatCode} booked`}
+                            className="w-8 h-8 sm:w-10 sm:h-10 rounded-md bg-slate-200 border border-slate-300 text-rose-500 flex flex-col items-center justify-center font-medium cursor-not-allowed transition-all relative select-none shadow-2xs"
                           >
                             <svg
-                              className="w-3 h-3 sm:w-3.5 sm:h-3.5 stroke-[2.5]"
+                              className="w-3.5 h-3.5 sm:w-4 sm:h-4 stroke-[3] text-rose-500"
                               viewBox="0 0 24 24"
                               fill="none"
                               stroke="currentColor"
                             >
                               <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
                             </svg>
+                            <span className="text-[8px] sm:text-[9px] font-bold text-slate-500 leading-none -mt-0.5">{seatCode}</span>
                           </button>
                         );
                       }
@@ -215,18 +216,19 @@ export function BusSeatSelector({
                             key={seatCode}
                             type="button"
                             disabled
-                            title={`Seat ${seatCode} (Unavailable)`}
-                            aria-label={`Seat ${seatCode} unavailable`}
-                            className="w-8 h-8 sm:w-10 sm:h-10 rounded-md bg-slate-200 text-slate-400 flex items-center justify-center font-medium cursor-not-allowed transition-all"
+                            title={`Seat ${seatCode} (Booked / Unavailable)`}
+                            aria-label={`Seat ${seatCode} booked`}
+                            className="w-8 h-8 sm:w-10 sm:h-10 rounded-md bg-slate-200 border border-slate-300 text-rose-500 flex flex-col items-center justify-center font-medium cursor-not-allowed transition-all relative select-none shadow-2xs"
                           >
                             <svg
-                              className="w-3 h-3 sm:w-3.5 sm:h-3.5 stroke-[2.5]"
+                              className="w-3.5 h-3.5 sm:w-4 sm:h-4 stroke-[3] text-rose-500"
                               viewBox="0 0 24 24"
                               fill="none"
                               stroke="currentColor"
                             >
                               <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
                             </svg>
+                            <span className="text-[8px] sm:text-[9px] font-bold text-slate-500 leading-none -mt-0.5">{seatCode}</span>
                           </button>
                         );
                       }
@@ -285,12 +287,12 @@ export function BusSeatSelector({
           </div>
 
           <div className="flex items-center gap-1.5">
-            <div className="w-5 h-5 sm:w-6 sm:h-6 rounded bg-slate-200 text-slate-400 flex items-center justify-center">
-              <svg className="w-3 h-3 sm:w-3.5 sm:h-3.5 stroke-[2.5]" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+            <div className="w-5 h-5 sm:w-6 sm:h-6 rounded bg-slate-200 border border-slate-300 text-rose-500 flex items-center justify-center">
+              <svg className="w-3 h-3 sm:w-3.5 sm:h-3.5 stroke-[3] text-rose-500" viewBox="0 0 24 24" fill="none" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
               </svg>
             </div>
-            <span>Unavailable</span>
+            <span>Booked (❌)</span>
           </div>
 
           <div className="flex items-center gap-1.5">

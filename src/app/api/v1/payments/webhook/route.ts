@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { confirmPaymentSuccess, ensureDbHydrated, getPaymentByTranId, getBookingById, deleteIncompleteBooking } from "@/server/db";
+import { confirmPaymentSuccess, ensureDbHydrated, getPaymentByTranId, getBookingByIdAsync, deleteIncompleteBooking } from "@/server/db";
 import { isPaymentSimulatorEnabled } from "@/lib/paymentMode";
 
 /**
@@ -38,7 +38,7 @@ export async function POST(request: Request) {
         amount_due: result.booking.amount_due,
       });
     } else {
-      const booking = getBookingById(payment.booking_id);
+      const booking = await getBookingByIdAsync(payment.booking_id);
       if (
         booking &&
         (booking.status === "pending_payment" || parseFloat(booking.amount_paid || "0") === 0)

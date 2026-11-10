@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { verifyClearanceToken } from "@/server/clearance";
-import { ensureDbHydrated, getBookingById, getClearanceTicket } from "@/server/db";
+import { ensureDbHydrated, getBookingByIdAsync, getClearanceTicketAsync } from "@/server/db";
 import { resolveBookingAccess } from "@/server/access";
 
 export async function GET(
@@ -13,7 +13,7 @@ export async function GET(
     const { searchParams } = new URL(request.url);
     const token = searchParams.get("token");
 
-    const ticket = getClearanceTicket(bookingId);
+    const ticket = await getClearanceTicketAsync(bookingId);
     if (!ticket) {
       return NextResponse.json({ detail: "No clearance ticket found for this booking." }, { status: 404 });
     }
@@ -29,7 +29,7 @@ export async function GET(
       }
     }
 
-    const booking = getBookingById(bookingId);
+    const booking = await getBookingByIdAsync(bookingId);
     if (!booking) {
       return NextResponse.json({ detail: "Booking not found." }, { status: 404 });
     }
